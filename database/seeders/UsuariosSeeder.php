@@ -3,36 +3,41 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 class UsuariosSeeder extends Seeder
 {
     public function run()
     {
-        // Administrador
-        User::create([
+        // Crear roles
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $decanoRole = Role::firstOrCreate(['name' => 'decano']);
+        $docenteRole = Role::firstOrCreate(['name' => 'docente']);
+
+        // Crear usuarios y asignar roles
+        $admin = User::create([
             'name' => 'Admin Principal',
             'email' => 'admin@example.com',
             'password' => Hash::make('12345678'),
-            'role' => 'admin', // rol
         ]);
+        $admin->assignRole($adminRole);
 
-        // Decano
-        User::create([
+        $decano = User::create([
             'name' => 'Decano Facultad',
             'email' => 'decano@example.com',
             'password' => Hash::make('12345678'),
-            'role' => 'decano',
         ]);
+        $decano->assignRole($decanoRole);
 
-        // Docente
-        User::create([
+        $docente = User::create([
             'name' => 'Docente Ejemplo',
             'email' => 'docente@example.com',
             'password' => Hash::make('12345678'),
-            'role' => 'docente',
         ]);
+        $docente->assignRole($docenteRole);
     }
 }
+
 
