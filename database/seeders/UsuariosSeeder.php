@@ -19,21 +19,21 @@ class UsuariosSeeder extends Seeder
         // Crear usuarios y asignar roles
         $admin = User::create([
             'name' => 'Admin Principal',
-            'email' => 'admin@example.com',
+            'email' => 'admin@gmail.com',
             'password' => Hash::make('12345678'),
         ]);
         $admin->assignRole($adminRole);
 
         $decano = User::create([
             'name' => 'Decano Facultad',
-            'email' => 'decano@example.com',
+            'email' => 'decano@gmail.com',
             'password' => Hash::make('12345678'),
         ]);
         $decano->assignRole($decanoRole);
 
         $docente = User::create([
             'name' => 'Docente Ejemplo',
-            'email' => 'docente@example.com',
+            'email' => 'docente@gmail.com',
             'password' => Hash::make('12345678'),
         ]);
         $docente->assignRole($docenteRole);

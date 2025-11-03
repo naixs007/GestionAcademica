@@ -1,6 +1,14 @@
+/* resources/css/app.css */
+@import './sidebar.css';
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
 
 /* Hero Section */
 .hero-section {
@@ -55,4 +63,3 @@
     background-color: #ff7e5f;
     color: #ffffff;
 }
-
