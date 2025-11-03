@@ -30,11 +30,20 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        // distingue las vistas dependiendo del rol
-        if($user->role === 'admin'){
+        // Redirección según rol (usando Spatie)
+        if ($user->hasRole('admin')) {
             return redirect()->route('admin.dashboard');
         }
 
+        if ($user->hasRole('decano')) {
+            return redirect()->route('decano.dashboard');
+        }
+
+        if ($user->hasRole('docente')) {
+            return redirect()->route('docente.dashboard');
+        }
+
+        // Si no tiene rol asignado, lo envías al dashboard general
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

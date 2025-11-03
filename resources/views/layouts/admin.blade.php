@@ -21,6 +21,9 @@
         <i class="bi bi-list"></i>
     </button>
 
+    <!-- Navigation -->
+    @include('admin.navigation')
+
     <!-- Sidebar -->
     @include('admin.sidebar')
 
