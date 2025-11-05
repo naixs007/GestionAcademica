@@ -12,54 +12,43 @@ class UsuariosSeeder extends Seeder
 {
     public function run()
     {
-        // Crear Permisos (idempotente)
-        Permission::firstOrCreate([
-            'name' => 'ver usuarios',
-            'guard_name' => 'web',
+        // Ensure roles exist (in case RolesSeeder wasn't run)
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'decano', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'docente', 'guard_name' => 'web']);
+
+        // Create or update users by email so the seeder is idempotent
+        $admin = User::updateOrCreate([
+            'email' => 'admin@academico.com',
+        ], [
+            'name' => 'Administrador',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'estado' => 'activo',
         ]);
-        Permission::firstOrCreate([
-            'name' => 'crear usuarios',
-            'guard_name' => 'web',
+        $admin->assignRole('admin');
+
+        $decano = User::updateOrCreate([
+            'email' => 'decano@academico.com',
+        ], [
+            'name' => 'Decano',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'estado' => 'activo',
         ]);
+        $decano->assignRole('decano');
 
-        // Crear Roles (idempotente)
-        $adminRole = Role::firstOrCreate(['name' => 'admin'], ['guard_name' => 'web']);
-        $decanoRole = Role::firstOrCreate(['name' => 'decano'], ['guard_name' => 'web']);
-        $docenteRole = Role::firstOrCreate(['name' => 'docente'], ['guard_name' => 'web']);
-
-        // Crear/actualizar usuarios y asignar roles (idempotente)
-        $admin = User::query()->updateOrCreate(
-            ['email' => 'admin@gmail.com'],
-            [
-                'name' => 'Admin Principal',
-                'password' => Hash::make('12345678'),
-                'email_verified_at' => now(),
-            ]
-        );
-        $admin->assignRole($adminRole);
-        $permissionsAdmin = Permission::query()->pluck('name');
-        $adminRole->syncPermissions($permissionsAdmin);
-
-        $decano = User::query()->updateOrCreate(
-            ['email' => 'decano@gmail.com'],
-            [
-                'name' => 'Decano Facultad',
-                'password' => Hash::make('12345678'),
-                'email_verified_at' => now(),
-            ]
-        );
-        $decano->assignRole($decanoRole);
-
-        $docente = User::query()->updateOrCreate(
-            ['email' => 'docente@gmail.com'],
-            [
-                'name' => 'Docente Ejemplo',
-                'password' => Hash::make('12345678'),
-                'email_verified_at' => now(),
-            ]
-        );
-        $docente->assignRole($docenteRole);
+        $docente = User::updateOrCreate([
+            'email' => 'docente@academico.com',
+        ], [
+            'name' => 'Docente',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'estado' => 'activo',
+        ]);
+        $docente->assignRole('docente');
     }
 }
+
 
 

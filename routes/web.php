@@ -12,6 +12,11 @@ Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('admin.dashboard');
 
+// Rutas admin: usuarios (resource)
+Route::prefix('admin')->middleware(['auth','verified'])->name('admin.')->group(function () {
+    Route::resource('users', \App\Http\Controllers\UserController::class)->names('users');
+});
+
 //ruta panel decano
 Route::get('/decano/dashboard', function () {
     return view('dashboard');
