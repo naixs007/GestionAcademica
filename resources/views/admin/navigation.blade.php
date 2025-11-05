@@ -3,19 +3,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('admin.dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                </div>
-
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
             </div>
 
             <!-- Settings Dropdown -->
@@ -67,7 +54,37 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            @php
+                use Illuminate\Support\Facades\Route;
+                $homeUrl = '/';
+                $isActive = false;
+                if (Route::has('dashboard')) {
+                    $homeUrl = route('dashboard');
+                    $isActive = request()->routeIs('dashboard');
+                } else {
+                    $user = Auth::user();
+                    if ($user) {
+                        if ($user->hasAnyRole(['admin', 'super-admin'])) {
+                            if (Route::has('admin.dashboard')) {
+                                $homeUrl = route('admin.dashboard');
+                                $isActive = request()->routeIs('admin.dashboard');
+                            }
+                        } elseif ($user->hasRole('decano')) {
+                            if (Route::has('decano.dashboard')) {
+                                $homeUrl = route('decano.dashboard');
+                                $isActive = request()->routeIs('decano.dashboard');
+                            }
+                        } elseif ($user->hasRole('docente')) {
+                            if (Route::has('docente.dashboard')) {
+                                $homeUrl = route('docente.dashboard');
+                                $isActive = request()->routeIs('docente.dashboard');
+                            }
+                        }
+                    }
+                }
+            @endphp
+
+            <x-responsive-nav-link href="{{ $homeUrl }}" :active="$isActive">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>

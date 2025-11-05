@@ -4,7 +4,7 @@
     </div>
 
     <div class="menu">
-    <a href="{{ route('admin.dashboard') }}" class="active"><i class="fa-regular fa-house"></i> Inicio</a>
+        <a href="#" class="active"><i class="fa-regular fa-house"></i> Inicio</a>
         <a href="#"><i class="fa-solid fa-users"></i> Gestión de Usuarios y Accesos</a>
         <a href="#"><i class="fa-solid fa-book"></i> Gestión Acádemica</a>
         <a href="#"><i class="fa-solid fa-hourglass-half"></i> Gestión de Horarios y Aulas</a>

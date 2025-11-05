@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -31,7 +32,8 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
 
         // Redirección según rol (usando Spatie)
-        if ($user->hasRole('admin')) {
+        // Soportar tanto 'admin' como 'super-admin' (dependiendo de cómo se sembraron los roles)
+        if ($user->hasAnyRole(['admin', 'super-admin'])) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -43,8 +45,24 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('docente.dashboard');
         }
 
-        // Si no tiene rol asignado, lo envías al dashboard general
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Si no tiene rol asignado o no matchea, calcula un fallback seguro
+        // Prioriza rutas por rol si existen, si no usa la ruta 'dashboard' si está disponible, sino '/'.
+        $defaultUrl = '/';
+        if ($user) {
+            if ($user->hasAnyRole(['admin', 'super-admin']) && Route::has('admin.dashboard')) {
+                $defaultUrl = route('admin.dashboard');
+            } elseif ($user->hasRole('decano') && Route::has('decano.dashboard')) {
+                $defaultUrl = route('decano.dashboard');
+            } elseif ($user->hasRole('docente') && Route::has('docente.dashboard')) {
+                $defaultUrl = route('docente.dashboard');
+            } elseif (Route::has('dashboard')) {
+                $defaultUrl = route('dashboard');
+            }
+        } elseif (Route::has('dashboard')) {
+            $defaultUrl = route('dashboard');
+        }
+
+        return redirect()->intended($defaultUrl);
     }
 
     /**
