@@ -29,7 +29,7 @@
 
     <!-- Contenido principal -->
     <main class="p-4" style="margin-left: 260px;">
-        @yield('content')
+        {{ $slot }}
     </main>
 
     <script>

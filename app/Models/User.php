@@ -16,9 +16,14 @@ use Spatie\Permission\Traits\HasRoles;
  * Spatie\Permission traits at runtime.
  *
  * @mixin \Spatie\Permission\Traits\HasRoles
- * @method bool hasPermissionTo(string|int|\Spatie\Permission\Contracts\Permission|\BackedEnum $permission)
- * @method bool hasRole(string|int|array|\Spatie\Permission\Contracts\Role|\BackedEnum $roles)
+ * @method bool hasPermissionTo(string|int|\Spatie\Permission\Contracts\Permission $permission)
+ * @method bool hasAnyPermission(array|string $permissions)
+ * @method bool hasRole(string|int|array|\Spatie\Permission\Contracts\Role $roles)
+ * @method bool hasAnyRole(array|string $roles)
  * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany roles()
+ * @method \Illuminate\Support\Collection getRoleNames()
+ * @method mixed assignRole(...$roles)
+ * @method \Illuminate\Support\Collection getDirectPermissions()
  */
 class User extends Authenticatable
 {
