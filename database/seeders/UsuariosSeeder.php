@@ -19,30 +19,30 @@ class UsuariosSeeder extends Seeder
 
         // Create or update users by email so the seeder is idempotent
         $admin = User::updateOrCreate([
-            'email' => 'admin@academico.com',
+            'email' => 'admin@gmail.com',
         ], [
             'name' => 'Administrador',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('12345678'),
             'email_verified_at' => now(),
             'estado' => 'activo',
         ]);
         $admin->assignRole('admin');
 
         $decano = User::updateOrCreate([
-            'email' => 'decano@academico.com',
+            'email' => 'decano@gmail.com',
         ], [
             'name' => 'Decano',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('12345678'),
             'email_verified_at' => now(),
             'estado' => 'activo',
         ]);
         $decano->assignRole('decano');
 
         $docente = User::updateOrCreate([
-            'email' => 'docente@academico.com',
+            'email' => 'docente@gmail.com',
         ], [
             'name' => 'Docente',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('12345678'),
             'email_verified_at' => now(),
             'estado' => 'activo',
         ]);
