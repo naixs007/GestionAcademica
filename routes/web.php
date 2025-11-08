@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,7 @@ Route::redirect('/admin', '/admin/dashboard')->middleware(['auth','verified']);
 
 // Rutas admin: usuarios (resource)
 Route::prefix('admin')->middleware(['auth','verified'])->name('admin.')->group(function () {
-    Route::resource('users', \App\Http\Controllers\UserController::class)->names('users');
+    Route::resource('users', UserController::class)->names('users');
 });
 
 //ruta panel decano
@@ -56,3 +57,4 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';
