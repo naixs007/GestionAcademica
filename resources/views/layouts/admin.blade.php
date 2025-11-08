@@ -16,18 +16,18 @@
 
 </head>
 <body>
-    <!-- Botón toggle móvil -->
+    <!-- Botón toggle móvil-->
     <button class="menu-toggle" id="menuToggle">
         <i class="bi bi-list"></i>
     </button>
 
-    <!-- Navigation -->
-    @include('admin.navigation')
+    <!-- Navigation-->
+    @include('layouts.partials.admin.navigation')
 
-    <!-- Sidebar -->
-    @include('admin.sidebar')
+    <!-- Sidebar-->
+    @include('layouts.partials.admin.sidebar')
 
-    <!-- Contenido principal -->
+    <!-- Contenido principal-->
     <main class="p-4" style="margin-left: 260px;">
         {{ $slot }}
     </main>
