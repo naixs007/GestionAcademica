@@ -44,7 +44,7 @@
     <section id="inicio" class="hero-section">
         <div class="hero-overlay"></div>
         <div class="container position-relative">
-            <div class="row justify-content-center text-center text-white">
+            <div class="row justify-content-center text-center text-black">
                 <div class="col-lg-8">
                     <h1 class="display-3 fw-bold mb-4 animate-fade-in">Bienvenido al Sistema de Gestión Académica</h1>
                     <p class="lead mb-5 animate-fade-in-delay">Administra usuarios, horarios, asistencia y reportes desde un solo lugar.</p>
@@ -117,7 +117,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
-                    <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80"
+                    <img src="/storage/img/FICCT.png"
                          alt="Campus universitario" class="img-fluid rounded shadow">
                 </div>
                 <div class="col-lg-6">

@@ -22,10 +22,10 @@
     </button>
 
     <!-- Navigation -->
-    @include('admin.navigation')
+    @include('layouts.partials.admin.navigation')
 
     <!-- Sidebar -->
-    @include('admin.sidebar')
+    @include('layouts.partials.admin.navigation')
 
     <!-- Contenido principal -->
     <main class="p-4" style="margin-left: 260px;">
