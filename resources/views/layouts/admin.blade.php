@@ -16,7 +16,7 @@
 
 </head>
 <body>
-    <!-- Botón toggle móvil -->
+    <!-- Botón toggle móvil-->
     <button class="menu-toggle" id="menuToggle">
         <i class="bi bi-list"></i>
     </button>
@@ -27,7 +27,7 @@
     <!-- Sidebar -->
     @include('layouts.partials.admin.navigation')
 
-    <!-- Contenido principal -->
+    <!-- Contenido principal-->
     <main class="p-4" style="margin-left: 260px;">
         {{ $slot }}
     </main>
