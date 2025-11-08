@@ -21,11 +21,11 @@
         <i class="bi bi-list"></i>
     </button>
 
-    <!-- Navigation -->
+    <!-- Navigation-->
     @include('layouts.partials.admin.navigation')
 
     <!-- Sidebar -->
-    @include('layouts.partials.admin.navigation')
+    @include('layouts.partials.admin.sidebar')
 
     <!-- Contenido principal-->
     <main class="p-4" style="margin-left: 260px;">
