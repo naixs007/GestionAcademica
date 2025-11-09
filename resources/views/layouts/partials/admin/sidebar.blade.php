@@ -3,6 +3,17 @@
     use Illuminate\Support\Facades\Route;
     use Illuminate\Support\Str;
     $user = Auth::user();
+
+    // Lógica para el Home URL (Usando el dashboard unificado)
+    $homeUrl = Route::has('dashboard') ? route('dashboard') : '/';
+    // Fallback si la ruta 'dashboard' no existe (mantenemos tu lógica original)
+    if (!Route::has('dashboard') && $user) {
+        if ($user->hasAnyRole(['admin','super-admin']) && Route::has('admin.dashboard')) $homeUrl = route('admin.dashboard');
+        elseif ($user->hasRole('decano') && Route::has('decano.dashboard')) $homeUrl = route('decano.dashboard');
+        elseif ($user->hasRole('docente') && Route::has('docente.dashboard')) $homeUrl = route('docente.dashboard');
+    }
+    // Determinar si la ruta actual es algún dashboard para la clase 'active'
+    $isActiveDashboard = Route::is('dashboard') || Route::is('*dashboard');
 @endphp
 
 <div class="sidebar" id="sidebar">
@@ -11,101 +22,100 @@
     </div>
 
     <div class="menu">
-        {{-- Inicio común: elegir dashboard según prefijo de ruta o rol --}}
-        @php
-            $homeUrl = '/';
-            $current = Route::currentRouteName();
-            if ($current && Str::startsWith($current, 'admin.')) {
-                if (Route::has('admin.dashboard')) $homeUrl = route('admin.dashboard');
-            } elseif ($current && Str::startsWith($current, 'decano.')) {
-                if (Route::has('decano.dashboard')) $homeUrl = route('decano.dashboard');
-            } elseif ($current && Str::startsWith($current, 'docente.')) {
-                if (Route::has('docente.dashboard')) $homeUrl = route('docente.dashboard');
-            } else {
-                if (Route::has('dashboard')) $homeUrl = route('dashboard');
-                elseif ($user) {
-                    if ($user->hasAnyRole(['admin','super-admin']) && Route::has('admin.dashboard')) $homeUrl = route('admin.dashboard');
-                    elseif ($user->hasRole('decano') && Route::has('decano.dashboard')) $homeUrl = route('decano.dashboard');
-                    elseif ($user->hasRole('docente') && Route::has('docente.dashboard')) $homeUrl = route('docente.dashboard');
-                }
-            }
-        @endphp
-
-        <a href="{{ $homeUrl }}"><i class="fa-regular fa-house"></i> Inicio</a>
+        <a href="{{ $homeUrl }}"
+            class="{{ $isActiveDashboard ? 'active' : '' }}">
+            <i class="fa-regular fa-house"></i> Inicio
+        </a>
 
         {{-- 1. Gestión de Usuarios y Accesos --}}
-        @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.ver')))
-            <a href="#usuarios"><i class="fa-solid fa-users"></i> Gestión de Usuarios y Accesos</a>
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.ver')))
+            <a href="{{ route('admin.users.index') }}"
+               class="{{ Route::is('admin.users.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-users"></i> Gestión de Usuarios y Accesos
+            </a>
+
+            {{-- Crear usuario --}}
             @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.crear'))
-                <a href="#usuarios/crear" class="ms-3">Crear usuario</a>
+                <a href="{{ route('admin.users.create') }}" class="ms-3">Crear usuario</a>
             @endif
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.editar'))
-                <a href="#usuarios/editar" class="ms-3">Editar usuario</a>
-            @endif
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.eliminar'))
-                <a href="#usuarios/eliminar" class="ms-3">Eliminar usuario</a>
-            @endif
+            {{-- Asignar roles (enlazado al index con filtro) --}}
             @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.asignar_roles'))
-                <a href="#usuarios/asignar" class="ms-3">Asignar roles</a>
-            @endif
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.remover_roles'))
-                <a href="#usuarios/remover" class="ms-3">Remover roles</a>
+                <a href="{{ route('admin.users.index', ['filter_roles' => 1]) }}" class="ms-3">Asignar roles</a>
             @endif
         @endif
 
-        {{-- 2. Gestión Académica --}}
-        @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('materias.ver')))
-            <a href="#materias"><i class="fa-solid fa-book"></i> Gestión Académica</a>
+        <hr>
+
+        {{-- 2. Gestión Académica (Materias) --}}
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('materias.ver')))
+            {{-- CORREGIDO: Usando 'admin.materias.index' --}}
+            <a href="{{ route('admin.materia.index') }}"
+               class="{{ Route::is('admin.materia.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-book"></i> Gestión Académica
+            </a>
+            {{-- CORREGIDO: Usando 'admin.materias.create' --}}
             @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('materias.crear'))
-                <a href="#materias/crear" class="ms-3">Crear materias</a>
-            @endif
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('materias.editar'))
-                <a href="#materias/editar" class="ms-3">Editar materias</a>
-            @endif
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('materias.eliminar'))
-                <a href="#materias/eliminar" class="ms-3">Eliminar materias</a>
+                <a href="{{ route('admin.materia.create') }}" class="ms-3">Crear materias</a>
             @endif
         @endif
 
         {{-- 3. Gestión de Horarios y Aulas --}}
-        @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('horarios.ver')))
-            <a href="#horarios"><i class="fa-solid fa-hourglass-half"></i> Gestión de Horarios y Aulas</a>
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('horarios.ver')))
+            {{-- CORREGIDO: Usando 'admin.horarios.index' --}}
+            <a href="{{ route('admin.horario.index') }}"
+               class="{{ Route::is('admin.horario.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-hourglass-half"></i> Gestión de Horarios
+            </a>
+            {{-- CORREGIDO: Usando 'admin.horarios.create' --}}
             @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('horarios.crear'))
-                <a href="#horarios/crear" class="ms-3">Crear horarios</a>
-            @endif
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('horarios.editar'))
-                <a href="#horarios/editar" class="ms-3">Editar horarios</a>
+                <a href="{{ route('admin.horario.create') }}" class="ms-3">Crear horarios</a>
             @endif
         @endif
-        @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('aulas.ver')))
-            <a href="#aulas" class="ms-0"><i class="fa-solid fa-building"></i> Aulas</a>
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('aulas.editar'))
-                <a href="#aulas/editar" class="ms-3">Editar aulas</a>
-            @endif
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('aulas.ver')))
+            {{-- CORREGIDO: Usando 'admin.aulas.index' --}}
+            <a href="{{ route('admin.aula.index') }}"
+               class="{{ Route::is('admin.aula.*') ? 'active' : '' }} ms-0">
+                <i class="fa-solid fa-building"></i> Aulas
+            </a>
         @endif
 
+        <hr>
+
         {{-- 4. Control de Asistencia Docente --}}
-        @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('asistencia.ver')))
-            <a href="#asistencia"><i class="fa-solid fa-square-check"></i> Control de Asistencia Docente</a>
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('asistencia.ver')))
+            {{-- CORREGIDO: Usando 'admin.asistencias.index' o si es un recurso singular, debes verificar el nombre --}}
+            {{-- Asumo el plural 'asistencias' por convención, pero mantengo tu nombre 'asistencia' si es un recurso singular --}}
+            <a href="{{ route('admin.asistencia.index') }}"
+               class="{{ Route::is('admin.asistencia.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-square-check"></i> Control de Asistencia Docente
+            </a>
             @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('asistencia.registrar'))
-                <a href="#asistencia/registrar" class="ms-3">Registrar asistencia</a>
+                <a href="{{ route('admin.asistencia.create') }}" class="ms-3">Registrar asistencia</a>
             @endif
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('asistencia.editar_propia'))
-                <a href="#asistencia/editar" class="ms-3">Editar asistencia propia</a>
-            @endif
+            {{--@if($user->hasAnyRole(['admin','super-admin']) || $hasPerm('asistencia.editar_propia'))
+                <a href="{{ route('asistencia.propia') }}" class="ms-3">Editar asistencia propia</a>
+            @endif--}}
         @endif
 
         {{-- 5. Reportes --}}
-        @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('reportes.ver')))
-            <a href="#reportes"><i class="fa-solid fa-chart-line"></i> Reportes</a>
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('reportes.ver')))
+            {{-- CORREGIDO: Usando 'admin.reportes.index' --}}
+            <a href="{{ route('admin.reporte.index') }}"
+               class="{{ Route::is('admin.reporte.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-chart-line"></i> Reportes
+            </a>
+            {{-- CORREGIDO: Usando 'admin.reportes.download' --}}
             @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('reportes.descargar'))
-                <a href="#reportes/descargar" class="ms-3">Descargar reportes</a>
+                <a href="{{ route('admin.reporte.download') }}" class="ms-3">Descargar reportes</a>
             @endif
         @endif
 
         {{-- 6. Bitácora --}}
-        @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('bitacora.ver')))
-            <a href="#bitacora"><i class="fa-solid fa-pen-to-square"></i> Bitácora</a>
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('bitacora.ver')))
+            <a href="{{ route('bitacora.index') }}"
+               class="{{ Route::is('bitacora.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-pen-to-square"></i> Bitácora
+            </a>
         @endif
     </div>
 </div>

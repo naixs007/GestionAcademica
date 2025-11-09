@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class UsuariosSeeder extends Seeder
 {
@@ -47,6 +46,57 @@ class UsuariosSeeder extends Seeder
             'estado' => 'activo',
         ]);
         $docente->assignRole('docente');
+
+        // ---------------------------------------------------------------
+        // Crear más usuarios docentes para el seeder
+        $docentes = [
+            ['name' => 'María García', 'email' => 'maria.garcia@gmail.com', 'password' => '12345'],
+            ['name' => 'Ana López', 'email' => 'ana.lopez@gmail.com', 'password' => '12345'],
+            ['name' => 'Carmen Martínez', 'email' => 'carmen.martinez@gmail.com', 'password' => '12345'],
+            ['name' => 'Laura Rodríguez', 'email' => 'laura.rodriguez@gmail.com', 'password' => '12345'],
+            ['name' => 'Sofía Hernández', 'email' => 'sofia.hernandez@gmail.com', 'password' => '12345'],
+            ['name' => 'Isabella Torres', 'email' => 'isabella.torres@gmail.com', 'password' => '12345'],
+        ];
+
+        foreach ($docentes as $docenteData) {
+            // Use updateOrCreate to make seeder idempotent and Hash the password
+            $user = User::updateOrCreate(
+                ['email' => $docenteData['email']],
+                [
+                    'name' => $docenteData['name'],
+                    'password' => Hash::make($docenteData['password']),
+                    'email_verified_at' => now(),
+                    'estado' => 'activo',
+                ]
+            );
+
+            // Assign role by name (roles were created above)
+            $user->assignRole('docente');
+        }
+
+        // Crear más usuarios decanos para el seeder
+        $decanos = [
+            ['name' => 'Valentina Ruiz', 'email' => 'valentina.ruiz@magy.com', 'password' => '12345'],
+            ['name' => 'Camila Díaz', 'email' => 'camila.diaz@magy.com', 'password' => '12345'],
+            ['name' => 'Gabriela Morales', 'email' => 'gabriela.morales@magy.com', 'password' => '12345'],
+            ['name' => 'Daniela Castro', 'email' => 'daniela.castro@magy.com', 'password' => '12345'],
+            ['name' => 'Natalia Ramos', 'email' => 'natalia.ramos@magy.com', 'password' => '12345'],
+            ['name' => 'Fernanda Silva', 'email' => 'fernanda.silva@magy.com', 'password' => '12345'],
+        ];
+
+        foreach ($decanos as $decanoData) {
+            $user = User::updateOrCreate(
+                ['email' => $decanoData['email']],
+                [
+                    'name' => $decanoData['name'],
+                    'password' => Hash::make($decanoData['password']),
+                    'email_verified_at' => now(),
+                    'estado' => 'activo',
+                ]
+            );
+
+            $user->assignRole('decano');
+        }
     }
 }
 

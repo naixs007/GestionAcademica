@@ -7,7 +7,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -22,15 +24,20 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $user = User::Paginate(15);
+        $users = User::Paginate(15); // Cambiado de $user a $users
         return view('admin.users.index', compact('users'));
     }
 
-    /*public function show(User $user): View
+    public function create(): View
+    {
+        return view('admin.users.create');
+    }
+
+    public function show(User $user): View
     {
         $user->load('roles', 'permissions');
-        return view('users.show', compact('user'));
-    }*/
+        return view('admin.users.show', compact('user'));
+    }
 
     public function store(Request $request)
     {
@@ -38,6 +45,8 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'estado' => ['required', 'in:activo,inactivo'],
         ]);
 
         $user = User::create([
@@ -56,15 +65,14 @@ class UserController extends Controller
         ]);
 
         return redirect()
-            ->route('users.index')
+            ->route('admin.users.index')
             ->with('status', 'Usuario creado correctamente.');
     }
 
-    /*
-        public function edit(User $user): View
+    public function edit(User $user): View
     {
-        return view('users.edit', compact('user'));
-    }*/
+        return view('admin.users.edit', compact('user'));
+    }
 
     public function update(Request $request, User $user)
     {
@@ -94,7 +102,7 @@ class UserController extends Controller
             'browser' => $request->header('user-agent') ?? 'No disponible', // Guardar navegador (con valor predeterminado)
         ]);
 
-        return redirect()->route('users.index')
+        return redirect()->route('admin.users.index')
             ->with('status', 'Usuario actualizado correctamente.');
     }
 
@@ -114,7 +122,7 @@ class UserController extends Controller
             'browser' => $request->header('user-agent') ?? 'No disponible', // Guardar navegador (con valor predeterminado)
         ]);
 
-        return redirect()->route('users.index')
+        return redirect()->route('admin.users.index')
             ->with('status', 'Usuario eliminado correctamente.');
     }
 
@@ -181,7 +189,7 @@ class UserController extends Controller
                 );
             }
 
-            ActivityLog::create([
+            Bitacora::create([
                 'user_id'     => Auth::id(),
                 'action'      => 'Actualización de roles/permisos',
                 'description' => 'Usuario afectado: '.$user->name.' | '.implode(' | ', $detalles),
@@ -227,7 +235,7 @@ class UserController extends Controller
 
     public function bitacora(Request $request): View
     {
-        $activityLogs = ActivityLog::with('user')
+        $bitacora = Bitacora::with('user')
             ->when($request->filled('action'), function($query) use ($request) {
                 $action = $request->input('action');
                 return $query->where('action', 'like', '%'.$action.'%');
@@ -236,7 +244,7 @@ class UserController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('users.bitacora', compact('activityLogs'));
+        return view('admin.bitacora.index', compact('bitacora'));
     }
 
     /**

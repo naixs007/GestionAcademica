@@ -3,23 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
-use app\Models\Bitacora;
-use illuminate\Support\Facades\Auth;
 
-class PermissionController extends Controller
+class MateriaController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $permissions = Permission::withCount('roles')->orderBy('name')->paginate(10);
-        return view('permissions.index', compact('permissions'));
+        //
     }
 
     /**

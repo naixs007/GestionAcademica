@@ -22,7 +22,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);*/
 
+         // Ejecutar primero RolesSeeder para crear roles y permisos
+         // antes de crear/actualizar usuarios que dependen de ellos.
          $this->call([
+            RolesSeeder::class,
             UsuariosSeeder::class,
         ]);
 

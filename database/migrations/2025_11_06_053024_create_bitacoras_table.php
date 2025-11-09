@@ -23,7 +23,9 @@ return new class extends Migration
             $table->string('tabla')->nullable();
             $table->string('registro_id')->nullable();
             $table->dateTime('fecha_hora')->nullable();
+            $table->index(['user_id', 'created_at']);
             $table->timestamps();
+
         });
     }
 

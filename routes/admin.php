@@ -1,7 +1,0 @@
-<?php
-
-use Illuminate\Support\Facades\Route;
-
-Route::get('/admin', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard')->middleware(['auth', 'verified']);
