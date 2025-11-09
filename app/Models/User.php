@@ -62,4 +62,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * If a user has a docente profile, this returns it.
+     */
+    public function docente()
+    {
+        return $this->hasOne(\App\Models\Docente::class, 'user_id');
+    }
 }

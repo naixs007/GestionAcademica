@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\http\models\Asistencia;
+use App\Models\Asistencia;
+use App\Models\Docente;
+use App\Models\Horario;
 
 class AsistenciaController extends Controller
 {
@@ -12,7 +14,7 @@ class AsistenciaController extends Controller
      */
     public function index()
     {
-        $asistencias = \App\Models\Asistencia::orderByDesc('fecha')->paginate(15);
+        $asistencias = Asistencia::orderByDesc('fecha')->paginate(15);
         return view('admin.asistencia.index', compact('asistencias'));
     }
 
@@ -21,7 +23,10 @@ class AsistenciaController extends Controller
      */
     public function create()
     {
-    return view('admin.asistencia.create');
+        $docentes = Docente::with('user')->orderBy('id')->get();
+        $horarios = Horario::orderBy('id')->get();
+
+        return view('admin.asistencia.create', compact('docentes','horarios'));
     }
 
     /**
@@ -30,13 +35,16 @@ class AsistenciaController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'docente' => ['nullable','string','max:255'],
+            'docente_id' => ['required','integer','exists:docentes,id'],
+            'horario_id' => ['required','integer','exists:horarios,id'],
             'fecha' => ['required','date'],
             'asistio' => ['required','in:0,1'],
             'observaciones' => ['nullable','string'],
         ]);
 
-        \App\Models\Asistencia::create([
+        Asistencia::create([
+            'docente_id' => $data['docente_id'],
+            'horario_id' => $data['horario_id'],
             'estado' => $data['asistio'],
             'fecha' => $data['fecha'],
             'observaciones' => $data['observaciones'] ?? null,
@@ -50,7 +58,7 @@ class AsistenciaController extends Controller
      */
     public function show(string $id)
     {
-        $asistencia = \App\Models\Asistencia::findOrFail($id);
+        $asistencia = Asistencia::findOrFail($id);
         return view('admin.asistencia.show', compact('asistencia'));
     }
 
@@ -59,7 +67,7 @@ class AsistenciaController extends Controller
      */
     public function edit(string $id)
     {
-        $asistencia = \App\Models\Asistencia::findOrFail($id);
+        $asistencia = Asistencia::findOrFail($id);
         return view('admin.asistencia.edit', compact('asistencia'));
     }
 
@@ -74,7 +82,7 @@ class AsistenciaController extends Controller
             'observaciones' => ['nullable','string'],
         ]);
 
-        $asistencia = \App\Models\Asistencia::findOrFail($id);
+        $asistencia = Asistencia::findOrFail($id);
         $asistencia->update([
             'estado' => $data['asistio'],
             'fecha' => $data['fecha'],
@@ -89,7 +97,7 @@ class AsistenciaController extends Controller
      */
     public function destroy(string $id)
     {
-        $asistencia = \App\Models\Asistencia::findOrFail($id);
+        $asistencia = Asistencia::findOrFail($id);
         $asistencia->delete();
         return redirect()->route('admin.asistencia.index')->with('status', 'Asistencia eliminada.');
     }

@@ -11,20 +11,22 @@ class Asistencia extends Model
     protected $table = 'asistencias';
 
     protected $fillable = [
+        'docente_id',
+        'horario_id',
         'estado',
         'fecha',
         'observaciones',
     ];
 
-     //Relacion muchos a 1 con docente
-    function docentes()
+    // Relación muchos a 1 con docente
+    public function docente()
     {
-        return $this->belongsTo(Docente::class);
+        return $this->belongsTo(Docente::class, 'docente_id');
     }
 
-    //Relacion muchos a 1 con horario
-    function horarios()
+    // Relación muchos a 1 con horario
+    public function horario()
     {
-        return $this->belongsTo(Horario::class);
+        return $this->belongsTo(Horario::class, 'horario_id');
     }
 }

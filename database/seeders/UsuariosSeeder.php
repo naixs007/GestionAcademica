@@ -50,12 +50,47 @@ class UsuariosSeeder extends Seeder
         // ---------------------------------------------------------------
         // Crear más usuarios docentes para el seeder
         $docentes = [
-            ['name' => 'María García', 'email' => 'maria.garcia@gmail.com', 'password' => '12345'],
-            ['name' => 'Ana López', 'email' => 'ana.lopez@gmail.com', 'password' => '12345'],
-            ['name' => 'Carmen Martínez', 'email' => 'carmen.martinez@gmail.com', 'password' => '12345'],
-            ['name' => 'Laura Rodríguez', 'email' => 'laura.rodriguez@gmail.com', 'password' => '12345'],
-            ['name' => 'Sofía Hernández', 'email' => 'sofia.hernandez@gmail.com', 'password' => '12345'],
-            ['name' => 'Isabella Torres', 'email' => 'isabella.torres@gmail.com', 'password' => '12345'],
+            ['name' => 'María García', 'email' => 'maria.garcia@gmail.com', 'password' => '12345', 'cargaHoraria' => 20, 'categoria' => 'Titular', 'profesion' => 'Lic.'],
+            [
+                'name' => 'Ana López',
+                'email' => 'ana.lopez@gmail.com',
+                'password' => '12345',
+                'cargaHoraria' => 15,
+                'categoria' => 'Titular',
+                'profesion' => 'Lic.'
+            ],
+            [
+                'name' => 'Carmen Martínez',
+                'email' => 'carmen.martinez@gmail.com',
+                'password' => '12345',
+                'cargaHoraria' => 15,
+                'categoria' => 'Titular',
+                'profesion' => 'Lic.'
+            ],
+            [
+                'name' => 'Laura Rodríguez',
+                'email' => 'laura.rodriguez@gmail.com',
+                'password' => '12345',
+                'cargaHoraria' => 20,
+                'categoria' => 'Titular',
+                'profesion' => 'Lic.'
+            ],
+            [
+                'name' => 'Sofía Hernández',
+                'email' => 'sofia.hernandez@gmail.com',
+                'password' => '12345',
+                'cargaHoraria' => 20,
+                'categoria' => 'Titular',
+                'profesion' => 'Lic.'
+            ],
+            [
+                'name' => 'Isabella Torres',
+                'email' => 'isabella.torres@gmail.com',
+                'password' => '12345',
+                'cargaHoraria' => 15,
+                'categoria' => 'Titular',
+                'profesion' => 'Lic.'
+            ],
         ];
 
         foreach ($docentes as $docenteData) {
@@ -99,6 +134,3 @@ class UsuariosSeeder extends Seeder
         }
     }
 }
-
-
-
