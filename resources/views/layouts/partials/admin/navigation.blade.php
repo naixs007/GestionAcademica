@@ -24,12 +24,13 @@
                     </a>
                 </div> --}}
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                {{-- Navigation Links
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">--}}
                     {{-- Using x-nav-link assumes you have this Blade component --}}
-                    <x-nav-link href="{{ $homeUrl }}" :active="$isActive">
+                {{--    <x-nav-link href="{{ $homeUrl }}" :active="$isActive">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                </div>
+                </div>--}}
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">

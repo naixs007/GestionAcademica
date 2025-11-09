@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Decanato</title>
+    <title>Panel de {{auth()->user()->name}}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -24,8 +24,8 @@
 
     <main class="p-4" style="margin-left: 260px;">
         <div class="container-fluid">
-            <h2>Panel de Decanato</h2>
-            <p>Bienvenido, Decano/a. Utilizando temporalmente la estructura de navegación y sidebar del Administrador.</p>
+            <h2>Panel de {{auth()->user()->name}}</h2>
+            <p>Bienvenido, {{auth()->user()->name}}. Utilizando temporalmente la estructura de navegación y sidebar del Administrador.</p>
 
             <div class="row mt-4">
                 <div class="col-md-12">
