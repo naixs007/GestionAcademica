@@ -44,6 +44,22 @@
             @endif
         @endif
 
+        {{-- Gestión de Roles y Permisos --}}
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('roles.ver') || $user->hasPermissionTo('permissions.ver')))
+            <a href="{{ route('admin.roles.index') }}"
+               class="{{ Route::is('admin.roles.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-user-shield"></i> Gestión de Roles
+            </a>
+
+            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('roles.crear'))
+                <a href="{{ route('admin.roles.create') }}" class="ms-3">Crear rol</a>
+            @endif
+
+            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('permissions.ver'))
+                <a href="{{ route('admin.permissions.index') }}" class="mt-1">Permisos</a>
+            @endif
+        @endif
+
         <hr>
 
         {{-- 2. Gestión Académica (Materias) --}}

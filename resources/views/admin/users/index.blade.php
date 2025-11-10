@@ -32,6 +32,9 @@
                                     @can('usuarios.editar')
                                         <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
                                     @endcan
+                                    @can('usuarios.asignar_roles')
+                                        <a href="{{ route('admin.user.roles.edit', $user) }}" class="btn btn-sm btn-outline-secondary ms-1">Asignar roles</a>
+                                    @endcan
                                     @can('usuarios.eliminar')
                                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar usuario?');">
                                             @csrf

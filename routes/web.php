@@ -111,6 +111,10 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     // Usar la ruta resource que apunta al AsistenciaController (crea index/create/store/show/edit/update/destroy)
     Route::resource('asistencia', AsistenciaController::class)->names('asistencia');
 
+    // Roles y Permisos (CRUD básico)
+    Route::resource('roles', App\Http\Controllers\RoleController::class)->names('roles');
+    Route::resource('permissions', App\Http\Controllers\PermissionController::class)->names('permissions');
+
     // Ruta específica de asistencia propia (si necesitas una acción personalizada la puedes implementar
     // en AsistenciaController como 'editPropia' y registrar la ruta apuntando al método)
     Route::get('asistencia/propia', function() {

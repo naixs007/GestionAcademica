@@ -149,7 +149,7 @@ class UserController extends Controller
         $userRoleIds = $user->roles->pluck('id')->toArray();
         $userPermissionIds = $user->permissions->pluck('id')->toArray();
 
-        return view('users.edit-roles', compact(
+        return view('admin.users.edit-roles', compact(
             'user', 'roles', 'permissions', 'userRoleIds', 'userPermissionIds'
         ));
     }
@@ -216,7 +216,7 @@ class UserController extends Controller
         }
 
         return redirect()
-            ->route('users.index')
+            ->route('admin.users.index')
             ->with('status', 'Roles y permisos actualizados correctamente.');
     }
 
