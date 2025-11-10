@@ -24,12 +24,12 @@
                     <tbody>
                         @forelse($bitacora as $entry)
                             <tr>
-                                <td>{{ $entry->user->name ?? 'Sistema' }}</td>
-                                <td>{{ $entry->action }}</td>
-                                <td>{{ $entry->description }}</td>
-                                <td>{{ $entry->ip_address ?? '-' }}</td>
-                                <td>{{ $entry->browser ?? '-' }}</td>
-                                <td>{{ $entry->created_at->format('Y-m-d H:i') }}</td>
+                                <td>{{ $entry->user->name ?? $entry->usuario ?? 'Sistema' }}</td>
+                                <td>{{ $entry->metodo ?? $entry->action ?? $entry->usuario ?? '-' }}</td>
+                                <td>{{ $entry->descripcion ?? $entry->description ?? '-' }}</td>
+                                <td>{{ $entry->direccion_ip ?? $entry->ip_address ?? '-' }}</td>
+                                <td>{{ $entry->navegador ?? $entry->browser ?? '-' }}</td>
+                                <td>{{ optional($entry->fecha_hora ?? $entry->created_at)->format('Y-m-d H:i') }}</td>
                             </tr>
                         @empty
                             <tr>

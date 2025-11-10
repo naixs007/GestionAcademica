@@ -55,13 +55,17 @@ class UserController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        // Registrar en bitácora
+        // Registrar en bitácora (usar columnas de la migración)
         Bitacora::create([
             'user_id' => Auth::id(),
-            'action' => 'Creación de usuario',
-            'description' => 'Usuario creado: ' . $user->name . ' (' . $user->email . ')',
-            'ip_address' => $request->ip() ?? 'No disponible',            // Guardar IP (con valor predeterminado)
-            'browser' => $request->header('user-agent') ?? 'No disponible', // Guardar navegador (con valor predeterminado)
+            'usuario' => $user->name ?? $user->email,
+            'metodo' => 'Creación de usuario',
+            'descripcion' => 'Usuario creado: ' . $user->name . ' (' . $user->email . ')',
+            'direccion_ip' => $request->ip() ?? 'No disponible',
+            'navegador' => $request->header('user-agent') ?? 'No disponible',
+            'tabla' => 'users',
+            'registro_id' => $user->id,
+            'fecha_hora' => now(),
         ]);
 
         return redirect()
@@ -93,13 +97,17 @@ class UserController extends Controller
 
         $user->update($updateData);
 
-        // Registrar en bitácora
+        // Registrar en bitácora (usar columnas de la migración)
         Bitacora::create([
             'user_id' => Auth::id(),
-            'action' => 'Actualización de usuario',
-            'description' => 'Usuario actualizado: ' . $user->name . ' (' . $user->email . ')',
-            'ip_address' => $request->ip() ?? 'No disponible',            // Guardar IP (con valor predeterminado)
-            'browser' => $request->header('user-agent') ?? 'No disponible', // Guardar navegador (con valor predeterminado)
+            'usuario' => $user->name ?? $user->email,
+            'metodo' => 'Actualización de usuario',
+            'descripcion' => 'Usuario actualizado: ' . $user->name . ' (' . $user->email . ')',
+            'direccion_ip' => $request->ip() ?? 'No disponible',
+            'navegador' => $request->header('user-agent') ?? 'No disponible',
+            'tabla' => 'users',
+            'registro_id' => $user->id,
+            'fecha_hora' => now(),
         ]);
 
         return redirect()->route('admin.users.index')
@@ -111,15 +119,20 @@ class UserController extends Controller
         $userName = $user->name;
         $userEmail = $user->email;
 
+        $userId = $user->id;
         $user->delete();
 
-        // Registrar en bitácora
+        // Registrar en bitácora (usar columnas de la migración)
         Bitacora::create([
             'user_id' => Auth::id(),
-            'action' => 'Eliminación de usuario',
-            'description' => 'Usuario eliminado: ' . $userName . ' (' . $userEmail . ')',
-            'ip_address' => $request->ip() ?? 'No disponible',            // Guardar IP (con valor predeterminado)
-            'browser' => $request->header('user-agent') ?? 'No disponible', // Guardar navegador (con valor predeterminado)
+            'usuario' => $userName . ' (' . $userEmail . ')',
+            'metodo' => 'Eliminación de usuario',
+            'descripcion' => 'Usuario eliminado: ' . $userName . ' (' . $userEmail . ')',
+            'direccion_ip' => $request->ip() ?? 'No disponible',
+            'navegador' => $request->header('user-agent') ?? 'No disponible',
+            'tabla' => 'users',
+            'registro_id' => $userId,
+            'fecha_hora' => now(),
         ]);
 
         return redirect()->route('admin.users.index')
@@ -191,10 +204,14 @@ class UserController extends Controller
 
             Bitacora::create([
                 'user_id'     => Auth::id(),
-                'action'      => 'Actualización de roles/permisos',
-                'description' => 'Usuario afectado: '.$user->name.' | '.implode(' | ', $detalles),
-                'ip_address' => $request->ip() ?? 'No disponible',            // Guardar IP (con valor predeterminado)
-                'browser' => $request->header('user-agent') ?? 'No disponible', // Guardar navegador (con valor predeterminado)
+                'usuario'     => $user->name ?? $user->email,
+                'metodo'      => 'Actualización de roles/permisos',
+                'descripcion' => 'Usuario afectado: '.$user->name.' | '.implode(' | ', $detalles),
+                'direccion_ip' => $request->ip() ?? 'No disponible',
+                'navegador' => $request->header('user-agent') ?? 'No disponible',
+                'tabla' => 'users',
+                'registro_id' => $user->id,
+                'fecha_hora' => now(),
             ]);
         }
 
@@ -237,8 +254,11 @@ class UserController extends Controller
     {
         $bitacora = Bitacora::with('user')
             ->when($request->filled('action'), function($query) use ($request) {
-                $action = $request->input('action');
-                return $query->where('action', 'like', '%'.$action.'%');
+                $term = $request->input('action');
+                return $query->where(function($q) use ($term) {
+                    $q->where('usuario', 'like', '%'.$term.'%')
+                      ->orWhere('descripcion', 'like', '%'.$term.'%');
+                });
             })
             ->orderByDesc('created_at')
             ->paginate(10)

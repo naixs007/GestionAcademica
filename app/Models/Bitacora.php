@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Bitacora extends Model
 {
@@ -19,5 +20,13 @@ class Bitacora extends Model
         'browser_info',
         'fecha_hora',
     ];
+
+    /**
+     * Relación al usuario que generó la entrada de la bitácora.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
 }
