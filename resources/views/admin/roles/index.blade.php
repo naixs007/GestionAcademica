@@ -27,7 +27,7 @@
                                 <td class="text-center">{{ $role->users_count ?? 0 }}</td>
                                 <td class="text-center">{{ $role->permissions_count ?? 0 }}</td>
                                 <td class="text-end">
-                                    <a href="{{ route('admin.roles.show', $role) }}" class="btn btn-sm btn-outline-secondary">Ver</a>
+                                    <a href="{{ route('admin.roles.show', $role) }}" class="btn btn-sm btn-outline-info">Ver</a>
                                     <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
                                     <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar rol?');">
                                         @csrf

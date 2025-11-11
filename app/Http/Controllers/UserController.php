@@ -25,7 +25,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $currentUser = Auth::user();
-        
+
         // Si es docente, solo mostrar otros docentes
         if ($currentUser->hasRole('docente') && !$currentUser->hasAnyRole(['admin', 'super-admin'])) {
             $users = User::whereHas('roles', function($query) {
@@ -35,7 +35,7 @@ class UserController extends Controller
             // Admin ve todos los usuarios
             $users = User::paginate(15);
         }
-        
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -46,8 +46,16 @@ class UserController extends Controller
 
     public function show(User $user): View
     {
+        $currentUser = Auth::user();
         $user->load('roles', 'permissions');
-        return view('admin.users.show', compact('user'));
+        
+        // Determinar qué campos mostrar según el rol del usuario actual
+        // Admin/Super-admin ven todo
+        $canViewFull = $currentUser->hasAnyRole(['admin', 'super-admin']);
+        // Decano ve nombre, correo, teléfono y estado
+        $canViewBasic = $currentUser->hasRole('decano') || $canViewFull;
+        
+        return view('admin.users.show', compact('user', 'canViewFull', 'canViewBasic'));
     }
 
     public function store(Request $request)
@@ -95,6 +103,8 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'estado' => ['nullable', 'in:activo,inactivo'],
         ]);
 
         $updateData = [
@@ -102,8 +112,19 @@ class UserController extends Controller
             'email' => $data['email'],
         ];
 
+        // Solo actualizar contraseña si se proporciona
         if (!empty($data['password'])) {
             $updateData['password'] = Hash::make($data['password']);
+        }
+        
+        // Solo actualizar teléfono si se proporciona
+        if (!empty($data['telefono'])) {
+            $updateData['telefono'] = $data['telefono'];
+        }
+        
+        // Solo actualizar estado si se proporciona
+        if (!empty($data['estado'])) {
+            $updateData['estado'] = $data['estado'];
         }
 
         $user->update($updateData);

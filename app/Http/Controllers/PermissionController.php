@@ -61,7 +61,8 @@ class PermissionController extends Controller
      */
     public function show(Permission $permission)
     {
-    return view('admin.permissions.show', compact('permission'));
+        $permission->load('roles.users');
+        return view('admin.permissions.show', compact('permission'));
     }
 
     /**

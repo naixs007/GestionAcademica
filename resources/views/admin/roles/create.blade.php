@@ -85,34 +85,52 @@
 
             // Datos de plantillas desde el servidor
             const templates = @json($templates);
+            
+            // Crear mapeo de permisos (id => nombre)
+            const permissionsMap = {};
+            @foreach($permissions as $perm)
+                permissionsMap[{{ $perm->id }}] = '{{ $perm->name }}';
+            @endforeach
 
-            // Cambio de plantilla
-            templateSelect.addEventListener('change', function() {
-                const selectedTemplate = this.value;
-                
-                if (selectedTemplate === 'custom') {
+            // Función para aplicar permisos de plantilla
+            function applyTemplatePermissions(templateKey) {
+                if (templateKey === 'custom') {
                     templateDescription.textContent = 'Selecciona manualmente los permisos para este rol';
-                    // No cambiar checkboxes, dejar como están
+                    // No cambiar checkboxes en modo personalizado
                     return;
                 }
 
-                const template = templates[selectedTemplate];
-                if (template) {
-                    templateDescription.textContent = template.description;
-                    
-                    // Desmarcar todos primero
-                    permissionCheckboxes.forEach(cb => cb.checked = false);
-                    
-                    // Marcar permisos de la plantilla
-                    template.permissions.forEach(permName => {
-                        permissionCheckboxes.forEach(cb => {
-                            const label = document.querySelector(`label[for="${cb.id}"]`);
-                            if (label && label.textContent === permName) {
-                                cb.checked = true;
-                            }
-                        });
+                const template = templates[templateKey];
+                if (!template) return;
+
+                templateDescription.textContent = template.description || '';
+                
+                // Desmarcar todos los checkboxes primero
+                permissionCheckboxes.forEach(cb => cb.checked = false);
+                
+                // Marcar solo los permisos de la plantilla seleccionada
+                if (template.permissions && template.permissions.length > 0) {
+                    permissionCheckboxes.forEach(cb => {
+                        const permId = parseInt(cb.value);
+                        const permName = permissionsMap[permId];
+                        
+                        // Si el nombre del permiso está en la plantilla, marcarlo
+                        if (permName && template.permissions.includes(permName)) {
+                            cb.checked = true;
+                        }
                     });
                 }
+            }
+
+            // Aplicar plantilla inicial si hay un valor old()
+            const initialTemplate = templateSelect.value;
+            if (initialTemplate && initialTemplate !== 'custom') {
+                applyTemplatePermissions(initialTemplate);
+            }
+
+            // Evento: cambio de plantilla
+            templateSelect.addEventListener('change', function() {
+                applyTemplatePermissions(this.value);
             });
 
             // Seleccionar todos

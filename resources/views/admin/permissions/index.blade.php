@@ -21,6 +21,7 @@
                                 <td>{{ $perm->name }}</td>
                                 <td class="text-center">{{ $perm->roles_count ?? 0 }}</td>
                                 <td class="text-end">
+                                    <a href="{{ route('admin.permissions.show', $perm) }}" class="btn btn-sm btn-outline-info">Ver</a>
                                     <a href="{{ route('admin.permissions.edit', $perm) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
                                     <form action="{{ route('admin.permissions.destroy', $perm) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar permiso?');">
                                         @csrf
