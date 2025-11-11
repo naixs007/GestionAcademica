@@ -19,21 +19,45 @@
                         </ul>
                     </div>
                 @endif
-                <form action="{{ route('admin.roles.store') }}" method="POST">
+                <form action="{{ route('admin.roles.store') }}" method="POST" id="roleForm">
                     @csrf
 
                     <div class="mb-3">
-                        <label class="form-label">Nombre</label>
+                        <label class="form-label">Nombre del Rol</label>
                         <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                        <small class="text-muted">Nombre único para identificar el rol</small>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Permisos</label>
-                        <div class="row">
-                            @foreach(\Spatie\Permission\Models\Permission::orderBy('name')->get() as $perm)
-                                <div class="col-6">
+                    <div class="mb-4">
+                        <label class="form-label">Plantilla de Rol</label>
+                        <select name="template" id="templateSelect" class="form-select">
+                            <option value="custom" {{ old('template') == 'custom' ? 'selected' : '' }}>Personalizado (seleccionar permisos manualmente)</option>
+                            @foreach($templates as $key => $template)
+                                @if($key !== 'custom')
+                                    <option value="{{ $key }}" {{ old('template') == $key ? 'selected' : '' }}>
+                                        {{ $template['name'] }} - {{ $template['description'] }}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                        <small class="text-muted" id="templateDescription">Selecciona una plantilla predeterminada o crea un rol personalizado</small>
+                    </div>
+
+                    <div class="mb-3" id="permissionsSection">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label mb-0">Permisos</label>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAll">Seleccionar todos</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAll">Deseleccionar todos</button>
+                            </div>
+                        </div>
+                        <div class="row" id="permissionsList">
+                            @foreach($permissions as $perm)
+                                <div class="col-md-6 col-lg-4">
                                     <div class="form-check">
-                                        <input type="checkbox" name="permissions[]" value="{{ $perm->id }}" id="perm-{{ $perm->id }}" class="form-check-input">
+                                        <input type="checkbox" name="permissions[]" value="{{ $perm->id }}" 
+                                               id="perm-{{ $perm->id }}" class="form-check-input permission-checkbox"
+                                               {{ in_array($perm->id, old('permissions', [])) ? 'checked' : '' }}>
                                         <label for="perm-{{ $perm->id }}" class="form-check-label">{{ $perm->name }}</label>
                                     </div>
                                 </div>
@@ -41,9 +65,66 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-primary">Crear</button>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Crear Rol</button>
+                        <a href="{{ route('admin.roles.index') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const templateSelect = document.getElementById('templateSelect');
+            const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
+            const selectAllBtn = document.getElementById('selectAll');
+            const deselectAllBtn = document.getElementById('deselectAll');
+            const templateDescription = document.getElementById('templateDescription');
+
+            // Datos de plantillas desde el servidor
+            const templates = @json($templates);
+
+            // Cambio de plantilla
+            templateSelect.addEventListener('change', function() {
+                const selectedTemplate = this.value;
+                
+                if (selectedTemplate === 'custom') {
+                    templateDescription.textContent = 'Selecciona manualmente los permisos para este rol';
+                    // No cambiar checkboxes, dejar como están
+                    return;
+                }
+
+                const template = templates[selectedTemplate];
+                if (template) {
+                    templateDescription.textContent = template.description;
+                    
+                    // Desmarcar todos primero
+                    permissionCheckboxes.forEach(cb => cb.checked = false);
+                    
+                    // Marcar permisos de la plantilla
+                    template.permissions.forEach(permName => {
+                        permissionCheckboxes.forEach(cb => {
+                            const label = document.querySelector(`label[for="${cb.id}"]`);
+                            if (label && label.textContent === permName) {
+                                cb.checked = true;
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Seleccionar todos
+            selectAllBtn.addEventListener('click', function() {
+                permissionCheckboxes.forEach(cb => cb.checked = true);
+            });
+
+            // Deseleccionar todos
+            deselectAllBtn.addEventListener('click', function() {
+                permissionCheckboxes.forEach(cb => cb.checked = false);
+            });
+        });
+    </script>
+    @endpush
 </x-admin-layout>

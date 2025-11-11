@@ -6,7 +6,10 @@ use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\AulaController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AsistenciaController;
+use App\Http\Controllers\SecurityController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -112,8 +115,13 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     Route::resource('asistencia', AsistenciaController::class)->names('asistencia');
 
     // Roles y Permisos (CRUD básico)
-    Route::resource('roles', App\Http\Controllers\RoleController::class)->names('roles');
-    Route::resource('permissions', App\Http\Controllers\PermissionController::class)->names('permissions');
+    Route::resource('roles', RoleController::class)->names('roles');
+    Route::get('roles/template/{template}/permissions', [RoleController::class, 'getTemplatePermissions'])
+        ->name('roles.template.permissions');
+    Route::resource('permissions', PermissionController::class)->names('permissions');
+    
+    // Panel unificado de Seguridad (Usuarios, Roles, Permisos)
+    Route::get('security', [SecurityController::class, 'index'])->name('security.index');
 
     // Ruta específica de asistencia propia (si necesitas una acción personalizada la puedes implementar
     // en AsistenciaController como 'editPropia' y registrar la ruta apuntando al método)
@@ -130,13 +138,13 @@ Route::get('/dashboard', function () {
     if (! $user) return redirect('/');
 
     // Redirección basada en rol
-    if ($user->hasAnyRole(['admin', 'super-admin']) && Route::has('admin.dashboard')) {
+    if (method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['admin', 'super-admin']) && Route::has('admin.dashboard')) {
         return redirect()->route('admin.dashboard');
     }
-    if ($user->hasRole('decano') && Route::has('decano.dashboard')) {
+    if (method_exists($user, 'hasRole') && $user->hasRole('decano') && Route::has('decano.dashboard')) {
         return redirect()->route('decano.dashboard');
     }
-    if ($user->hasRole('docente') && Route::has('docente.dashboard')) {
+    if (method_exists($user, 'hasRole') && $user->hasRole('docente') && Route::has('docente.dashboard')) {
         return redirect()->route('docente.dashboard');
     }
 

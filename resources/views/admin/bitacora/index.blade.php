@@ -29,7 +29,7 @@
                                 <td>{{ $entry->descripcion ?? $entry->description ?? '-' }}</td>
                                 <td>{{ $entry->direccion_ip ?? $entry->ip_address ?? '-' }}</td>
                                 <td>{{ $entry->navegador ?? $entry->browser ?? '-' }}</td>
-                                <td>{{ optional($entry->fecha_hora ?? $entry->created_at)->format('Y-m-d H:i') }}</td>
+                                <td>{{ $entry->fecha_hora ?? $entry->created_at->format('Y-m-d H:i') }}</td>
                             </tr>
                         @empty
                             <tr>

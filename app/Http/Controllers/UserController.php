@@ -24,7 +24,18 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::Paginate(15); // Cambiado de $user a $users
+        $currentUser = Auth::user();
+        
+        // Si es docente, solo mostrar otros docentes
+        if ($currentUser->hasRole('docente') && !$currentUser->hasAnyRole(['admin', 'super-admin'])) {
+            $users = User::whereHas('roles', function($query) {
+                $query->where('name', 'docente');
+            })->paginate(15);
+        } else {
+            // Admin ve todos los usuarios
+            $users = User::paginate(15);
+        }
+        
         return view('admin.users.index', compact('users'));
     }
 

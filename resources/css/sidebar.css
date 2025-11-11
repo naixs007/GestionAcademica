@@ -50,6 +50,43 @@ body {
             font-size: 1.2rem;
         }
 
+        /* Submenú desplegable */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
+            padding-left: 15px;
+        }
+
+        .submenu.show {
+            max-height: 600px;
+            opacity: 1;
+        }
+
+        .submenu a {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .submenu-toggle i.fa-chevron-down {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .submenu-toggle.active i.fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        
+        /* Mejora visual del botón toggle */
+        .submenu-toggle {
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
         /* Toggle para móviles */
         .menu-toggle {
             display: none;

@@ -10,35 +10,40 @@ class RolesSeeder extends Seeder
 {
     public function run()
     {
-        // ROLES
-        $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-        $decano = Role::firstOrCreate(['name' => 'decano', 'guard_name' => 'web']);
-        $docente = Role::firstOrCreate(['name' => 'docente', 'guard_name' => 'web']);
+        // Limpiar cache de permisos
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // PERMISOS
-        $permissions = [
-            'usuarios.ver', 'usuarios.crear', 'usuarios.editar', 'usuarios.eliminar',
-            'usuarios.asignar_roles', 'usuarios.remover_roles',
-            'materias.ver', 'materias.crear', 'materias.editar', 'materias.eliminar',
-            'horarios.ver', 'horarios.crear', 'horarios.editar',
-            'aulas.ver', 'aulas.editar',
-            'asistencia.ver', 'asistencia.registrar', 'asistencia.editar_propia',
-            'reportes.ver', 'reportes.descargar',
-            'bitacora.ver'
-        ];
+        // Obtener configuración de plantillas de roles
+        $templates = config('role_templates.templates');
+        $allPermissions = config('role_templates.all_permissions');
 
-        foreach ($permissions as $perm) {
-            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
+        // Crear todos los permisos del sistema
+        foreach ($allPermissions as $permName) {
+            Permission::firstOrCreate(['name' => $permName, 'guard_name' => 'web']);
         }
 
-        // ASIGNAR PERMISOS A ROLES
-        $admin->syncPermissions($permissions);
+        // Crear roles predeterminados basados en plantillas
+        foreach ($templates as $roleKey => $template) {
+            // Solo crear roles con nombre específico (admin, decano, docente)
+            // 'custom' no se crea automáticamente
+            if ($roleKey === 'custom') {
+                continue;
+            }
 
-        $decano->syncPermissions([
-            'usuarios.ver','materias.ver','horarios.ver','asistencia.ver','reportes.ver','bitacora.ver'
-        ]);
+            $role = Role::firstOrCreate([
+                'name' => $roleKey,
+                'guard_name' => 'web'
+            ]);
 
-        $docente->syncPermissions(['horarios.ver','asistencia.registrar','asistencia.ver']);
+            // Asignar permisos de la plantilla
+            if (!empty($template['permissions'])) {
+                $role->syncPermissions($template['permissions']);
+            }
+
+            $this->command->info("Rol '{$roleKey}' creado/actualizado con " . count($template['permissions']) . " permisos.");
+        }
+
+        $this->command->info('Roles y permisos sembrados correctamente desde plantillas.');
     }
 }
 

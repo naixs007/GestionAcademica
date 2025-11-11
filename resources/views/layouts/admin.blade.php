@@ -29,7 +29,7 @@
 
     <!-- Contenido principal-->
     <main class="p-4" style="margin-left: 260px;">
-        
+
         {{ $slot }}
     </main>
 
@@ -39,6 +39,26 @@
 
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('active');
+        });
+
+        // Manejo de submenús desplegables
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggles = document.querySelectorAll('.submenu-toggle[data-target]');
+
+            menuToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('data-target');
+                    const submenu = document.getElementById(targetId);
+
+                    if (submenu) {
+                        // Toggle clase show
+                        submenu.classList.toggle('show');
+                        this.classList.toggle('active');
+                    }
+                });
+            });
         });
     </script>
 </body>

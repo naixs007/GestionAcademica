@@ -27,37 +27,35 @@
             <i class="fa-regular fa-house"></i> Inicio
         </a>
 
-        {{-- 1. Gestión de Usuarios y Accesos --}}
-    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.ver')))
-            <a href="{{ route('admin.users.index') }}"
-               class="{{ Route::is('admin.users.*') ? 'active' : '' }}">
-                <i class="fa-solid fa-users"></i> Gestión de Usuarios y Accesos
+        {{-- 1. Gestión de Usuarios y Seguridad --}}
+    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.ver') || $user->hasPermissionTo('roles.ver') || $user->hasPermissionTo('permissions.ver')))
+            <a href="#" class="submenu-toggle {{ Route::is('admin.users.*') || Route::is('admin.roles.*') || Route::is('admin.permissions.*') ? 'active' : '' }}" data-target="security-menu">
+                <i class="fa-solid fa-shield-halved"></i> Gestión de Usuarios y Seguridad
+                <i class="fa-solid fa-chevron-down ms-auto"></i>
             </a>
 
-            {{-- Crear usuario --}}
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.crear'))
-                <a href="{{ route('admin.users.create') }}" class="ms-3">Crear usuario</a>
-            @endif
-            {{-- Asignar roles (enlazado al index con filtro) --}}
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.asignar_roles'))
-                <a href="{{ route('admin.users.index', ['filter_roles' => 1]) }}" class="ms-3">Asignar roles</a>
-            @endif
-        @endif
+            <div id="security-menu" class="submenu {{ Route::is('admin.users.*') || Route::is('admin.roles.*') || Route::is('admin.permissions.*') ? 'show' : '' }}">
+                {{-- USUARIOS --}}
+                @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('usuarios.ver'))
+                    <a href="{{ route('admin.users.index') }}" class="{{ Route::is('admin.users.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-users"></i> Usuarios
+                    </a>
+                @endif
 
-        {{-- Gestión de Roles y Permisos --}}
-    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('roles.ver') || $user->hasPermissionTo('permissions.ver')))
-            <a href="{{ route('admin.roles.index') }}"
-               class="{{ Route::is('admin.roles.*') ? 'active' : '' }}">
-                <i class="fa-solid fa-user-shield"></i> Gestión de Roles
-            </a>
+                {{-- ROLES --}}
+                @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('roles.ver'))
+                    <a href="{{ route('admin.roles.index') }}" class="{{ Route::is('admin.roles.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-user-tag"></i> Roles
+                    </a>
+                @endif
 
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('roles.crear'))
-                <a href="{{ route('admin.roles.create') }}" class="ms-3">Crear rol</a>
-            @endif
-
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('permissions.ver'))
-                <a href="{{ route('admin.permissions.index') }}" class="mt-1">Permisos</a>
-            @endif
+                {{-- PERMISOS --}}
+                @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('permissions.ver'))
+                    <a href="{{ route('admin.permissions.index') }}" class="{{ Route::is('admin.permissions.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-key"></i> Permisos
+                    </a>
+                @endif
+            </div>
         @endif
 
         <hr>
