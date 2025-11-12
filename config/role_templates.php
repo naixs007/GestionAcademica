@@ -21,7 +21,9 @@ return [
                 'usuarios.asignar_roles', 'usuarios.remover_roles',
                 'roles.ver', 'roles.crear', 'roles.editar', 'roles.eliminar',
                 'permissions.ver', 'permissions.crear', 'permissions.editar', 'permissions.eliminar',
+                'docentes.ver', 'docentes.crear', 'docentes.editar', 'docentes.eliminar',
                 'materias.ver', 'materias.crear', 'materias.editar', 'materias.eliminar',
+                'grupos.ver', 'grupos.crear', 'grupos.editar', 'grupos.eliminar',
                 'horarios.ver', 'horarios.crear', 'horarios.editar', 'horarios.eliminar',
                 'aulas.ver', 'aulas.crear', 'aulas.editar', 'aulas.eliminar',
                 'asistencia.ver', 'asistencia.registrar', 'asistencia.editar', 'asistencia.eliminar',
@@ -35,7 +37,9 @@ return [
             'description' => 'Gestión académica y visualización de reportes',
             'permissions' => [
                 'usuarios.ver',
+                'docentes.ver', 'docentes.crear', 'docentes.editar',
                 'materias.ver', 'materias.crear', 'materias.editar',
+                'grupos.ver', 'grupos.crear', 'grupos.editar',
                 'horarios.ver', 'horarios.crear', 'horarios.editar',
                 'aulas.ver',
                 'asistencia.ver',
@@ -79,8 +83,14 @@ return [
         'roles.ver', 'roles.crear', 'roles.editar', 'roles.eliminar',
         'permissions.ver', 'permissions.crear', 'permissions.editar', 'permissions.eliminar',
 
+        // Docentes
+        'docentes.ver', 'docentes.crear', 'docentes.editar', 'docentes.eliminar',
+
         // Materias
         'materias.ver', 'materias.crear', 'materias.editar', 'materias.eliminar',
+
+        // Grupos
+        'grupos.ver', 'grupos.crear', 'grupos.editar', 'grupos.eliminar',
 
         // Horarios
         'horarios.ver', 'horarios.crear', 'horarios.editar', 'horarios.eliminar',

@@ -18,6 +18,12 @@ class Grupo extends Model
 
     public function materias()
     {
-        return $this->belongsTo(Materia::class);
+        return $this->belongsTo(Materia::class, 'materia_id');
+    }
+
+    // Alias para mejor semántica
+    public function materia()
+    {
+        return $this->belongsTo(Materia::class, 'materia_id');
     }
 }

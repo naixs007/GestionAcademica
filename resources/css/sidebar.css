@@ -78,7 +78,7 @@ body {
         .submenu-toggle.active i.fa-chevron-down {
             transform: rotate(180deg);
         }
-        
+
         /* Mejora visual del botón toggle */
         .submenu-toggle {
             cursor: pointer;

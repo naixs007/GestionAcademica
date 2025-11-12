@@ -1,0 +1,251 @@
+<x-admin-layout>
+    <div class="container py-6">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h4">
+                <i class="fa-solid fa-edit text-warning"></i> Editar Grupo
+            </h2>
+            <a href="{{ route('admin.grupos.index') }}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Volver
+            </a>
+        </div>
+
+        {{-- Mensajes de error --}}
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">
+                    <i class="fa-solid fa-exclamation-triangle"></i> Errores de validación
+                </h5>
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="fa-solid fa-users-rectangle"></i> Actualizar Información del Grupo
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ route('admin.grupos.update', $grupo) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="row">
+                                {{-- Columna Izquierda --}}
+                                <div class="col-md-6">
+                                    <div class="card mb-4 border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">
+                                                <i class="fa-solid fa-info-circle"></i> Datos Básicos
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            {{-- Nombre del Grupo --}}
+                                            <div class="mb-3">
+                                                <label for="nombre" class="form-label">
+                                                    <i class="fa-solid fa-tag text-primary"></i> 
+                                                    <strong>Nombre del Grupo</strong> <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" 
+                                                       name="nombre" 
+                                                       id="nombre" 
+                                                       class="form-control @error('nombre') is-invalid @enderror"
+                                                       value="{{ old('nombre', $grupo->nombre) }}"
+                                                       maxlength="100"
+                                                       required>
+                                                @error('nombre')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+
+                                            {{-- Capacidad --}}
+                                            <div class="mb-3">
+                                                <label for="capacidad" class="form-label">
+                                                    <i class="fa-solid fa-users text-info"></i> 
+                                                    <strong>Capacidad Máxima</strong> <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="number" 
+                                                       name="capacidad" 
+                                                       id="capacidad" 
+                                                       class="form-control @error('capacidad') is-invalid @enderror"
+                                                       value="{{ old('capacidad', $grupo->capacidad) }}"
+                                                       min="1"
+                                                       max="100"
+                                                       required>
+                                                @error('capacidad')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                                
+                                                {{-- Barra de progreso --}}
+                                                <div class="progress mt-2" style="height: 20px;">
+                                                    <div class="progress-bar bg-info" 
+                                                         role="progressbar" 
+                                                         style="width: {{ ($grupo->capacidad / 100) * 100 }}%"
+                                                         aria-valuenow="{{ $grupo->capacidad }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                        {{ $grupo->capacidad }} estudiantes
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Columna Derecha --}}
+                                <div class="col-md-6">
+                                    <div class="card mb-4 border-success">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0">
+                                                <i class="fa-solid fa-book"></i> Materia Asignada
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            {{-- Materia --}}
+                                            <div class="mb-3">
+                                                <label for="materia_id" class="form-label">
+                                                    <i class="fa-solid fa-book-open text-warning"></i> 
+                                                    <strong>Materia</strong> <span class="text-danger">*</span>
+                                                </label>
+                                                <select name="materia_id" 
+                                                        id="materia_id" 
+                                                        class="form-select @error('materia_id') is-invalid @enderror" 
+                                                        required>
+                                                    <option value="">Seleccione una materia</option>
+                                                    @foreach($materias as $materia)
+                                                        <option value="{{ $materia->id }}" 
+                                                                {{ old('materia_id', $grupo->materia_id) == $materia->id ? 'selected' : '' }}>
+                                                            {{ $materia->codigo ?? 'N/A' }} - {{ $materia->nombre }}
+                                                            @if($materia->docente)
+                                                                ({{ $materia->docente->user->name }})
+                                                            @endif
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('materia_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+
+                                            {{-- Info actual --}}
+                                            @if($grupo->materias)
+                                                <div class="alert alert-info">
+                                                    <small>
+                                                        <strong>Materia actual:</strong><br>
+                                                        <i class="fa-solid fa-book"></i> 
+                                                        {{ $grupo->materias->codigo }} - {{ $grupo->materias->nombre }}
+                                                        @if($grupo->materias->docente)
+                                                            <br>
+                                                            <i class="fa-solid fa-user"></i> 
+                                                            Docente: {{ $grupo->materias->docente->user->name }}
+                                                        @endif
+                                                    </small>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    {{-- Estadísticas --}}
+                                    <div class="card border-info">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0">
+                                                <i class="fa-solid fa-chart-bar"></i> Estadísticas
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>
+                                                    <i class="fa-solid fa-users text-info"></i> Capacidad:
+                                                </span>
+                                                <strong>{{ $grupo->capacidad }}</strong>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>
+                                                    <i class="fa-solid fa-user-check text-success"></i> Inscritos:
+                                                </span>
+                                                <strong>0</strong>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span>
+                                                    <i class="fa-solid fa-calendar text-warning"></i> Creado:
+                                                </span>
+                                                <strong>{{ $grupo->created_at->format('d/m/Y') }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Advertencia --}}
+                            <div class="alert alert-warning mb-4">
+                                <i class="fa-solid fa-exclamation-triangle"></i>
+                                <strong>Importante:</strong> 
+                                <ul class="mb-0 mt-2">
+                                    <li>Si cambia la materia asignada, verifique que sea coherente con el plan de estudios.</li>
+                                    <li>La capacidad no debe ser menor que el número de estudiantes ya inscritos.</li>
+                                    <li>Cualquier cambio afectará inmediatamente a los registros asociados.</li>
+                                </ul>
+                            </div>
+
+                            {{-- Botones de acción --}}
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-warning btn-lg flex-fill">
+                                    <i class="fa-solid fa-save"></i> Actualizar Grupo
+                                </button>
+                                <a href="{{ route('admin.grupos.show', $grupo) }}" 
+                                   class="btn btn-info btn-lg">
+                                    <i class="fa-solid fa-eye"></i> Ver
+                                </a>
+                                <a href="{{ route('admin.grupos.index') }}" 
+                                   class="btn btn-outline-secondary btn-lg">
+                                    <i class="fa-solid fa-times"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Información del sistema --}}
+                <div class="card mt-4 border-secondary">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fa-solid fa-info-circle text-secondary"></i> Información del Sistema
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <small class="text-muted">ID Grupo:</small>
+                                <p><strong>#{{ $grupo->id }}</strong></p>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted">Creado:</small>
+                                <p><strong>{{ $grupo->created_at->format('d/m/Y H:i') }}</strong></p>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted">Última actualización:</small>
+                                <p><strong>{{ $grupo->updated_at->format('d/m/Y H:i') }}</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Actualizar la barra de progreso cuando cambie la capacidad
+        document.getElementById('capacidad').addEventListener('input', function() {
+            const value = this.value;
+            const progressBar = document.querySelector('.progress-bar');
+            const percentage = (value / 100) * 100;
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = value + ' estudiantes';
+        });
+    </script>
+</x-admin-layout>

@@ -60,17 +60,49 @@
 
         <hr>
 
-        {{-- 2. Gestión Académica (Materias) --}}
-    @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('materias.ver')))
-            {{-- CORREGIDO: Usando 'admin.materias.index' --}}
-            <a href="{{ route('admin.materia.index') }}"
-               class="{{ Route::is('admin.materia.*') ? 'active' : '' }}">
-                <i class="fa-solid fa-book"></i> Gestión Académica
+        {{-- 2. Gestión Académica (Submenú desplegable) --}}
+        @if($user && ($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('docentes.ver') || $user->hasPermissionTo('materias.ver') || $user->hasPermissionTo('grupos.ver')))
+            <a href="#" class="submenu-toggle {{ Route::is('admin.docentes.*') || Route::is('admin.materia.*') || Route::is('admin.grupos.*') || Route::is('admin.carga-academica.*') || Route::is('admin.configuracion.*') ? 'active' : '' }}" data-target="academic-menu">
+                <i class="fa-solid fa-graduation-cap"></i> Gestión Académica
+                <i class="fa-solid fa-chevron-down ms-auto"></i>
             </a>
-            {{-- CORREGIDO: Usando 'admin.materias.create' --}}
-            @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('materias.crear'))
-                <a href="{{ route('admin.materia.create') }}" class="ms-3">Crear materias</a>
-            @endif
+
+            <div id="academic-menu" class="submenu {{ Route::is('admin.docentes.*') || Route::is('admin.materia.*') || Route::is('admin.grupos.*') || Route::is('admin.carga-academica.*') || Route::is('admin.configuracion.*') ? 'show' : '' }}">
+                {{-- DOCENTES --}}
+                @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('docentes.ver'))
+                    <a href="{{ route('admin.docentes.index') }}" class="{{ Route::is('admin.docentes.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-chalkboard-user"></i> Docentes
+                    </a>
+                @endif
+
+                {{-- MATERIAS --}}
+                @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('materias.ver'))
+                    <a href="{{ route('admin.materia.index') }}" class="{{ Route::is('admin.materia.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-book"></i> Materias
+                    </a>
+                @endif
+
+                {{-- GRUPOS --}}
+                @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('grupos.ver'))
+                    <a href="{{ route('admin.grupos.index') }}" class="{{ Route::is('admin.grupos.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-users-rectangle"></i> Grupos
+                    </a>
+                @endif
+
+                {{-- ASIGNAR CARGA ACADÉMICA --}}
+                @if($user->hasAnyRole(['admin','super-admin']) || $user->hasPermissionTo('carga-academica.gestionar'))
+                    <a href="{{ route('admin.carga-academica.index') }}" class="{{ Route::is('admin.carga-academica.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-list-check"></i> Asignar Carga Académica
+                    </a>
+                @endif
+
+                {{-- CONFIGURAR PARÁMETROS GENERALES --}}
+                @if($user->hasAnyRole(['admin','super-admin']))
+                    <a href="{{ route('admin.configuracion.index') }}" class="{{ Route::is('admin.configuracion.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-gear"></i> Configurar Parámetros
+                    </a>
+                @endif
+            </div>
         @endif
 
         {{-- 3. Gestión de Horarios y Aulas --}}

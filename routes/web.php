@@ -10,6 +10,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\SecurityController;
+use App\Http\Controllers\DocenteController;
+use App\Http\Controllers\GrupoController;
+use App\Http\Controllers\CargaAcademicaController;
+use App\Http\Controllers\ConfiguracionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -75,14 +79,23 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
 
     // 2. RECURSOS ACADÉMICOS (VERSIONES TEMPORALES CON FUNCIONES ANÓNIMAS)
 
-    // Materia (Temporal)
-    // Route::resource('materia', MateriaController::class)->names('materia'); // RUTA ORIGINAL
-    Route::get('materia', function() {
-        return "Ruta: admin.materia.index (Listado de Materias) - OK";
-    })->name('materia.index');
-    Route::get('materia/create', function() {
-        return "Ruta: admin.materia.create (Formulario de Creación) - OK";
-    })->name('materia.create');
+    // Docente (Resource completo)
+    Route::resource('docentes', DocenteController::class)->names('docentes');
+
+    // Materia (Resource completo)
+    Route::resource('materia', MateriaController::class)->names('materia');
+
+    // Grupo (Resource completo)
+    Route::resource('grupos', GrupoController::class)->names('grupos');
+
+    // Carga Académica (Gestión de asignación de materias a docentes)
+    Route::resource('carga-academica', CargaAcademicaController::class)->names('carga-academica');
+
+    // Configuración de Parámetros Generales
+    Route::get('configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
+    Route::get('configuracion/editar', [ConfiguracionController::class, 'edit'])->name('configuracion.edit');
+    Route::put('configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
+    Route::post('configuracion/reset', [ConfiguracionController::class, 'reset'])->name('configuracion.reset');
 
     // Horario (Temporal)
     // Route::resource('horario', HorarioController::class)->names('horario'); // RUTA ORIGINAL
