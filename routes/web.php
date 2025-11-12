@@ -89,7 +89,9 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     Route::resource('grupos', GrupoController::class)->names('grupos');
 
     // Carga Académica (Gestión de asignación de materias a docentes)
-    Route::resource('carga-academica', CargaAcademicaController::class)->names('carga-academica');
+    Route::resource('carga-academica', CargaAcademicaController::class)
+        ->parameters(['carga-academica' => 'docente'])
+        ->names('carga-academica');
 
     // Configuración de Parámetros Generales
     Route::get('configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
@@ -132,7 +134,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     Route::get('roles/template/{template}/permissions', [RoleController::class, 'getTemplatePermissions'])
         ->name('roles.template.permissions');
     Route::resource('permissions', PermissionController::class)->names('permissions');
-    
+
     // Panel unificado de Seguridad (Usuarios, Roles, Permisos)
     Route::get('security', [SecurityController::class, 'index'])->name('security.index');
 

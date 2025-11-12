@@ -24,6 +24,7 @@ return [
                 'docentes.ver', 'docentes.crear', 'docentes.editar', 'docentes.eliminar',
                 'materias.ver', 'materias.crear', 'materias.editar', 'materias.eliminar',
                 'grupos.ver', 'grupos.crear', 'grupos.editar', 'grupos.eliminar',
+                'carga-academica.ver', 'carga-academica.crear', 'carga-academica.editar', 'carga-academica.eliminar',
                 'horarios.ver', 'horarios.crear', 'horarios.editar', 'horarios.eliminar',
                 'aulas.ver', 'aulas.crear', 'aulas.editar', 'aulas.eliminar',
                 'asistencia.ver', 'asistencia.registrar', 'asistencia.editar', 'asistencia.eliminar',
@@ -40,6 +41,7 @@ return [
                 'docentes.ver', 'docentes.crear', 'docentes.editar',
                 'materias.ver', 'materias.crear', 'materias.editar',
                 'grupos.ver', 'grupos.crear', 'grupos.editar',
+                'carga-academica.ver', 'carga-academica.crear', 'carga-academica.editar',
                 'horarios.ver', 'horarios.crear', 'horarios.editar',
                 'aulas.ver',
                 'asistencia.ver',
@@ -91,6 +93,9 @@ return [
 
         // Grupos
         'grupos.ver', 'grupos.crear', 'grupos.editar', 'grupos.eliminar',
+
+        // Carga Académica
+        'carga-academica.ver', 'carga-academica.crear', 'carga-academica.editar', 'carga-academica.eliminar',
 
         // Horarios
         'horarios.ver', 'horarios.crear', 'horarios.editar', 'horarios.eliminar',
