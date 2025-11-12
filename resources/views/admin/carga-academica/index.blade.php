@@ -41,7 +41,6 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light sticky-top">
                             <tr>
-                                <th style="min-width: 80px;">ID</th>
                                 <th style="min-width: 200px;">
                                     <i class="fa-solid fa-user"></i> Docente
                                 </th>
@@ -68,7 +67,7 @@
                                     $materiasAsignadas = $docente->materias->count();
                                     $cargaTotal = $docente->materias->sum('cargaHoraria');
                                     $porcentajeCarga = $docente->cargaHoraria > 0 ? ($cargaTotal / $docente->cargaHoraria) * 100 : 0;
-                                    
+
                                     if($porcentajeCarga >= 100) {
                                         $estadoClass = 'danger';
                                         $estadoIcon = 'exclamation-triangle';
@@ -88,7 +87,6 @@
                                     }
                                 @endphp
                                 <tr>
-                                    <td><strong>#{{ $docente->id }}</strong></td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-circle bg-primary text-white me-2">
@@ -110,8 +108,8 @@
                                     <td>
                                         <strong>{{ $cargaTotal }}</strong> / {{ $docente->cargaHoraria }} hrs
                                         <div class="progress mt-1" style="height: 8px;">
-                                            <div class="progress-bar bg-{{ $estadoClass }}" 
-                                                 role="progressbar" 
+                                            <div class="progress-bar bg-{{ $estadoClass }}"
+                                                 role="progressbar"
                                                  style="width: {{ min($porcentajeCarga, 100) }}%">
                                             </div>
                                         </div>
@@ -124,15 +122,15 @@
                                     <td class="text-center sticky-col">
                                         <div class="btn-group" role="group">
                                             @can('carga-academica.ver')
-                                                <a href="{{ route('admin.carga-academica.show', $docente->id) }}" 
-                                                   class="btn btn-sm btn-info" 
+                                                <a href="{{ route('admin.carga-academica.show', $docente->id) }}"
+                                                   class="btn btn-sm btn-info"
                                                    title="Ver detalle">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </a>
                                             @endcan
                                             @can('carga-academica.editar')
-                                                <a href="{{ route('admin.carga-academica.edit', $docente->id) }}" 
-                                                   class="btn btn-sm btn-warning" 
+                                                <a href="{{ route('admin.carga-academica.edit', $docente->id) }}"
+                                                   class="btn btn-sm btn-warning"
                                                    title="Editar carga">
                                                     <i class="fa-solid fa-edit"></i>
                                                 </a>
@@ -174,40 +172,40 @@
             font-weight: bold;
             font-size: 1.2rem;
         }
-        
+
         .sticky-top {
             position: sticky;
             top: 0;
             z-index: 10;
             background-color: #f8f9fa;
         }
-        
+
         .sticky-col {
             position: sticky;
             right: 0;
             background-color: white;
             box-shadow: -2px 0 5px rgba(0,0,0,0.1);
         }
-        
+
         .table-hover tbody tr:hover .sticky-col {
             background-color: #f8f9fa;
         }
-        
+
         /* Scrollbar personalizado */
         .table-responsive::-webkit-scrollbar {
             height: 8px;
             width: 8px;
         }
-        
+
         .table-responsive::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
-        
+
         .table-responsive::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 4px;
         }
-        
+
         .table-responsive::-webkit-scrollbar-thumb:hover {
             background: #555;
         }

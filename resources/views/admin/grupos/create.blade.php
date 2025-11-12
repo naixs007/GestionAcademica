@@ -40,12 +40,12 @@
                                 {{-- Nombre del Grupo --}}
                                 <div class="col-md-6 mb-4">
                                     <label for="nombre" class="form-label">
-                                        <i class="fa-solid fa-tag text-primary"></i> 
+                                        <i class="fa-solid fa-tag text-primary"></i>
                                         <strong>Nombre del Grupo</strong> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" 
-                                           name="nombre" 
-                                           id="nombre" 
+                                    <input type="text"
+                                           name="nombre"
+                                           id="nombre"
                                            class="form-control @error('nombre') is-invalid @enderror"
                                            value="{{ old('nombre') }}"
                                            maxlength="100"
@@ -55,7 +55,7 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                     <small class="text-muted">
-                                        <i class="fa-solid fa-info-circle"></i> 
+                                        <i class="fa-solid fa-info-circle"></i>
                                         Identificador único del grupo
                                     </small>
                                 </div>
@@ -63,12 +63,12 @@
                                 {{-- Capacidad --}}
                                 <div class="col-md-6 mb-4">
                                     <label for="capacidad" class="form-label">
-                                        <i class="fa-solid fa-users text-info"></i> 
+                                        <i class="fa-solid fa-users text-info"></i>
                                         <strong>Capacidad Máxima</strong> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="number" 
-                                           name="capacidad" 
-                                           id="capacidad" 
+                                    <input type="number"
+                                           name="capacidad"
+                                           id="capacidad"
                                            class="form-control @error('capacidad') is-invalid @enderror"
                                            value="{{ old('capacidad', 30) }}"
                                            min="1"
@@ -79,38 +79,8 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                     <small class="text-muted">
-                                        <i class="fa-solid fa-info-circle"></i> 
+                                        <i class="fa-solid fa-info-circle"></i>
                                         Número máximo de estudiantes (1-100)
-                                    </small>
-                                </div>
-
-                                {{-- Materia --}}
-                                <div class="col-12 mb-4">
-                                    <label for="materia_id" class="form-label">
-                                        <i class="fa-solid fa-book text-warning"></i> 
-                                        <strong>Materia</strong> <span class="text-danger">*</span>
-                                    </label>
-                                    <select name="materia_id" 
-                                            id="materia_id" 
-                                            class="form-select @error('materia_id') is-invalid @enderror" 
-                                            required>
-                                        <option value="">Seleccione una materia</option>
-                                        @foreach($materias as $materia)
-                                            <option value="{{ $materia->id }}" 
-                                                    {{ old('materia_id') == $materia->id ? 'selected' : '' }}>
-                                                {{ $materia->codigo ?? 'N/A' }} - {{ $materia->nombre }}
-                                                @if($materia->docente)
-                                                    (Docente: {{ $materia->docente->user->name }})
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('materia_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <small class="text-muted">
-                                        <i class="fa-solid fa-info-circle"></i> 
-                                        Seleccione la materia a la que pertenece este grupo
                                     </small>
                                 </div>
                             </div>
@@ -123,7 +93,7 @@
                                 <ul class="mb-0">
                                     <li>El nombre del grupo debe ser único y descriptivo.</li>
                                     <li>La capacidad se refiere al número máximo de estudiantes que pueden inscribirse.</li>
-                                    <li>Cada grupo debe estar asociado a una materia específica.</li>
+                                    <li>Las materias se asignan a los grupos desde el módulo de Carga Académica.</li>
                                 </ul>
                             </div>
 
@@ -148,7 +118,7 @@
                         </h6>
                         <p class="mb-2"><strong>¿Qué es un grupo?</strong></p>
                         <p class="mb-3">Un grupo es una división de estudiantes dentro de una materia específica. Permite organizar mejor las clases cuando hay muchos estudiantes.</p>
-                        
+
                         <p class="mb-2"><strong>Ejemplos de nombres:</strong></p>
                         <ul class="mb-0">
                             <li><strong>Grupo A, Grupo B:</strong> Para división alfabética</li>

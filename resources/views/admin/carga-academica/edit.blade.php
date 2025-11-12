@@ -39,7 +39,7 @@
                         </div>
                         <h4 class="mb-1">{{ $docente->user->name }}</h4>
                         <p class="text-muted mb-3">{{ $docente->user->email }}</p>
-                        
+
                         <div class="row text-start">
                             <div class="col-12 mb-2">
                                 <small class="text-muted">Categoría:</small>
@@ -62,26 +62,32 @@
                     </div>
                     <div class="card-body">
                         @php
+                            $cargasActuales = $docente->cargasAcademicas->count();
                             $materiasActuales = $docente->materias->count();
                             $cargaActual = $docente->materias->sum('cargaHoraria');
                             $porcentajeActual = $docente->cargaHoraria > 0 ? ($cargaActual / $docente->cargaHoraria) * 100 : 0;
                         @endphp
-                        
+
                         <div class="mb-3">
-                            <label class="text-muted small">Materias Actuales</label>
-                            <h4 class="mb-0 text-primary">{{ $materiasActuales }}</h4>
+                            <label class="text-muted small">Asignaciones</label>
+                            <h4 class="mb-0 text-primary">{{ $cargasActuales }}</h4>
                         </div>
-                        
+
+                        <div class="mb-3">
+                            <label class="text-muted small">Materias Únicas</label>
+                            <h4 class="mb-0 text-info">{{ $materiasActuales }}</h4>
+                        </div>
+
                         <div class="mb-3">
                             <label class="text-muted small">Carga Horaria Actual</label>
                             <h4 class="mb-0 text-success">{{ $cargaActual }} / {{ $docente->cargaHoraria }} hrs</h4>
                         </div>
-                        
+
                         <div>
                             <label class="text-muted small">Porcentaje de Carga</label>
                             <div class="progress" style="height: 25px;">
-                                <div class="progress-bar bg-{{ $porcentajeActual >= 100 ? 'danger' : ($porcentajeActual >= 75 ? 'warning' : 'success') }}" 
-                                     role="progressbar" 
+                                <div class="progress-bar bg-{{ $porcentajeActual >= 100 ? 'danger' : ($porcentajeActual >= 75 ? 'warning' : 'success') }}"
+                                     role="progressbar"
                                      style="width: {{ min($porcentajeActual, 100) }}%">
                                     {{ number_format($porcentajeActual, 1) }}%
                                 </div>
@@ -106,8 +112,8 @@
 
                             <div class="alert alert-info">
                                 <i class="fa-solid fa-info-circle"></i>
-                                <strong>Instrucciones:</strong> Seleccione las materias que desea asignar a este docente. 
-                                Las materias no seleccionadas serán desasignadas.
+                                <strong>Instrucciones:</strong> Seleccione las materias y grupos que desea asignar a este docente.
+                                Las asignaciones actuales no seleccionadas serán eliminadas.
                             </div>
 
                             {{-- Lista de materias disponibles --}}
@@ -135,30 +141,21 @@
                                                 @foreach($materias as $materia)
                                                     @php
                                                         $esAsignada = $docente->materias->contains($materia->id);
-                                                        $tieneOtroDocente = !$esAsignada && $materia->docente_id;
                                                     @endphp
                                                     <tr class="{{ $esAsignada ? 'table-success' : '' }}">
                                                         <td class="text-center">
-                                                            <input type="checkbox" 
-                                                                   name="materias[]" 
+                                                            <input type="checkbox"
+                                                                   name="materias[]"
                                                                    value="{{ $materia->id }}"
                                                                    class="form-check-input materia-checkbox"
                                                                    data-carga="{{ $materia->cargaHoraria }}"
-                                                                   {{ $esAsignada ? 'checked' : '' }}
-                                                                   {{ $tieneOtroDocente ? 'data-otro-docente=true' : '' }}>
+                                                                   {{ $esAsignada ? 'checked' : '' }}>
                                                         </td>
                                                         <td>
                                                             <span class="badge bg-primary">{{ $materia->codigo }}</span>
                                                         </td>
                                                         <td>
                                                             <strong>{{ $materia->nombre }}</strong>
-                                                            @if($tieneOtroDocente)
-                                                                <br>
-                                                                <small class="text-danger">
-                                                                    <i class="fa-solid fa-exclamation-triangle"></i>
-                                                                    Asignada a otro docente
-                                                                </small>
-                                                            @endif
                                                         </td>
                                                         <td>{{ $materia->nivel }}</td>
                                                         <td class="text-center"><strong>{{ $materia->cargaHoraria }}</strong></td>
@@ -166,10 +163,6 @@
                                                             @if($esAsignada)
                                                                 <span class="badge bg-success">
                                                                     <i class="fa-solid fa-check"></i> Asignada
-                                                                </span>
-                                                            @elseif($tieneOtroDocente)
-                                                                <span class="badge bg-warning">
-                                                                    <i class="fa-solid fa-user"></i> Ocupada
                                                                 </span>
                                                             @else
                                                                 <span class="badge bg-secondary">
@@ -181,9 +174,7 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
-                                    </div>
-
-                                    {{-- Resumen de carga seleccionada --}}
+                                    </div>                                    {{-- Resumen de carga seleccionada --}}
                                     <div class="alert alert-primary mt-3" id="resumenCarga">
                                         <div class="row">
                                             <div class="col-md-4">
@@ -200,9 +191,9 @@
                                             </div>
                                         </div>
                                         <div class="progress mt-2" style="height: 20px;">
-                                            <div class="progress-bar" 
+                                            <div class="progress-bar"
                                                  id="progressBar"
-                                                 role="progressbar" 
+                                                 role="progressbar"
                                                  style="width: {{ min($porcentajeActual, 100) }}%">
                                             </div>
                                         </div>
@@ -238,27 +229,43 @@
                 </div>
 
                 {{-- Materias actualmente asignadas --}}
-                @if($docente->materias->count() > 0)
+                @if($docente->cargasAcademicas->count() > 0)
                     <div class="card shadow-sm mt-3">
                         <div class="card-header bg-success text-white">
                             <h6 class="mb-0">
-                                <i class="fa-solid fa-check-circle"></i> Materias Actualmente Asignadas
+                                <i class="fa-solid fa-check-circle"></i> Asignaciones Actuales de Carga Académica
                             </h6>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                @foreach($docente->materias as $materia)
-                                    <div class="col-md-6 mb-2">
-                                        <div class="d-flex align-items-center p-2 border rounded">
-                                            <i class="fa-solid fa-book text-success me-2"></i>
-                                            <div class="flex-grow-1">
-                                                <strong>{{ $materia->codigo }}</strong> - {{ $materia->nombre }}
-                                                <br>
-                                                <small class="text-muted">{{ $materia->cargaHoraria }} hrs/semana</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Materia</th>
+                                            <th>Grupo</th>
+                                            <th>Horas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($docente->cargasAcademicas as $carga)
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ $carga->materia->codigo }}</span>
+                                                    <br>
+                                                    <small>{{ $carga->materia->nombre }}</small>
+                                                </td>
+                                                <td>
+                                                    @if($carga->grupo)
+                                                        <span class="badge bg-info">{{ $carga->grupo->nombre }}</span>
+                                                    @else
+                                                        <span class="text-muted">Sin grupo</span>
+                                                    @endif
+                                                </td>
+                                                <td><strong>{{ $carga->materia->cargaHoraria }}</strong> hrs</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -299,7 +306,7 @@
 
                 // Actualizar barra de progreso
                 progressBar.style.width = Math.min(porcentaje, 100) + '%';
-                
+
                 if(porcentaje >= 100) {
                     progressBar.classList.remove('bg-success', 'bg-warning');
                     progressBar.classList.add('bg-danger');
@@ -320,12 +327,6 @@
             // Evento para cada checkbox
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
-                    // Confirmar si la materia está asignada a otro docente
-                    if(this.checked && this.dataset.otroDocente) {
-                        if(!confirm('Esta materia está asignada a otro docente. ¿Desea reasignarla a este docente?')) {
-                            this.checked = false;
-                        }
-                    }
                     actualizarResumen();
                 });
             });

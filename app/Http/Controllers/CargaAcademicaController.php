@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CargaAcademica;
 use App\Models\Docente;
 use App\Models\Materia;
 use App\Models\Grupo;
@@ -15,7 +16,7 @@ class CargaAcademicaController extends Controller
      */
     public function index()
     {
-        $docentes = Docente::with(['user', 'materias'])->paginate(10);
+        $docentes = Docente::with(['user', 'cargasAcademicas.materia', 'cargasAcademicas.grupo'])->paginate(10);
         return view('admin.carga-academica.index', compact('docentes'));
     }
 
@@ -27,7 +28,7 @@ class CargaAcademicaController extends Controller
         $docentes = Docente::with('user')->get();
         $materias = Materia::all();
         $grupos = Grupo::all();
-        
+
         return view('admin.carga-academica.create', compact('docentes', 'materias', 'grupos'));
     }
 
@@ -43,24 +44,21 @@ class CargaAcademicaController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-            
-            // Obtener la materia y asignarla al docente
-            $materia = Materia::findOrFail($validated['materia_id']);
-            $materia->update(['docente_id' => $validated['docente_id']]);
-            
-            // Si se especifica un grupo, asignarlo
-            if (!empty($validated['grupo_id'])) {
-                $grupo = Grupo::findOrFail($validated['grupo_id']);
-                $grupo->update(['materia_id' => $validated['materia_id']]);
+            // Verificar si la combinación ya existe
+            $exists = CargaAcademica::where('docente_id', $validated['docente_id'])
+                ->where('materia_id', $validated['materia_id'])
+                ->where('grupo_id', $validated['grupo_id'])
+                ->exists();
+
+            if ($exists) {
+                return back()->withErrors(['error' => 'Esta asignación ya existe.'])->withInput();
             }
-            
-            DB::commit();
-            
+
+            CargaAcademica::create($validated);
+
             return redirect()->route('admin.carga-academica.index')
                 ->with('success', 'Carga académica asignada exitosamente.');
         } catch (\Exception $e) {
-            DB::rollBack();
             return back()->withErrors(['error' => 'Error al asignar carga académica: ' . $e->getMessage()])
                 ->withInput();
         }
@@ -71,7 +69,7 @@ class CargaAcademicaController extends Controller
      */
     public function show(Docente $docente)
     {
-        $docente->load(['user', 'materias.grupos']);
+        $docente->load(['user', 'cargasAcademicas.materia', 'cargasAcademicas.grupo']);
         return view('admin.carga-academica.show', compact('docente'));
     }
 
@@ -82,8 +80,8 @@ class CargaAcademicaController extends Controller
     {
         $materias = Materia::all();
         $grupos = Grupo::all();
-        $docente->load(['materias']);
-        
+        $docente->load(['cargasAcademicas.materia', 'cargasAcademicas.grupo']);
+
         return view('admin.carga-academica.edit', compact('docente', 'materias', 'grupos'));
     }
 
@@ -93,21 +91,28 @@ class CargaAcademicaController extends Controller
     public function update(Request $request, Docente $docente)
     {
         $validated = $request->validate([
-            'materias' => 'required|array',
-            'materias.*' => 'exists:materias,id',
+            'asignaciones' => 'required|array',
+            'asignaciones.*.materia_id' => 'required|exists:materias,id',
+            'asignaciones.*.grupo_id' => 'nullable|exists:grupos,id',
         ]);
 
         try {
             DB::beginTransaction();
-            
-            // Actualizar las materias del docente
-            foreach ($validated['materias'] as $materiaId) {
-                $materia = Materia::findOrFail($materiaId);
-                $materia->update(['docente_id' => $docente->id]);
+
+            // Eliminar asignaciones anteriores
+            $docente->cargasAcademicas()->delete();
+
+            // Crear nuevas asignaciones
+            foreach ($validated['asignaciones'] as $asignacion) {
+                CargaAcademica::create([
+                    'docente_id' => $docente->id,
+                    'materia_id' => $asignacion['materia_id'],
+                    'grupo_id' => $asignacion['grupo_id'] ?? null,
+                ]);
             }
-            
+
             DB::commit();
-            
+
             return redirect()->route('admin.carga-academica.index')
                 ->with('success', 'Carga académica actualizada exitosamente.');
         } catch (\Exception $e) {
@@ -120,14 +125,14 @@ class CargaAcademicaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($materiaId)
+    public function destroy($cargaAcademicaId)
     {
         try {
-            $materia = Materia::findOrFail($materiaId);
-            $materia->update(['docente_id' => null]);
-            
+            $cargaAcademica = CargaAcademica::findOrFail($cargaAcademicaId);
+            $cargaAcademica->delete();
+
             return redirect()->route('admin.carga-academica.index')
-                ->with('success', 'Asignación de materia removida exitosamente.');
+                ->with('success', 'Asignación de carga académica removida exitosamente.');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Error al remover asignación: ' . $e->getMessage()]);
         }

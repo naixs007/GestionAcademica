@@ -83,7 +83,9 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     Route::resource('docentes', DocenteController::class)->names('docentes');
 
     // Materia (Resource completo)
-    Route::resource('materia', MateriaController::class)->names('materia');
+    Route::resource('materia', MateriaController::class)
+        ->parameters(['materia' => 'materia'])
+        ->names('materia');
 
     // Grupo (Resource completo)
     Route::resource('grupos', GrupoController::class)->names('grupos');

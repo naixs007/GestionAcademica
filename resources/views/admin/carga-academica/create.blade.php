@@ -47,7 +47,7 @@
                                         <select name="docente_id" id="docente_id" class="form-select @error('docente_id') is-invalid @enderror" required>
                                             <option value="">-- Seleccionar docente --</option>
                                     @endif
-                                    <option value="{{ $docente->id }}" 
+                                    <option value="{{ $docente->id }}"
                                             data-carga="{{ $docente->cargaHoraria }}"
                                             data-categoria="{{ $docente->categoria }}"
                                             {{ old('docente_id') == $docente->id ? 'selected' : '' }}>
@@ -58,8 +58,8 @@
                                     @endif
                                 @empty
                                     <div class="alert alert-warning" role="alert">
-                                        <i class="fa-solid fa-exclamation-triangle"></i> 
-                                        No hay docentes registrados. 
+                                        <i class="fa-solid fa-exclamation-triangle"></i>
+                                        No hay docentes registrados.
                                         <a href="{{ route('admin.docentes.create') }}" class="alert-link">Registrar docente</a>
                                     </div>
                                 @endforelse
@@ -90,25 +90,21 @@
                                         <select name="materia_id" id="materia_id" class="form-select @error('materia_id') is-invalid @enderror" required>
                                             <option value="">-- Seleccionar materia --</option>
                                     @endif
-                                    <option value="{{ $materia->id }}" 
+                                    <option value="{{ $materia->id }}"
                                             data-carga="{{ $materia->cargaHoraria }}"
                                             data-codigo="{{ $materia->codigo }}"
                                             data-nivel="{{ $materia->nivel }}"
-                                            data-docente="{{ $materia->docente_id }}"
                                             {{ old('materia_id') == $materia->id ? 'selected' : '' }}>
-                                        {{ $materia->codigo }} - {{ $materia->nombre }} 
+                                        {{ $materia->codigo }} - {{ $materia->nombre }}
                                         ({{ $materia->cargaHoraria }} hrs - {{ $materia->nivel }})
-                                        @if($materia->docente_id)
-                                            <span class="text-danger">[Ya asignada]</span>
-                                        @endif
                                     </option>
                                     @if($loop->last)
                                         </select>
                                     @endif
                                 @empty
                                     <div class="alert alert-warning" role="alert">
-                                        <i class="fa-solid fa-exclamation-triangle"></i> 
-                                        No hay materias registradas. 
+                                        <i class="fa-solid fa-exclamation-triangle"></i>
+                                        No hay materias registradas.
                                         <a href="{{ route('admin.materia.create') }}" class="alert-link">Registrar materia</a>
                                     </div>
                                 @endforelse
@@ -128,9 +124,6 @@
                                 <p class="mb-1"><strong>Código:</strong> <span id="infoCodigoMateria">-</span></p>
                                 <p class="mb-1"><strong>Nivel:</strong> <span id="infoNivelMateria">-</span></p>
                                 <p class="mb-0"><strong>Carga Horaria:</strong> <span id="infoCargaMateria">-</span> hrs/semana</p>
-                                <div id="alertaMateriaAsignada" class="alert alert-danger mt-2 d-none">
-                                    <i class="fa-solid fa-exclamation-triangle"></i> Esta materia ya está asignada a otro docente. La asignación se reemplazará.
-                                </div>
                             </div>
 
                             {{-- Seleccionar Grupo (opcional) --}}
@@ -143,7 +136,7 @@
                                         <option value="">-- Sin asignar a grupo específico --</option>
                                         @foreach($grupos as $grupo)
                                             <option value="{{ $grupo->id }}" {{ old('grupo_id') == $grupo->id ? 'selected' : '' }}>
-                                                {{ $grupo->nombre }} - {{ $grupo->materias->nombre ?? 'Sin materia' }} (Cap: {{ $grupo->capacidad }})
+                                                {{ $grupo->nombre }} (Cap: {{ $grupo->capacidad }})
                                             </option>
                                         @endforeach
                                     </select>
@@ -239,7 +232,7 @@
                 });
             }
 
-            // Mostrar información de la materia seleccionada
+                        // Mostrar información de la materia seleccionada
             if(materiaSelect) {
                 materiaSelect.addEventListener('change', function() {
                     const option = this.options[this.selectedIndex];
@@ -247,15 +240,6 @@
                         document.getElementById('infoCodigoMateria').textContent = option.dataset.codigo;
                         document.getElementById('infoNivelMateria').textContent = option.dataset.nivel;
                         document.getElementById('infoCargaMateria').textContent = option.dataset.carga;
-                        
-                        // Mostrar alerta si la materia ya está asignada
-                        const alertaMateriaAsignada = document.getElementById('alertaMateriaAsignada');
-                        if(option.dataset.docente) {
-                            alertaMateriaAsignada.classList.remove('d-none');
-                        } else {
-                            alertaMateriaAsignada.classList.add('d-none');
-                        }
-                        
                         materiaInfo.classList.remove('d-none');
                     } else {
                         materiaInfo.classList.add('d-none');

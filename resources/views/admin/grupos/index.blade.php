@@ -41,18 +41,14 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light sticky-top">
                             <tr>
-                                <th style="min-width: 80px;">ID</th>
                                 <th style="min-width: 180px;">
                                     <i class="fa-solid fa-tag"></i> Nombre del Grupo
                                 </th>
-                                <th style="min-width: 250px;">
-                                    <i class="fa-solid fa-book"></i> Materia
-                                </th>
-                                <th style="min-width: 200px;">
-                                    <i class="fa-solid fa-chalkboard-user"></i> Docente
-                                </th>
                                 <th style="min-width: 120px;">
                                     <i class="fa-solid fa-users"></i> Capacidad
+                                </th>
+                                <th style="min-width: 150px;">
+                                    <i class="fa-solid fa-calendar-check"></i> Asignaciones
                                 </th>
                                 <th style="min-width: 150px;">
                                     <i class="fa-solid fa-calendar"></i> Registro
@@ -65,32 +61,18 @@
                         <tbody>
                             @forelse($grupos as $grupo)
                                 <tr>
-                                    <td><span class="badge bg-secondary">#{{ $grupo->id }}</span></td>
                                     <td>
                                         <i class="fa-solid fa-users-rectangle text-primary"></i>
                                         <strong>{{ $grupo->nombre }}</strong>
                                     </td>
                                     <td>
-                                        @if($grupo->materias)
-                                            <span class="badge bg-primary">
-                                                {{ $grupo->materias->codigo ?? 'N/A' }}
-                                            </span>
-                                            {{ $grupo->materias->nombre }}
-                                        @else
-                                            <span class="text-muted">Sin materia asignada</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($grupo->materias && $grupo->materias->docente)
-                                            <i class="fa-solid fa-user-circle text-success"></i>
-                                            <small>{{ $grupo->materias->docente->user->name }}</small>
-                                        @else
-                                            <span class="text-muted">Sin docente</span>
-                                        @endif
-                                    </td>
-                                    <td>
                                         <span class="badge bg-info">
                                             <i class="fa-solid fa-users"></i> {{ $grupo->capacidad }} estudiantes
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            <i class="fa-solid fa-calendar-check"></i> {{ $grupo->cargas_academicas_count ?? 0 }} asignaciones
                                         </span>
                                     </td>
                                     <td>
@@ -102,30 +84,30 @@
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
                                             @can('grupos.ver')
-                                                <a href="{{ route('admin.grupos.show', $grupo) }}" 
-                                                   class="btn btn-sm btn-info" 
+                                                <a href="{{ route('admin.grupos.show', $grupo) }}"
+                                                   class="btn btn-sm btn-info"
                                                    title="Ver detalles">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </a>
                                             @endcan
 
                                             @can('grupos.editar')
-                                                <a href="{{ route('admin.grupos.edit', $grupo) }}" 
-                                                   class="btn btn-sm btn-warning" 
+                                                <a href="{{ route('admin.grupos.edit', $grupo) }}"
+                                                   class="btn btn-sm btn-warning"
                                                    title="Editar">
                                                     <i class="fa-solid fa-edit"></i>
                                                 </a>
                                             @endcan
 
                                             @can('grupos.eliminar')
-                                                <form action="{{ route('admin.grupos.destroy', $grupo) }}" 
-                                                      method="POST" 
+                                                <form action="{{ route('admin.grupos.destroy', $grupo) }}"
+                                                      method="POST"
                                                       class="d-inline"
                                                       onsubmit="return confirm('¿Está seguro de eliminar este grupo?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="btn btn-sm btn-danger" 
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger"
                                                             title="Eliminar">
                                                         <i class="fa-solid fa-trash"></i>
                                                     </button>
@@ -136,7 +118,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-5">
+                                    <td colspan="5" class="text-center py-5">
                                         <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="text-muted mb-0">No hay grupos registrados.</p>
                                         @can('grupos.crear')
@@ -144,6 +126,8 @@
                                                 <i class="fa-solid fa-plus"></i> Registrar Primer Grupo
                                             </a>
                                         @endcan
+                                    </td>
+                                </tr>
                                     </td>
                                 </tr>
                             @endforelse
@@ -161,7 +145,7 @@
         {{-- Información adicional --}}
         <div class="alert alert-info mt-4">
             <i class="fa-solid fa-info-circle"></i>
-            <strong>Información:</strong> Aquí puedes gestionar todos los grupos académicos. 
+            <strong>Información:</strong> Aquí puedes gestionar todos los grupos académicos.
             Cada grupo está asociado a una materia y tiene una capacidad máxima de estudiantes.
         </div>
     </div>

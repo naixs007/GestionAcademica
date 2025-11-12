@@ -27,8 +27,23 @@ class Docente extends Model
         return $this->hasMany(Asistencia::class);
     }
 
+    // Relación muchos a muchos con Materias a través de carga_academica
     public function materias()
     {
-        return $this->hasMany(Materia::class);
+        return $this->belongsToMany(Materia::class, 'carga_academica', 'docente_id', 'materia_id')
+            ->withTimestamps();
+    }
+
+    // Relación muchos a muchos con Grupos a través de carga_academica
+    public function grupos()
+    {
+        return $this->belongsToMany(Grupo::class, 'carga_academica', 'docente_id', 'grupo_id')
+            ->withTimestamps();
+    }
+
+    // Relación con asignaciones de carga académica
+    public function cargasAcademicas()
+    {
+        return $this->hasMany(CargaAcademica::class);
     }
 }

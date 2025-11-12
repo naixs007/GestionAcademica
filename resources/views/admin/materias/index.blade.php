@@ -42,7 +42,7 @@
                         <thead class="table-light sticky-top">
                             <tr>
                                 <th style="min-width: 100px;">
-                                    <i class="fa-solid fa-barcode"></i> Código
+                                    <i class="fa-solid fa-barcode"></i> Sigla
                                 </th>
                                 <th style="min-width: 250px;">
                                     <i class="fa-solid fa-book"></i> Nombre de la Materia
@@ -53,11 +53,8 @@
                                 <th style="min-width: 130px;">
                                     <i class="fa-solid fa-clock"></i> Carga Horaria
                                 </th>
-                                <th style="min-width: 200px;">
-                                    <i class="fa-solid fa-chalkboard-user"></i> Docente
-                                </th>
                                 <th style="min-width: 120px;">
-                                    <i class="fa-solid fa-users-rectangle"></i> Grupos
+                                    <i class="fa-solid fa-users-rectangle"></i> Asignaciones
                                 </th>
                                 <th style="min-width: 200px;" class="text-center">
                                     <i class="fa-solid fa-cog"></i> Acciones
@@ -83,45 +80,37 @@
                                         </span>
                                     </td>
                                     <td>
-                                        @if($materia->docente)
-                                            <i class="fa-solid fa-user-circle text-success"></i>
-                                            <small>{{ $materia->docente->user->name }}</small>
-                                        @else
-                                            <span class="text-muted">Sin asignar</span>
-                                        @endif
-                                    </td>
-                                    <td>
                                         <span class="badge bg-success">
-                                            <i class="fa-solid fa-users"></i> {{ $materia->grupos->count() }} grupos
+                                            <i class="fa-solid fa-calendar-check"></i> {{ $materia->cargas_academicas_count ?? 0 }} asignaciones
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
                                             @can('materias.ver')
-                                                <a href="{{ route('admin.materia.show', $materia) }}" 
-                                                   class="btn btn-sm btn-info" 
+                                                <a href="{{ route('admin.materia.show', $materia) }}"
+                                                   class="btn btn-sm btn-info"
                                                    title="Ver detalles">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </a>
                                             @endcan
 
                                             @can('materias.editar')
-                                                <a href="{{ route('admin.materia.edit', $materia) }}" 
-                                                   class="btn btn-sm btn-warning" 
+                                                <a href="{{ route('admin.materia.edit', $materia) }}"
+                                                   class="btn btn-sm btn-warning"
                                                    title="Editar">
                                                     <i class="fa-solid fa-edit"></i>
                                                 </a>
                                             @endcan
 
                                             @can('materias.eliminar')
-                                                <form action="{{ route('admin.materia.destroy', $materia) }}" 
-                                                      method="POST" 
+                                                <form action="{{ route('admin.materia.destroy', $materia) }}"
+                                                      method="POST"
                                                       class="d-inline"
                                                       onsubmit="return confirm('¿Está seguro de eliminar esta materia? No se puede eliminar si tiene grupos asignados.');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="btn btn-sm btn-danger" 
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger"
                                                             title="Eliminar"
                                                             @if($materia->grupos->count() > 0) disabled @endif>
                                                         <i class="fa-solid fa-trash"></i>
@@ -133,7 +122,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-5">
+                                    <td colspan="6" class="text-center py-5">
                                         <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="text-muted mb-0">No hay materias registradas.</p>
                                         @can('materias.crear')
@@ -158,7 +147,7 @@
         {{-- Información adicional --}}
         <div class="alert alert-info mt-4">
             <i class="fa-solid fa-info-circle"></i>
-            <strong>Información:</strong> Aquí puedes gestionar todas las materias del plan de estudios. 
+            <strong>Información:</strong> Aquí puedes gestionar todas las materias del plan de estudios.
             Cada materia puede ser asignada a un docente y dividida en grupos.
         </div>
     </div>

@@ -42,12 +42,12 @@
                                     {{-- Código --}}
                                     <div class="mb-4">
                                         <label for="codigo" class="form-label">
-                                            <i class="fa-solid fa-barcode text-primary"></i> 
+                                            <i class="fa-solid fa-barcode text-primary"></i>
                                             <strong>Código de la Materia</strong> <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" 
-                                               name="codigo" 
-                                               id="codigo" 
+                                        <input type="text"
+                                               name="codigo"
+                                               id="codigo"
                                                class="form-control @error('codigo') is-invalid @enderror"
                                                value="{{ old('codigo') }}"
                                                maxlength="20"
@@ -57,7 +57,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
+                                            <i class="fa-solid fa-info-circle"></i>
                                             Código único para identificar la materia
                                         </small>
                                     </div>
@@ -65,12 +65,12 @@
                                     {{-- Nombre --}}
                                     <div class="mb-4">
                                         <label for="nombre" class="form-label">
-                                            <i class="fa-solid fa-book-open text-info"></i> 
+                                            <i class="fa-solid fa-book-open text-info"></i>
                                             <strong>Nombre de la Materia</strong> <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" 
-                                               name="nombre" 
-                                               id="nombre" 
+                                        <input type="text"
+                                               name="nombre"
+                                               id="nombre"
                                                class="form-control @error('nombre') is-invalid @enderror"
                                                value="{{ old('nombre') }}"
                                                maxlength="150"
@@ -80,7 +80,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
+                                            <i class="fa-solid fa-info-circle"></i>
                                             Nombre completo de la materia
                                         </small>
                                     </div>
@@ -88,11 +88,11 @@
                                     {{-- Nivel --}}
                                     <div class="mb-4">
                                         <label for="nivel" class="form-label">
-                                            <i class="fa-solid fa-layer-group text-warning"></i> 
+                                            <i class="fa-solid fa-layer-group text-warning"></i>
                                             <strong>Nivel</strong> <span class="text-danger">*</span>
                                         </label>
-                                        <select name="nivel" id="nivel" 
-                                                class="form-select @error('nivel') is-invalid @enderror" 
+                                        <select name="nivel" id="nivel"
+                                                class="form-select @error('nivel') is-invalid @enderror"
                                                 required>
                                             <option value="">Seleccione un nivel</option>
                                             <option value="1er Semestre" {{ old('nivel') == '1er Semestre' ? 'selected' : '' }}>
@@ -130,7 +130,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
+                                            <i class="fa-solid fa-info-circle"></i>
                                             Semestre en el que se imparte la materia
                                         </small>
                                     </div>
@@ -141,12 +141,12 @@
                                     {{-- Carga Horaria --}}
                                     <div class="mb-4">
                                         <label for="cargaHoraria" class="form-label">
-                                            <i class="fa-solid fa-clock text-success"></i> 
+                                            <i class="fa-solid fa-clock text-success"></i>
                                             <strong>Carga Horaria (horas/semana)</strong> <span class="text-danger">*</span>
                                         </label>
-                                        <input type="number" 
-                                               name="cargaHoraria" 
-                                               id="cargaHoraria" 
+                                        <input type="number"
+                                               name="cargaHoraria"
+                                               id="cargaHoraria"
                                                class="form-control @error('cargaHoraria') is-invalid @enderror"
                                                value="{{ old('cargaHoraria', 4) }}"
                                                min="1"
@@ -157,50 +157,9 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
+                                            <i class="fa-solid fa-info-circle"></i>
                                             Horas semanales de clase (1-20)
                                         </small>
-                                    </div>
-
-                                    {{-- Docente --}}
-                                    <div class="mb-4">
-                                        <label for="docente_id" class="form-label">
-                                            <i class="fa-solid fa-chalkboard-user text-primary"></i> 
-                                            <strong>Docente Asignado</strong>
-                                        </label>
-                                        <select name="docente_id" 
-                                                id="docente_id" 
-                                                class="form-select @error('docente_id') is-invalid @enderror">
-                                            <option value="">Sin asignar (opcional)</option>
-                                            @forelse($docentes as $docente)
-                                                <option value="{{ $docente->id }}" 
-                                                        {{ old('docente_id') == $docente->id ? 'selected' : '' }}>
-                                                    {{ $docente->user->name }} 
-                                                    ({{ $docente->categoria }})
-                                                </option>
-                                            @empty
-                                                <option value="" disabled>No hay docentes registrados</option>
-                                            @endforelse
-                                        </select>
-                                        @error('docente_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        
-                                        @if($docentes->isEmpty())
-                                            <div class="alert alert-warning mt-2 mb-0">
-                                                <i class="fa-solid fa-exclamation-triangle"></i>
-                                                <small>
-                                                    <strong>No hay docentes registrados.</strong><br>
-                                                    Primero debes <a href="{{ route('admin.docentes.create') }}" class="alert-link">registrar docentes</a> 
-                                                    para poder asignarlos a las materias.
-                                                </small>
-                                            </div>
-                                        @else
-                                            <small class="text-muted">
-                                                <i class="fa-solid fa-info-circle"></i> 
-                                                Puedes asignar un docente ahora o después
-                                            </small>
-                                        @endif
                                     </div>
 
                                     {{-- Información adicional --}}
@@ -211,7 +170,7 @@
                                         <ul class="mb-0 small">
                                             <li>El código debe ser único para cada materia</li>
                                             <li>La carga horaria típica es de 2 a 6 horas semanales</li>
-                                            <li>Puedes asignar el docente más tarde si aún no está definido</li>
+                                            <li>Los docentes se asignan desde el módulo de Carga Académica</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -244,7 +203,7 @@
                             <li><strong>INF-405:</strong> Informática del cuarto nivel</li>
                         </ul>
                         <p class="mb-0 text-muted small">
-                            <i class="fa-solid fa-info-circle"></i> 
+                            <i class="fa-solid fa-info-circle"></i>
                             Esto ayuda a organizar mejor el plan de estudios.
                         </p>
                     </div>

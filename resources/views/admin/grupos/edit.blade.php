@@ -50,12 +50,12 @@
                                             {{-- Nombre del Grupo --}}
                                             <div class="mb-3">
                                                 <label for="nombre" class="form-label">
-                                                    <i class="fa-solid fa-tag text-primary"></i> 
+                                                    <i class="fa-solid fa-tag text-primary"></i>
                                                     <strong>Nombre del Grupo</strong> <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="text" 
-                                                       name="nombre" 
-                                                       id="nombre" 
+                                                <input type="text"
+                                                       name="nombre"
+                                                       id="nombre"
                                                        class="form-control @error('nombre') is-invalid @enderror"
                                                        value="{{ old('nombre', $grupo->nombre) }}"
                                                        maxlength="100"
@@ -68,12 +68,12 @@
                                             {{-- Capacidad --}}
                                             <div class="mb-3">
                                                 <label for="capacidad" class="form-label">
-                                                    <i class="fa-solid fa-users text-info"></i> 
+                                                    <i class="fa-solid fa-users text-info"></i>
                                                     <strong>Capacidad Máxima</strong> <span class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" 
-                                                       name="capacidad" 
-                                                       id="capacidad" 
+                                                <input type="number"
+                                                       name="capacidad"
+                                                       id="capacidad"
                                                        class="form-control @error('capacidad') is-invalid @enderror"
                                                        value="{{ old('capacidad', $grupo->capacidad) }}"
                                                        min="1"
@@ -82,14 +82,14 @@
                                                 @error('capacidad')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
-                                                
+
                                                 {{-- Barra de progreso --}}
                                                 <div class="progress mt-2" style="height: 20px;">
-                                                    <div class="progress-bar bg-info" 
-                                                         role="progressbar" 
+                                                    <div class="progress-bar bg-info"
+                                                         role="progressbar"
                                                          style="width: {{ ($grupo->capacidad / 100) * 100 }}%"
-                                                         aria-valuenow="{{ $grupo->capacidad }}" 
-                                                         aria-valuemin="0" 
+                                                         aria-valuenow="{{ $grupo->capacidad }}"
+                                                         aria-valuemin="0"
                                                          aria-valuemax="100">
                                                         {{ $grupo->capacidad }} estudiantes
                                                     </div>
@@ -104,49 +104,32 @@
                                     <div class="card mb-4 border-success">
                                         <div class="card-header bg-success text-white">
                                             <h6 class="mb-0">
-                                                <i class="fa-solid fa-book"></i> Materia Asignada
+                                                <i class="fa-solid fa-calendar-check"></i> Asignaciones
                                             </h6>
                                         </div>
                                         <div class="card-body">
-                                            {{-- Materia --}}
-                                            <div class="mb-3">
-                                                <label for="materia_id" class="form-label">
-                                                    <i class="fa-solid fa-book-open text-warning"></i> 
-                                                    <strong>Materia</strong> <span class="text-danger">*</span>
-                                                </label>
-                                                <select name="materia_id" 
-                                                        id="materia_id" 
-                                                        class="form-select @error('materia_id') is-invalid @enderror" 
-                                                        required>
-                                                    <option value="">Seleccione una materia</option>
-                                                    @foreach($materias as $materia)
-                                                        <option value="{{ $materia->id }}" 
-                                                                {{ old('materia_id', $grupo->materia_id) == $materia->id ? 'selected' : '' }}>
-                                                            {{ $materia->codigo ?? 'N/A' }} - {{ $materia->nombre }}
-                                                            @if($materia->docente)
-                                                                ({{ $materia->docente->user->name }})
-                                                            @endif
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                @error('materia_id')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
+                                            <div class="alert alert-info">
+                                                <i class="fa-solid fa-info-circle"></i>
+                                                <strong>Nota:</strong> Las asignaciones de materias y docentes se gestionan desde el módulo de Carga Académica.
                                             </div>
 
-                                            {{-- Info actual --}}
-                                            @if($grupo->materias)
-                                                <div class="alert alert-info">
-                                                    <small>
-                                                        <strong>Materia actual:</strong><br>
-                                                        <i class="fa-solid fa-book"></i> 
-                                                        {{ $grupo->materias->codigo }} - {{ $grupo->materias->nombre }}
-                                                        @if($grupo->materias->docente)
+                                            @if($grupo->cargasAcademicas && $grupo->cargasAcademicas->count() > 0)
+                                                <label class="form-label"><strong>Asignaciones actuales:</strong></label>
+                                                <ul class="list-group">
+                                                    @foreach($grupo->cargasAcademicas as $carga)
+                                                        <li class="list-group-item">
+                                                            <i class="fa-solid fa-book text-primary"></i> {{ $carga->materia->nombre }}
                                                             <br>
-                                                            <i class="fa-solid fa-user"></i> 
-                                                            Docente: {{ $grupo->materias->docente->user->name }}
-                                                        @endif
-                                                    </small>
+                                                            <small class="text-muted">
+                                                                <i class="fa-solid fa-user"></i> {{ $carga->docente->user->name }}
+                                                            </small>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @else
+                                                <div class="text-center py-3">
+                                                    <i class="fa-solid fa-calendar-xmark fa-2x text-muted mb-2"></i>
+                                                    <p class="text-muted mb-0">No hay asignaciones para este grupo.</p>
                                                 </div>
                                             @endif
                                         </div>
@@ -186,7 +169,7 @@
                             {{-- Advertencia --}}
                             <div class="alert alert-warning mb-4">
                                 <i class="fa-solid fa-exclamation-triangle"></i>
-                                <strong>Importante:</strong> 
+                                <strong>Importante:</strong>
                                 <ul class="mb-0 mt-2">
                                     <li>Si cambia la materia asignada, verifique que sea coherente con el plan de estudios.</li>
                                     <li>La capacidad no debe ser menor que el número de estudiantes ya inscritos.</li>
@@ -199,11 +182,7 @@
                                 <button type="submit" class="btn btn-warning btn-lg flex-fill">
                                     <i class="fa-solid fa-save"></i> Actualizar Grupo
                                 </button>
-                                <a href="{{ route('admin.grupos.show', $grupo) }}" 
-                                   class="btn btn-info btn-lg">
-                                    <i class="fa-solid fa-eye"></i> Ver
-                                </a>
-                                <a href="{{ route('admin.grupos.index') }}" 
+                                <a href="{{ route('admin.grupos.index') }}"
                                    class="btn btn-outline-secondary btn-lg">
                                     <i class="fa-solid fa-times"></i> Cancelar
                                 </a>

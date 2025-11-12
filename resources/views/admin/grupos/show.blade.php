@@ -57,105 +57,73 @@
                     </div>
                 </div>
 
-                {{-- Información de la Materia --}}
+                {{-- Asignaciones de Carga Académica --}}
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">
-                            <i class="fa-solid fa-book"></i> Materia Asignada
-                        </h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fa-solid fa-calendar-check"></i> Asignaciones de Carga Académica
+                            </h5>
+                            <span class="badge bg-light text-dark">{{ $grupo->cargasAcademicas->count() }} asignaciones</span>
+                        </div>
                     </div>
                     <div class="card-body">
-                        @if($grupo->materias)
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small">
-                                        <i class="fa-solid fa-barcode"></i> Código
-                                    </label>
-                                    <p class="mb-0">
-                                        <span class="badge bg-primary">{{ $grupo->materias->codigo ?? 'N/A' }}</span>
-                                    </p>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small">
-                                        <i class="fa-solid fa-book-open"></i> Nombre de la Materia
-                                    </label>
-                                    <p class="mb-0">
-                                        <strong>{{ $grupo->materias->nombre }}</strong>
-                                    </p>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small">
-                                        <i class="fa-solid fa-layer-group"></i> Nivel
-                                    </label>
-                                    <p class="mb-0">{{ $grupo->materias->nivel ?? 'No especificado' }}</p>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small">
-                                        <i class="fa-solid fa-clock"></i> Horas Semanales
-                                    </label>
-                                    <p class="mb-0">{{ $grupo->materias->horasSemanales ?? 'N/A' }} horas</p>
-                                </div>
+                        @if($grupo->cargasAcademicas && $grupo->cargasAcademicas->count() > 0)
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><i class="fa-solid fa-book"></i> Materia</th>
+                                            <th><i class="fa-solid fa-chalkboard-user"></i> Docente</th>
+                                            <th><i class="fa-solid fa-calendar"></i> Fecha Asignación</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($grupo->cargasAcademicas as $carga)
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ $carga->materia->codigo }}</span>
+                                                    <br>
+                                                    <strong>{{ $carga->materia->nombre }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        Nivel: {{ $carga->materia->nivel }} |
+                                                        {{ $carga->materia->cargaHoraria }} hrs/semana
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-circle bg-success text-white me-2">
+                                                            {{ substr($carga->docente->user->name, 0, 1) }}
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ $carga->docente->user->name }}</strong>
+                                                            <br>
+                                                            <small class="text-muted">
+                                                                <span class="badge bg-info">{{ $carga->docente->categoria }}</span>
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted">
+                                                        {{ $carga->created_at->format('d/m/Y H:i') }}
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         @else
-                            <div class="text-center py-3">
-                                <i class="fa-solid fa-exclamation-triangle fa-2x text-warning mb-2"></i>
-                                <p class="text-muted mb-0">No hay materia asignada a este grupo.</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Información del Docente --}}
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="fa-solid fa-chalkboard-user"></i> Docente Responsable
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        @if($grupo->materias && $grupo->materias->docente)
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small">
-                                        <i class="fa-solid fa-user-circle"></i> Nombre Completo
-                                    </label>
-                                    <p class="mb-0">
-                                        <strong>{{ $grupo->materias->docente->user->name }}</strong>
-                                    </p>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small">
-                                        <i class="fa-solid fa-envelope"></i> Correo Electrónico
-                                    </label>
-                                    <p class="mb-0">
-                                        <a href="mailto:{{ $grupo->materias->docente->user->email }}">
-                                            {{ $grupo->materias->docente->user->email }}
-                                        </a>
-                                    </p>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small">
-                                        <i class="fa-solid fa-tag"></i> Categoría
-                                    </label>
-                                    <p class="mb-0">
-                                        <span class="badge bg-primary">
-                                            {{ $grupo->materias->docente->categoria }}
-                                        </span>
-                                    </p>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small">
-                                        <i class="fa-solid fa-graduation-cap"></i> Profesión
-                                    </label>
-                                    <p class="mb-0">
-                                        {{ $grupo->materias->docente->profesion ?? 'No especificada' }}
-                                    </p>
-                                </div>
-                            </div>
-                        @else
-                            <div class="text-center py-3">
-                                <i class="fa-solid fa-user-slash fa-2x text-muted mb-2"></i>
-                                <p class="text-muted mb-0">No hay docente asignado a la materia de este grupo.</p>
+                            <div class="text-center py-4">
+                                <i class="fa-solid fa-calendar-xmark fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-2">No hay asignaciones de carga académica para este grupo.</p>
+                                @can('carga-academica.crear')
+                                    <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-primary">
+                                        <i class="fa-solid fa-plus"></i> Asignar Materia y Docente
+                                    </a>
+                                @endcan
                             </div>
                         @endif
                     </div>
@@ -208,14 +176,14 @@
                     <div class="card-body">
                         <div class="d-grid gap-2">
                             @can('grupos.editar')
-                                <a href="{{ route('admin.grupos.edit', $grupo) }}" 
+                                <a href="{{ route('admin.grupos.edit', $grupo) }}"
                                    class="btn btn-warning">
                                     <i class="fa-solid fa-edit"></i> Editar Grupo
                                 </a>
                             @endcan
 
                             @can('grupos.eliminar')
-                                <form action="{{ route('admin.grupos.destroy', $grupo) }}" 
+                                <form action="{{ route('admin.grupos.destroy', $grupo) }}"
                                       method="POST"
                                       onsubmit="return confirm('¿Está seguro de eliminar este grupo? Esta acción no se puede deshacer.');">
                                     @csrf
@@ -245,9 +213,9 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
                             <span>
-                                <i class="fa-solid fa-book text-warning"></i> Materia:
+                                <i class="fa-solid fa-calendar-check text-warning"></i> Asignaciones:
                             </span>
-                            <strong>{{ $grupo->materias->codigo ?? 'N/A' }}</strong>
+                            <strong>{{ $grupo->cargasAcademicas->count() }}</strong>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
                             <span>
@@ -285,4 +253,17 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .avatar-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+    </style>
 </x-admin-layout>

@@ -41,7 +41,6 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light sticky-top">
                             <tr>
-                                <th style="min-width: 80px;">ID</th>
                                 <th style="min-width: 200px;">
                                     <i class="fa-solid fa-user"></i> Nombre Completo
                                 </th>
@@ -68,7 +67,6 @@
                         <tbody>
                             @forelse($docentes as $docente)
                                 <tr>
-                                    <td><span class="badge bg-secondary">#{{ $docente->id }}</span></td>
                                     <td>
                                         <i class="fa-solid fa-user-circle text-primary"></i>
                                         <strong>{{ $docente->user->name }}</strong>
@@ -99,30 +97,30 @@
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
                                             @can('docentes.ver')
-                                                <a href="{{ route('admin.docentes.show', $docente) }}" 
-                                                   class="btn btn-sm btn-info" 
+                                                <a href="{{ route('admin.docentes.show', $docente) }}"
+                                                   class="btn btn-sm btn-info"
                                                    title="Ver detalles">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </a>
                                             @endcan
 
                                             @can('docentes.editar')
-                                                <a href="{{ route('admin.docentes.edit', $docente) }}" 
-                                                   class="btn btn-sm btn-warning" 
+                                                <a href="{{ route('admin.docentes.edit', $docente) }}"
+                                                   class="btn btn-sm btn-warning"
                                                    title="Editar">
                                                     <i class="fa-solid fa-edit"></i>
                                                 </a>
                                             @endcan
 
                                             @can('docentes.eliminar')
-                                                <form action="{{ route('admin.docentes.destroy', $docente) }}" 
-                                                      method="POST" 
+                                                <form action="{{ route('admin.docentes.destroy', $docente) }}"
+                                                      method="POST"
                                                       class="d-inline"
                                                       onsubmit="return confirm('¿Está seguro de eliminar este docente?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="btn btn-sm btn-danger" 
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger"
                                                             title="Eliminar">
                                                         <i class="fa-solid fa-trash"></i>
                                                     </button>
@@ -158,7 +156,7 @@
         {{-- Información adicional --}}
         <div class="alert alert-info mt-4">
             <i class="fa-solid fa-info-circle"></i>
-            <strong>Información:</strong> Aquí puedes gestionar todos los docentes registrados en el sistema. 
+            <strong>Información:</strong> Aquí puedes gestionar todos los docentes registrados en el sistema.
             Puedes ver sus materias asignadas, carga horaria y datos personales.
         </div>
     </div>

@@ -14,7 +14,7 @@ class MateriaController extends Controller
      */
     public function index()
     {
-        $materias = Materia::with(['docente.user', 'grupos'])->paginate(10);
+        $materias = Materia::withCount(['cargasAcademicas', 'grupos'])->paginate(10);
         return view('admin.materias.index', compact('materias'));
     }
 
@@ -23,8 +23,7 @@ class MateriaController extends Controller
      */
     public function create()
     {
-        $docentes = Docente::with('user')->get();
-        return view('admin.materias.create', compact('docentes'));
+        return view('admin.materias.create');
     }
 
     /**
@@ -37,12 +36,11 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo',
             'nivel' => 'required|string|max:50',
             'cargaHoraria' => 'required|integer|min:1|max:20',
-            'docente_id' => 'nullable|exists:docentes,id',
         ]);
 
         try {
             Materia::create($validated);
-            
+
             return redirect()->route('admin.materia.index')
                 ->with('success', 'Materia registrada exitosamente.');
         } catch (\Exception $e) {
@@ -56,7 +54,7 @@ class MateriaController extends Controller
      */
     public function show(Materia $materia)
     {
-        $materia->load(['docente.user', 'grupos', 'horarios', 'aulas']);
+        $materia->load(['cargasAcademicas.docente.user', 'cargasAcademicas.grupo', 'horarios', 'aulas']);
         return view('admin.materias.show', compact('materia'));
     }
 
@@ -65,8 +63,7 @@ class MateriaController extends Controller
      */
     public function edit(Materia $materia)
     {
-        $docentes = Docente::with('user')->get();
-        return view('admin.materias.edit', compact('materia', 'docentes'));
+        return view('admin.materias.edit', compact('materia'));
     }
 
     /**
@@ -79,12 +76,11 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo,' . $materia->id,
             'nivel' => 'required|string|max:50',
             'cargaHoraria' => 'required|integer|min:1|max:20',
-            'docente_id' => 'nullable|exists:docentes,id',
         ]);
 
         try {
             $materia->update($validated);
-            
+
             return redirect()->route('admin.materia.index')
                 ->with('success', 'Materia actualizada exitosamente.');
         } catch (\Exception $e) {
@@ -99,13 +95,13 @@ class MateriaController extends Controller
     public function destroy(Materia $materia)
     {
         try {
-            // Verificar si tiene grupos asignados
-            if ($materia->grupos()->count() > 0) {
-                return back()->withErrors(['error' => 'No se puede eliminar la materia porque tiene grupos asignados.']);
+            // Verificar si tiene asignaciones de carga académica
+            if ($materia->cargasAcademicas()->count() > 0) {
+                return back()->withErrors(['error' => 'No se puede eliminar la materia porque tiene asignaciones de carga académica.']);
             }
-            
+
             $materia->delete();
-            
+
             return redirect()->route('admin.materia.index')
                 ->with('success', 'Materia eliminada exitosamente.');
         } catch (\Exception $e) {

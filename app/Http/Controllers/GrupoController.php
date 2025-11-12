@@ -14,7 +14,7 @@ class GrupoController extends Controller
      */
     public function index()
     {
-        $grupos = Grupo::with('materias')->paginate(10);
+        $grupos = Grupo::withCount('cargasAcademicas')->paginate(10);
         return view('admin.grupos.index', compact('grupos'));
     }
 
@@ -23,8 +23,7 @@ class GrupoController extends Controller
      */
     public function create()
     {
-        $materias = Materia::all();
-        return view('admin.grupos.create', compact('materias'));
+        return view('admin.grupos.create');
     }
 
     /**
@@ -34,13 +33,12 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:100',
-            'materia_id' => 'required|exists:materias,id',
             'capacidad' => 'required|integer|min:1|max:100',
         ]);
 
         try {
             Grupo::create($validated);
-            
+
             return redirect()->route('admin.grupos.index')
                 ->with('success', 'Grupo registrado exitosamente.');
         } catch (\Exception $e) {
@@ -54,7 +52,7 @@ class GrupoController extends Controller
      */
     public function show(Grupo $grupo)
     {
-        $grupo->load(['materias.docente.user']);
+        $grupo->load(['cargasAcademicas.materia', 'cargasAcademicas.docente.user']);
         return view('admin.grupos.show', compact('grupo'));
     }
 
@@ -63,8 +61,7 @@ class GrupoController extends Controller
      */
     public function edit(Grupo $grupo)
     {
-        $materias = Materia::all();
-        return view('admin.grupos.edit', compact('grupo', 'materias'));
+        return view('admin.grupos.edit', compact('grupo'));
     }
 
     /**
@@ -74,13 +71,12 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:100',
-            'materia_id' => 'required|exists:materias,id',
             'capacidad' => 'required|integer|min:1|max:100',
         ]);
 
         try {
             $grupo->update($validated);
-            
+
             return redirect()->route('admin.grupos.index')
                 ->with('success', 'Grupo actualizado exitosamente.');
         } catch (\Exception $e) {
@@ -95,8 +91,13 @@ class GrupoController extends Controller
     public function destroy(Grupo $grupo)
     {
         try {
+            // Verificar si tiene asignaciones de carga académica
+            if ($grupo->cargasAcademicas()->count() > 0) {
+                return back()->withErrors(['error' => 'No se puede eliminar el grupo porque tiene asignaciones de carga académica.']);
+            }
+
             $grupo->delete();
-            
+
             return redirect()->route('admin.grupos.index')
                 ->with('success', 'Grupo eliminado exitosamente.');
         } catch (\Exception $e) {
