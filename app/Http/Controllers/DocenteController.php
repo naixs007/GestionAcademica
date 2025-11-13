@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bitacora;
 use App\Models\Docente;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -42,17 +43,29 @@ class DocenteController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             $docente = Docente::create($validated);
-            
+
             // Asignar rol de docente al usuario si no lo tiene
             $user = User::find($validated['user_id']);
             if (!$user->hasRole('docente')) {
                 $user->assignRole('docente');
             }
-            
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Creó el docente '{$user->name}' (Categoría: {$docente->categoria}, Carga horaria: {$docente->cargaHoraria}h)",
+                'metodo' => 'POST',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
             DB::commit();
-            
+
             return redirect()->route('admin.docentes.index')
                 ->with('success', 'Docente registrado exitosamente.');
         } catch (\Exception $e) {
@@ -96,10 +109,11 @@ class DocenteController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             $oldUserId = $docente->user_id;
+            $oldUserName = $docente->user->name;
             $docente->update($validated);
-            
+
             // Si cambió el usuario, actualizar roles
             if ($oldUserId != $validated['user_id']) {
                 // Remover rol del usuario anterior si no tiene otros vínculos
@@ -107,16 +121,29 @@ class DocenteController extends Controller
                 if ($oldUser && !$oldUser->docente()->exists()) {
                     $oldUser->removeRole('docente');
                 }
-                
+
                 // Asignar rol al nuevo usuario
                 $newUser = User::find($validated['user_id']);
                 if (!$newUser->hasRole('docente')) {
                     $newUser->assignRole('docente');
                 }
             }
-            
+
+            // Registrar en bitácora
+            $currentUser = User::find($validated['user_id']);
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Actualizó el docente '{$oldUserName}' a '{$currentUser->name}' (Categoría: {$docente->categoria}, Carga horaria: {$docente->cargaHoraria}h)",
+                'metodo' => 'PUT',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
             DB::commit();
-            
+
             return redirect()->route('admin.docentes.index')
                 ->with('success', 'Docente actualizado exitosamente.');
         } catch (\Exception $e) {
@@ -133,18 +160,34 @@ class DocenteController extends Controller
     {
         try {
             DB::beginTransaction();
-            
+
+            // Capturar datos antes de eliminar
             $userId = $docente->user_id;
+            $nombreDocente = $docente->user->name;
+            $categoriaDocente = $docente->categoria;
+
             $docente->delete();
-            
+
             // Remover rol de docente si el usuario ya no tiene el vínculo
             $user = User::find($userId);
             if ($user && !$user->docente()->exists()) {
                 $user->removeRole('docente');
             }
-            
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Eliminó el docente '{$nombreDocente}' (Categoría: {$categoriaDocente})",
+                'metodo' => 'DELETE',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
             DB::commit();
-            
+
             return redirect()->route('admin.docentes.index')
                 ->with('success', 'Docente eliminado exitosamente.');
         } catch (\Exception $e) {

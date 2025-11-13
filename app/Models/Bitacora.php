@@ -17,7 +17,6 @@ class Bitacora extends Model
         'ruta',
         'direccion_ip',
         'navegador',
-        'browser_info',
         'fecha_hora',
     ];
 

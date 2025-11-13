@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bitacora;
 use App\Models\Grupo;
 use App\Models\Materia;
 use Illuminate\Http\Request;
@@ -37,11 +38,28 @@ class GrupoController extends Controller
         ]);
 
         try {
-            Grupo::create($validated);
+            DB::beginTransaction();
+
+            $grupo = Grupo::create($validated);
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Creó el grupo '{$grupo->nombre}' con capacidad de {$grupo->capacidad} estudiantes",
+                'metodo' => 'POST',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
+            DB::commit();
 
             return redirect()->route('admin.grupos.index')
                 ->with('success', 'Grupo registrado exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->withErrors(['error' => 'Error al registrar grupo: ' . $e->getMessage()])
                 ->withInput();
         }
@@ -75,11 +93,30 @@ class GrupoController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
+
+            $oldNombre = $grupo->nombre;
+            $oldCapacidad = $grupo->capacidad;
             $grupo->update($validated);
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Actualizó el grupo '{$oldNombre}' a '{$grupo->nombre}' (Capacidad: {$oldCapacidad} → {$grupo->capacidad} estudiantes)",
+                'metodo' => 'PUT',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
+            DB::commit();
 
             return redirect()->route('admin.grupos.index')
                 ->with('success', 'Grupo actualizado exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->withErrors(['error' => 'Error al actualizar grupo: ' . $e->getMessage()])
                 ->withInput();
         }
@@ -96,11 +133,32 @@ class GrupoController extends Controller
                 return back()->withErrors(['error' => 'No se puede eliminar el grupo porque tiene asignaciones de carga académica.']);
             }
 
+            DB::beginTransaction();
+
+            // Capturar datos antes de eliminar
+            $nombreGrupo = $grupo->nombre;
+            $capacidadGrupo = $grupo->capacidad;
+
             $grupo->delete();
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Eliminó el grupo '{$nombreGrupo}' (Capacidad: {$capacidadGrupo} estudiantes)",
+                'metodo' => 'DELETE',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
+            DB::commit();
 
             return redirect()->route('admin.grupos.index')
                 ->with('success', 'Grupo eliminado exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->withErrors(['error' => 'Error al eliminar grupo: ' . $e->getMessage()]);
         }
     }

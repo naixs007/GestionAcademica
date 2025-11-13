@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bitacora;
 use App\Models\Materia;
 use App\Models\Docente;
 use Illuminate\Http\Request;
@@ -34,16 +35,33 @@ class MateriaController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:150',
             'codigo' => 'required|string|max:20|unique:materias,codigo',
-            'nivel' => 'required|string|max:50',
+            'nivel' => 'required|integer|min:1|max:10',
             'cargaHoraria' => 'required|integer|min:1|max:20',
         ]);
 
         try {
-            Materia::create($validated);
+            DB::beginTransaction();
 
-            return redirect()->route('admin.materia.index')
+            $materia = Materia::create($validated);
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Creó la materia '{$materia->nombre}' con código '{$materia->codigo}' (Nivel: {$materia->nivel}, Carga horaria: {$materia->cargaHoraria}h)",
+                'metodo' => 'POST',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('admin.materias.index')
                 ->with('success', 'Materia registrada exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->withErrors(['error' => 'Error al registrar materia: ' . $e->getMessage()])
                 ->withInput();
         }
@@ -74,16 +92,34 @@ class MateriaController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:150',
             'codigo' => 'required|string|max:20|unique:materias,codigo,' . $materia->id,
-            'nivel' => 'required|string|max:50',
+            'nivel' => 'required|integer|min:1|max:10',
             'cargaHoraria' => 'required|integer|min:1|max:20',
         ]);
 
         try {
+            DB::beginTransaction();
+
+            $oldNombre = $materia->nombre;
             $materia->update($validated);
 
-            return redirect()->route('admin.materia.index')
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Actualizó la materia '{$oldNombre}' a '{$materia->nombre}' (Código: {$materia->codigo}, Nivel: {$materia->nivel}, Carga horaria: {$materia->cargaHoraria}h)",
+                'metodo' => 'PUT',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('admin.materias.index')
                 ->with('success', 'Materia actualizada exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->withErrors(['error' => 'Error al actualizar materia: ' . $e->getMessage()])
                 ->withInput();
         }
@@ -100,11 +136,32 @@ class MateriaController extends Controller
                 return back()->withErrors(['error' => 'No se puede eliminar la materia porque tiene asignaciones de carga académica.']);
             }
 
+            DB::beginTransaction();
+
+            // Capturar datos antes de eliminar
+            $nombreMateria = $materia->nombre;
+            $codigoMateria = $materia->codigo;
+
             $materia->delete();
 
-            return redirect()->route('admin.materia.index')
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => "Eliminó la materia '{$nombreMateria}' con código '{$codigoMateria}'",
+                'metodo' => 'DELETE',
+                'ruta' => request()->path(),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('admin.materias.index')
                 ->with('success', 'Materia eliminada exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->withErrors(['error' => 'Error al eliminar materia: ' . $e->getMessage()]);
         }
     }

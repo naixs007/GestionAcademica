@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use App\Models\Configuracion;
+use App\Models\Bitacora;
+use Illuminate\Support\Facades\Validator;
 
 class ConfiguracionController extends Controller
 {
@@ -13,10 +16,10 @@ class ConfiguracionController extends Controller
      */
     public function index()
     {
-        // Obtener configuraciones desde la tabla settings o cache
-        $configuraciones = $this->getConfiguraciones();
-        
-        return view('admin.configuracion.index', compact('configuraciones'));
+        // Obtener configuración actual del sistema (singleton)
+        $configuracion = Configuracion::current();
+
+        return view('admin.configuracion.index', compact('configuracion'));
     }
 
     /**
@@ -24,61 +27,50 @@ class ConfiguracionController extends Controller
      */
     public function edit()
     {
-        $configuraciones = $this->getConfiguraciones();
-        
-        return view('admin.configuracion.edit', compact('configuraciones'));
+        // Obtener configuración actual del sistema (singleton)
+        $configuracion = Configuracion::current();
+
+        return view('admin.configuracion.edit', compact('configuracion'));
     }
 
     /**
-     * Update the configuration parameters.
+     * Update the configuration parameters (web form).
      */
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'nombre_institucion' => 'required|string|max:255',
-            'sigla_institucion' => 'nullable|string|max:50',
-            'anio_academico' => 'required|integer|min:2020|max:2100',
-            'periodo_academico' => 'required|string|in:1,2,Anual',
-            'duracion_periodo' => 'required|integer|min:1|max:12',
-            'horas_por_periodo' => 'required|integer|min:30|max:100',
-            'dias_laborales' => 'required|array',
-            'dias_laborales.*' => 'in:Lunes,Martes,Miércoles,Jueves,Viernes,Sábado,Domingo',
-            'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
-            'tolerancia_asistencia' => 'required|integer|min:0|max:60',
-            'email_notificaciones' => 'nullable|email',
-            'permitir_auto_registro' => 'required|boolean',
+            'nombre_institucion' => 'nullable|string|max:255',
+            'logo_institucional_path' => 'nullable|string|max:255',
+            'periodo_academico_default_id' => 'nullable|integer',
+            'tolerancia_asistencia_minutos' => 'nullable|integer|min:0|max:60',
+            'requerir_motivo_ausencia' => 'nullable|boolean',
+            'expiracion_contrasena_dias' => 'nullable|integer|min:30|max:365',
+            'notificaciones_email_remitente' => 'nullable|email|max:255',
         ]);
 
         try {
             DB::beginTransaction();
-            
-            // Guardar cada configuración
-            foreach ($validated as $key => $value) {
-                if (is_array($value)) {
-                    $value = json_encode($value);
-                }
-                
-                DB::table('configuraciones')->updateOrInsert(
-                    ['clave' => $key],
-                    [
-                        'valor' => $value,
-                        'updated_at' => now()
-                    ]
-                );
-                
-                // Actualizar cache
-                Cache::forget('config_' . $key);
-                Cache::put('config_' . $key, $value, now()->addDays(7));
-            }
-            
+
+            // Obtener configuración actual y actualizarla
+            $configuracion = Configuracion::current();
+            $configuracion->update($validated);
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => 'El usuario ' . auth()->id() . ' actualizó los parámetros generales del sistema',
+                'metodo' => 'PUT',
+                'ruta' => route('admin.configuracion.update'),
+                'direccion_ip' => $request->ip(),
+                'navegador' => $request->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
             DB::commit();
-            
-            // Limpiar cache general de configuraciones
-            Cache::forget('configuraciones_generales');
-            
+
             return redirect()->route('admin.configuracion.index')
-                ->with('success', 'Configuraciones actualizadas exitosamente.');
+                ->with('success', 'Configuración actualizada exitosamente.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Error al actualizar configuraciones: ' . $e->getMessage()])
@@ -87,62 +79,14 @@ class ConfiguracionController extends Controller
     }
 
     /**
-     * Get all configuration parameters.
+     * Get all configuration parameters (Deprecated - usar Configuracion::current()).
+     *
+     * @deprecated Use Configuracion::current() instead
      */
     private function getConfiguraciones()
     {
-        return Cache::remember('configuraciones_generales', now()->addDays(7), function () {
-            // Verificar si existe la tabla configuraciones
-            if (!DB::getSchemaBuilder()->hasTable('configuraciones')) {
-                // Retornar valores por defecto
-                return $this->getDefaultConfiguraciones();
-            }
-            
-            $configs = DB::table('configuraciones')->pluck('valor', 'clave')->toArray();
-            
-            // Decodificar JSON si es necesario
-            foreach ($configs as $key => $value) {
-                if ($this->isJson($value)) {
-                    $configs[$key] = json_decode($value, true);
-                }
-            }
-            
-            // Mezclar con valores por defecto para claves faltantes
-            return array_merge($this->getDefaultConfiguraciones(), $configs);
-        });
-    }
-
-    /**
-     * Get default configuration values.
-     */
-    private function getDefaultConfiguraciones()
-    {
-        return [
-            'nombre_institucion' => 'Universidad Autónoma Gabriel René Moreno',
-            'sigla_institucion' => 'UAGRM',
-            'anio_academico' => date('Y'),
-            'periodo_academico' => '1',
-            'duracion_periodo' => 4,
-            'horas_por_periodo' => 48,
-            'dias_laborales' => ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
-            'hora_inicio' => '07:00',
-            'hora_fin' => '21:00',
-            'tolerancia_asistencia' => 15,
-            'email_notificaciones' => 'admin@example.com',
-            'permitir_auto_registro' => false,
-        ];
-    }
-
-    /**
-     * Check if a string is valid JSON.
-     */
-    private function isJson($string)
-    {
-        if (!is_string($string)) {
-            return false;
-        }
-        json_decode($string);
-        return json_last_error() === JSON_ERROR_NONE;
+        // Retornar configuración actual usando el modelo
+        return Configuracion::current()->toArray();
     }
 
     /**
@@ -152,20 +96,135 @@ class ConfiguracionController extends Controller
     {
         try {
             DB::beginTransaction();
-            
-            // Eliminar todas las configuraciones
-            DB::table('configuraciones')->truncate();
-            
-            // Limpiar cache
-            Cache::forget('configuraciones_generales');
-            
+
+            // Obtener configuración actual y resetear a valores por defecto
+            $configuracion = Configuracion::current();
+            $configuracion->update([
+                'nombre_institucion' => 'Sistema de Gestión Académica',
+                'logo_institucional_path' => null,
+                'periodo_academico_default_id' => null,
+                'tolerancia_asistencia_minutos' => 10,
+                'requerir_motivo_ausencia' => false,
+                'expiracion_contrasena_dias' => 90,
+                'notificaciones_email_remitente' => null,
+            ]);
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => 'El usuario ' . auth()->id() . ' restableció los parámetros del sistema a valores por defecto',
+                'metodo' => 'POST',
+                'ruta' => route('admin.configuracion.reset'),
+                'direccion_ip' => request()->ip(),
+                'navegador' => request()->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
             DB::commit();
-            
+
             return redirect()->route('admin.configuracion.index')
-                ->with('success', 'Configuraciones restablecidas a valores por defecto.');
+                ->with('success', 'Configuración restablecida a valores por defecto.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Error al restablecer configuraciones: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * API: Obtener la configuración actual del sistema.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show()
+    {
+        try {
+            $configuracion = Configuracion::current();
+
+            return response()->json([
+                'success' => true,
+                'data' => $configuracion,
+                'message' => 'Configuración obtenida exitosamente'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener la configuración',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Actualizar la configuración del sistema.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiUpdate(Request $request)
+    {
+        // Validación de datos
+        $validator = Validator::make($request->all(), [
+            'nombre_institucion' => 'nullable|string|max:255',
+            'logo_institucional_path' => 'nullable|string|max:255',
+            'periodo_academico_default_id' => 'nullable|integer|exists:periodos_academicos,id',
+            'tolerancia_asistencia_minutos' => 'nullable|integer|min:0|max:60',
+            'requerir_motivo_ausencia' => 'nullable|boolean',
+            'expiracion_contrasena_dias' => 'nullable|integer|min:30|max:365',
+            'notificaciones_email_remitente' => 'nullable|email|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Obtener configuración actual y actualizarla
+            $configuracion = Configuracion::current();
+            $configuracion->update($request->only([
+                'nombre_institucion',
+                'logo_institucional_path',
+                'periodo_academico_default_id',
+                'tolerancia_asistencia_minutos',
+                'requerir_motivo_ausencia',
+                'expiracion_contrasena_dias',
+                'notificaciones_email_remitente',
+            ]));
+
+            // Registrar en bitácora
+            Bitacora::create([
+                'user_id' => auth()->id(),
+                'usuario' => auth()->user()->name,
+                'descripcion' => 'El usuario ' . auth()->id() . ' actualizó los parámetros generales del sistema',
+                'metodo' => 'POST',
+                'ruta' => '/api/configuraciones',
+                'direccion_ip' => $request->ip(),
+                'navegador' => $request->userAgent(),
+                'fecha_hora' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'data' => $configuracion->fresh(),
+                'message' => 'Configuración actualizada exitosamente'
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la configuración',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

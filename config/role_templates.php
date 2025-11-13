@@ -30,6 +30,7 @@ return [
                 'asistencia.ver', 'asistencia.registrar', 'asistencia.editar', 'asistencia.eliminar',
                 'reportes.ver', 'reportes.descargar',
                 'bitacora.ver',
+                'configuracion.ver', 'configuracion.editar',
             ],
         ],
 
@@ -111,5 +112,8 @@ return [
 
         // Bitácora
         'bitacora.ver',
+
+        // Configuración
+        'configuracion.ver', 'configuracion.editar',
     ],
 ];
