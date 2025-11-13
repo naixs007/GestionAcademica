@@ -119,11 +119,9 @@
                             <div class="text-center py-4">
                                 <i class="fa-solid fa-calendar-xmark fa-3x text-muted mb-3"></i>
                                 <p class="text-muted mb-2">No hay asignaciones de carga académica para este grupo.</p>
-                                @can('carga-academica.crear')
-                                    <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-primary">
-                                        <i class="fa-solid fa-plus"></i> Asignar Materia y Docente
-                                    </a>
-                                @endcan
+                                <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-primary">
+                                    <i class="fa-solid fa-plus"></i> Asignar Materia y Docente
+                                </a>
                             </div>
                         @endif
                     </div>
@@ -175,24 +173,20 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            @can('grupos.editar')
-                                <a href="{{ route('admin.grupos.edit', $grupo) }}"
-                                   class="btn btn-warning">
-                                    <i class="fa-solid fa-edit"></i> Editar Grupo
-                                </a>
-                            @endcan
+                            <a href="{{ route('admin.grupos.edit', $grupo) }}"
+                               class="btn btn-warning">
+                                <i class="fa-solid fa-edit"></i> Editar Grupo
+                            </a>
 
-                            @can('grupos.eliminar')
-                                <form action="{{ route('admin.grupos.destroy', $grupo) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('¿Está seguro de eliminar este grupo? Esta acción no se puede deshacer.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger w-100">
-                                        <i class="fa-solid fa-trash"></i> Eliminar Grupo
-                                    </button>
-                                </form>
-                            @endcan
+                            <form action="{{ route('admin.grupos.destroy', $grupo) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('¿Está seguro de eliminar este grupo? Esta acción no se puede deshacer.');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fa-solid fa-trash"></i> Eliminar Grupo
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

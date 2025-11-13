@@ -130,11 +130,9 @@
                             <div class="text-center py-3">
                                 <i class="fa-solid fa-calendar-xmark fa-2x text-muted mb-2"></i>
                                 <p class="text-muted mb-0">No hay asignaciones de carga académica para esta materia.</p>
-                                @can('carga-academica.crear')
-                                    <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-primary mt-2">
-                                        <i class="fa-solid fa-plus"></i> Asignar Docente
-                                    </a>
-                                @endcan
+                                <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-primary mt-2">
+                                    <i class="fa-solid fa-plus"></i> Asignar Docente
+                                </a>
                             </div>
                         @endif
                     </div>
@@ -233,22 +231,19 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            @can('materias.editar')
-                                <a href="{{ route('admin.materia.edit', $materia) }}"
-                                   class="btn btn-warning">
-                                    <i class="fa-solid fa-edit"></i> Editar Materia
-                                </a>
-                            @endcan
+                            <a href="{{ route('admin.materia.edit', $materia) }}"
+                               class="btn btn-warning">
+                                <i class="fa-solid fa-edit"></i> Editar Materia
+                            </a>
 
-                            @can('materias.eliminar')
-                                <form action="{{ route('admin.materia.destroy', $materia) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('¿Está seguro de eliminar esta materia? Esta acción no se puede deshacer.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="btn btn-danger w-100"
-                                            @if($materia->cargasAcademicas->count() > 0) disabled title="No se puede eliminar porque tiene asignaciones activas" @endif>
+                            <form action="{{ route('admin.materia.destroy', $materia) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('¿Está seguro de eliminar esta materia? Esta acción no se puede deshacer.');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="btn btn-danger w-100"
+                                        @if($materia->cargasAcademicas->count() > 0) disabled title="No se puede eliminar porque tiene asignaciones activas" @endif>
                                         <i class="fa-solid fa-trash"></i> Eliminar Materia
                                     </button>
                                 </form>

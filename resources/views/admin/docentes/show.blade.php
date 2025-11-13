@@ -244,31 +244,25 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            @can('docentes.editar')
-                                <a href="{{ route('admin.docentes.edit', $docente) }}" 
-                                   class="btn btn-warning">
-                                    <i class="fa-solid fa-edit"></i> Editar Docente
-                                </a>
-                            @endcan
+                            <a href="{{ route('admin.docentes.edit', $docente) }}"
+                               class="btn btn-warning">
+                                <i class="fa-solid fa-edit"></i> Editar Docente
+                            </a>
 
-                            @can('carga-academica.gestionar')
-                                <a href="{{ route('admin.carga-academica.show', $docente) }}" 
-                                   class="btn btn-info">
-                                    <i class="fa-solid fa-list-check"></i> Gestionar Carga Académica
-                                </a>
-                            @endcan
+                            <a href="{{ route('admin.carga-academica.show', $docente) }}"
+                               class="btn btn-info">
+                                <i class="fa-solid fa-list-check"></i> Gestionar Carga Académica
+                            </a>
 
-                            @can('docentes.eliminar')
-                                <form action="{{ route('admin.docentes.destroy', $docente) }}" 
-                                      method="POST"
-                                      onsubmit="return confirm('¿Está seguro de eliminar este docente? Esta acción no se puede deshacer.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger w-100">
-                                        <i class="fa-solid fa-trash"></i> Eliminar Docente
-                                    </button>
-                                </form>
-                            @endcan
+                            <form action="{{ route('admin.docentes.destroy', $docente) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('¿Está seguro de eliminar este docente? Esta acción no se puede deshacer.');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fa-solid fa-trash"></i> Eliminar Docente
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

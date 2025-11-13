@@ -17,7 +17,7 @@ return new class extends Migration
                 ->constrained('materias')
                 ->onDelete('cascade');
 
-            $table->string('diaSemana');
+            $table->json('diaSemana');
             $table->time('horaInicio');
             $table->time('horaFin');
             $table->string('modalidad');

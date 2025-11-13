@@ -1,15 +1,11 @@
 <x-admin-layout>
     <div class="container-fluid py-6">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4">
-                <i class="fa-solid fa-calendar-check text-primary"></i> Gestión de Carga Académica
-            </h2>
-            @can('carga-academica.crear')
-                <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-success">
-                    <i class="fa-solid fa-plus"></i> Asignar Carga Académica
-                </a>
-            @endcan
-        </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-list-check"></i> Asignar Carga Académica</h2>
+        <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nueva Asignación
+        </a>
+    </div>
 
         {{-- Mensajes de éxito/error --}}
         @if(session('success'))
@@ -120,21 +116,17 @@
                                         </span>
                                     </td>
                                     <td class="text-center sticky-col">
-                                        <div class="btn-group" role="group">
-                                            @can('carga-academica.ver')
-                                                <a href="{{ route('admin.carga-academica.show', $docente->id) }}"
-                                                   class="btn btn-sm btn-info"
-                                                   title="Ver detalle">
-                                                    <i class="fa-solid fa-eye"></i>
-                                                </a>
-                                            @endcan
-                                            @can('carga-academica.editar')
-                                                <a href="{{ route('admin.carga-academica.edit', $docente->id) }}"
-                                                   class="btn btn-sm btn-warning"
-                                                   title="Editar carga">
-                                                    <i class="fa-solid fa-edit"></i>
-                                                </a>
-                                            @endcan
+                                                                                <div class="btn-group" role="group">
+                                            <a href="{{ route('admin.carga-academica.show', $docente) }}"
+                                               class="btn btn-sm btn-info"
+                                               title="Ver detalles">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.carga-academica.edit', $docente) }}"
+                                               class="btn btn-sm btn-warning"
+                                               title="Editar">
+                                                <i class="fa-solid fa-edit"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>

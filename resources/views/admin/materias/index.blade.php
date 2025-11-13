@@ -1,15 +1,11 @@
 <x-admin-layout>
     <div class="container-fluid py-6">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4">
-                <i class="fa-solid fa-book text-primary"></i> Gestión de Materias
-            </h2>
-            @can('materias.crear')
-                <a href="{{ route('admin.materia.create') }}" class="btn btn-success">
-                    <i class="fa-solid fa-plus"></i> Nueva Materia
-                </a>
-            @endcan
-        </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-book"></i> Gestión de Materias</h2>
+        <a href="{{ route('admin.materia.create') }}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nueva Materia
+        </a>
+    </div>
 
         {{-- Mensajes de éxito/error --}}
         @if(session('success'))
@@ -85,38 +81,31 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <div class="btn-group" role="group">
-                                            @can('materias.ver')
-                                                <a href="{{ route('admin.materia.show', $materia) }}"
-                                                   class="btn btn-sm btn-info"
-                                                   title="Ver detalles">
-                                                    <i class="fa-solid fa-eye"></i>
-                                                </a>
-                                            @endcan
+                                                                                <div class="btn-group" role="group">
+                                            <a href="{{ route('admin.materia.show', $materia) }}"
+                                               class="btn btn-sm btn-info"
+                                               title="Ver detalles">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
 
-                                            @can('materias.editar')
-                                                <a href="{{ route('admin.materia.edit', $materia) }}"
-                                                   class="btn btn-sm btn-warning"
-                                                   title="Editar">
-                                                    <i class="fa-solid fa-edit"></i>
-                                                </a>
-                                            @endcan
+                                            <a href="{{ route('admin.materia.edit', $materia) }}"
+                                               class="btn btn-sm btn-warning"
+                                               title="Editar">
+                                                <i class="fa-solid fa-edit"></i>
+                                            </a>
 
-                                            @can('materias.eliminar')
-                                                <form action="{{ route('admin.materia.destroy', $materia) }}"
-                                                      method="POST"
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('¿Está seguro de eliminar esta materia? No se puede eliminar si tiene grupos asignados.');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-danger"
-                                                            title="Eliminar"
-                                                            @if($materia->grupos->count() > 0) disabled @endif>
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endcan
+                                            <form action="{{ route('admin.materia.destroy', $materia) }}"
+                                                  method="POST"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('¿Está seguro de eliminar esta materia?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-danger"
+                                                        title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
@@ -125,11 +114,9 @@
                                     <td colspan="6" class="text-center py-5">
                                         <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="text-muted mb-0">No hay materias registradas.</p>
-                                        @can('materias.crear')
-                                            <a href="{{ route('admin.materia.create') }}" class="btn btn-primary mt-3">
-                                                <i class="fa-solid fa-plus"></i> Registrar Primera Materia
-                                            </a>
-                                        @endcan
+                                        <a href="{{ route('admin.materia.create') }}" class="btn btn-primary mt-3">
+                                            <i class="fa-solid fa-plus"></i> Registrar Primera Materia
+                                        </a>
                                     </td>
                                 </tr>
                             @endforelse

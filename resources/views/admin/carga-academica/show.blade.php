@@ -5,11 +5,9 @@
                 <i class="fa-solid fa-eye text-info"></i> Detalle de Carga Académica
             </h2>
             <div>
-                @can('carga-academica.editar')
-                    <a href="{{ route('admin.carga-academica.edit', $docente->id) }}" class="btn btn-warning">
-                        <i class="fa-solid fa-edit"></i> Editar Carga
-                    </a>
-                @endcan
+                <a href="{{ route('admin.carga-academica.edit', $docente->id) }}" class="btn btn-warning">
+                    <i class="fa-solid fa-edit"></i> Editar Carga
+                </a>
                 <a href="{{ route('admin.carga-academica.index') }}" class="btn btn-secondary">
                     <i class="fa-solid fa-arrow-left"></i> Volver
                 </a>
@@ -31,7 +29,7 @@
                         </div>
                         <h4 class="mb-1">{{ $docente->user->name }}</h4>
                         <p class="text-muted mb-3">{{ $docente->user->email }}</p>
-                        
+
                         <div class="row text-start">
                             <div class="col-12 mb-2">
                                 <small class="text-muted">Categoría:</small>
@@ -66,21 +64,21 @@
                             $cargaTotal = $docente->materias->sum('cargaHoraria');
                             $porcentajeCarga = $docente->cargaHoraria > 0 ? ($cargaTotal / $docente->cargaHoraria) * 100 : 0;
                         @endphp
-                        
+
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="text-muted small">Materias Asignadas</span>
                                 <strong class="text-primary">{{ $materiasAsignadas }}</strong>
                             </div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="text-muted small">Carga Horaria Total</span>
                                 <strong class="text-success">{{ $cargaTotal }} hrs</strong>
                             </div>
                         </div>
-                        
+
                         <div>
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="text-muted small">Porcentaje de Carga</span>
@@ -89,30 +87,30 @@
                                 </strong>
                             </div>
                             <div class="progress" style="height: 20px;">
-                                <div class="progress-bar bg-{{ $porcentajeCarga >= 100 ? 'danger' : ($porcentajeCarga >= 75 ? 'warning' : 'success') }}" 
-                                     role="progressbar" 
+                                <div class="progress-bar bg-{{ $porcentajeCarga >= 100 ? 'danger' : ($porcentajeCarga >= 75 ? 'warning' : 'success') }}"
+                                     role="progressbar"
                                      style="width: {{ min($porcentajeCarga, 100) }}%"
-                                     aria-valuenow="{{ $porcentajeCarga }}" 
-                                     aria-valuemin="0" 
+                                     aria-valuenow="{{ $porcentajeCarga }}"
+                                     aria-valuemin="0"
                                      aria-valuemax="100">
                                     {{ number_format($porcentajeCarga, 1) }}%
                                 </div>
                             </div>
                         </div>
-                        
+
                         @if($porcentajeCarga >= 100)
                             <div class="alert alert-danger mt-3 mb-0">
-                                <i class="fa-solid fa-exclamation-triangle"></i> 
+                                <i class="fa-solid fa-exclamation-triangle"></i>
                                 <small>Carga horaria completa o excedida</small>
                             </div>
                         @elseif($porcentajeCarga >= 75)
                             <div class="alert alert-warning mt-3 mb-0">
-                                <i class="fa-solid fa-clock"></i> 
+                                <i class="fa-solid fa-clock"></i>
                                 <small>Cerca del límite de carga horaria</small>
                             </div>
                         @elseif($porcentajeCarga > 0)
                             <div class="alert alert-info mt-3 mb-0">
-                                <i class="fa-solid fa-check-circle"></i> 
+                                <i class="fa-solid fa-check-circle"></i>
                                 <small>Aún hay disponibilidad de horas</small>
                             </div>
                         @endif
@@ -142,7 +140,7 @@
                                             </span>
                                             <h5 class="mb-0">{{ $materia->nombre }}</h5>
                                         </div>
-                                        
+
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <small class="text-muted">
@@ -182,20 +180,18 @@
                                             </div>
                                         @endif
                                     </div>
-                                    
+
                                     <div class="ms-3">
-                                        @can('carga-academica.eliminar')
-                                            <form action="{{ route('admin.carga-academica.destroy', $materia->id) }}" 
-                                                  method="POST" 
-                                                  class="d-inline"
-                                                  onsubmit="return confirm('¿Está seguro de remover esta materia del docente?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Remover materia">
-                                                    <i class="fa-solid fa-times"></i>
-                                                </button>
-                                            </form>
-                                        @endcan
+                                        <form action="{{ route('admin.carga-academica.destroy', $materia->id) }}"
+                                              method="POST"
+                                              class="d-inline"
+                                              onsubmit="return confirm('¿Está seguro de remover esta materia del docente?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Remover materia">
+                                                <i class="fa-solid fa-times"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -203,11 +199,9 @@
                             <div class="text-center py-5">
                                 <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
                                 <p class="text-muted">Este docente no tiene materias asignadas.</p>
-                                @can('carga-academica.crear')
-                                    <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-primary">
-                                        <i class="fa-solid fa-plus"></i> Asignar Materias
-                                    </a>
-                                @endcan
+                                <a href="{{ route('admin.carga-academica.create') }}" class="btn btn-primary">
+                                    <i class="fa-solid fa-plus"></i> Asignar Materias
+                                </a>
                             </div>
                         @endforelse
                     </div>
@@ -270,7 +264,7 @@
             font-weight: bold;
             font-size: 2.5rem;
         }
-        
+
         .hover-bg-light:hover {
             background-color: #f8f9fa;
             transition: background-color 0.3s;

@@ -17,9 +17,13 @@ class Horario extends Model
         'modalidad',
     ];
 
-    public function materias()
+    protected $casts = [
+        'diaSemana' => 'array',
+    ];
+
+    public function materia()
     {
-        return $this->belongsTo(Materia::class);
+        return $this->belongsTo(Materia::class, 'materia_id');
     }
 
     public function asistencias()

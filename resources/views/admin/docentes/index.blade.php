@@ -1,15 +1,11 @@
 <x-admin-layout>
     <div class="container-fluid py-6">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4">
-                <i class="fa-solid fa-chalkboard-user text-primary"></i> Gestión de Docentes
-            </h2>
-            @can('docentes.crear')
-                <a href="{{ route('admin.docentes.create') }}" class="btn btn-success">
-                    <i class="fa-solid fa-plus"></i> Nuevo Docente
-                </a>
-            @endcan
-        </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-chalkboard-user"></i> Gestión de Docentes</h2>
+        <a href="{{ route('admin.docentes.create') }}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nuevo Docente
+        </a>
+    </div>
 
         {{-- Mensajes de éxito/error --}}
         @if(session('success'))
@@ -96,36 +92,30 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
-                                            @can('docentes.ver')
-                                                <a href="{{ route('admin.docentes.show', $docente) }}"
-                                                   class="btn btn-sm btn-info"
-                                                   title="Ver detalles">
-                                                    <i class="fa-solid fa-eye"></i>
-                                                </a>
-                                            @endcan
+                                            <a href="{{ route('admin.docentes.show', $docente) }}"
+                                               class="btn btn-sm btn-info"
+                                               title="Ver detalles">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
 
-                                            @can('docentes.editar')
-                                                <a href="{{ route('admin.docentes.edit', $docente) }}"
-                                                   class="btn btn-sm btn-warning"
-                                                   title="Editar">
-                                                    <i class="fa-solid fa-edit"></i>
-                                                </a>
-                                            @endcan
+                                            <a href="{{ route('admin.docentes.edit', $docente) }}"
+                                               class="btn btn-sm btn-warning"
+                                               title="Editar">
+                                                <i class="fa-solid fa-edit"></i>
+                                            </a>
 
-                                            @can('docentes.eliminar')
-                                                <form action="{{ route('admin.docentes.destroy', $docente) }}"
-                                                      method="POST"
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('¿Está seguro de eliminar este docente?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-danger"
-                                                            title="Eliminar">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endcan
+                                            <form action="{{ route('admin.docentes.destroy', $docente) }}"
+                                                  method="POST"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('¿Está seguro de eliminar este docente?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-danger"
+                                                        title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
@@ -134,11 +124,9 @@
                                     <td colspan="8" class="text-center py-5">
                                         <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="text-muted mb-0">No hay docentes registrados.</p>
-                                        @can('docentes.crear')
-                                            <a href="{{ route('admin.docentes.create') }}" class="btn btn-primary mt-3">
-                                                <i class="fa-solid fa-plus"></i> Registrar Primer Docente
-                                            </a>
-                                        @endcan
+                                        <a href="{{ route('admin.docentes.create') }}" class="btn btn-primary mt-3">
+                                            <i class="fa-solid fa-plus"></i> Registrar Primer Docente
+                                        </a>
                                     </td>
                                 </tr>
                             @endforelse

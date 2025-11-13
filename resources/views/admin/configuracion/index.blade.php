@@ -1,15 +1,11 @@
 <x-admin-layout>
     <div class="container-fluid py-6">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4">
-                <i class="fa-solid fa-cog text-primary"></i> Configuración del Sistema
-            </h2>
-            @can('configuracion.editar')
-                <a href="{{ route('admin.configuracion.edit') }}" class="btn btn-primary">
-                    <i class="fa-solid fa-edit"></i> Editar Configuración
-                </a>
-            @endcan
-        </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-gear"></i> Configurar Parámetros Generales</h2>
+        <a href="{{ route('admin.configuracion.edit') }}" class="btn btn-primary">
+            <i class="fa-solid fa-edit"></i> Editar Configuración
+        </a>
+    </div>
 
         {{-- Mensajes de éxito --}}
         @if(session('success'))
@@ -202,17 +198,16 @@
         </div>
 
         {{-- Acciones Adicionales --}}
-        @can('configuracion.editar')
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card shadow-sm border-danger">
-                        <div class="card-header bg-danger text-white">
-                            <h6 class="mb-0">
-                                <i class="fa-solid fa-triangle-exclamation"></i> Zona de Peligro
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h6 class="mb-0">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Zona de Peligro
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="mb-1">Restablecer Configuración</h6>
                                     <p class="text-muted mb-0 small">
@@ -232,6 +227,6 @@
                     </div>
                 </div>
             </div>
-        @endcan
+        </div>
     </div>
 </x-admin-layout>

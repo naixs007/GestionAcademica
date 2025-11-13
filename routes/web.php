@@ -101,20 +101,15 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     Route::put('configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
     Route::post('configuracion/reset', [ConfiguracionController::class, 'reset'])->name('configuracion.reset');
 
-    // Horario (Temporal)
-    // Route::resource('horario', HorarioController::class)->names('horario'); // RUTA ORIGINAL
-    Route::get('horario', function() {
-        return "Ruta: admin.horario.index (Listado de Horarios) - OK";
-    })->name('horario.index');
-    Route::get('horario/create', function() {
-        return "Ruta: admin.horario.create (Formulario de Horario) - OK";
-    })->name('horario.create');
+    // Horario (Resource completo)
+    Route::resource('horario', HorarioController::class)
+        ->parameters(['horario' => 'horario'])
+        ->names('horario');
 
-    // Aula (Temporal)
-    // Route::resource('aula', AulaController::class)->names('aula'); // RUTA ORIGINAL
-    Route::get('aula', function() {
-        return "Ruta: admin.aula.index (Listado de Aulas) - OK";
-    })->name('aula.index');
+    // Aula (Resource completo)
+    Route::resource('aula', AulaController::class)
+        ->parameters(['aula' => 'aula'])
+        ->names('aula');
 
     // 3. REPORTE (Temporal)
     // Route::get('reporte', [ReporteController::class, 'index'])->name('reporte.index'); // RUTA ORIGINAL

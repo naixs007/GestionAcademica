@@ -1,15 +1,11 @@
 <x-admin-layout>
     <div class="container-fluid py-6">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4">
-                <i class="fa-solid fa-users-rectangle text-primary"></i> Gestión de Grupos
-            </h2>
-            @can('grupos.crear')
-                <a href="{{ route('admin.grupos.create') }}" class="btn btn-success">
-                    <i class="fa-solid fa-plus"></i> Nuevo Grupo
-                </a>
-            @endcan
-        </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-users-rectangle"></i> Gestión de Grupos</h2>
+        <a href="{{ route('admin.grupos.create') }}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Nuevo Grupo
+        </a>
+    </div>
 
         {{-- Mensajes de éxito/error --}}
         @if(session('success'))
@@ -83,36 +79,30 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
-                                            @can('grupos.ver')
-                                                <a href="{{ route('admin.grupos.show', $grupo) }}"
-                                                   class="btn btn-sm btn-info"
-                                                   title="Ver detalles">
-                                                    <i class="fa-solid fa-eye"></i>
-                                                </a>
-                                            @endcan
+                                            <a href="{{ route('admin.grupos.show', $grupo) }}"
+                                               class="btn btn-sm btn-info"
+                                               title="Ver detalles">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
 
-                                            @can('grupos.editar')
-                                                <a href="{{ route('admin.grupos.edit', $grupo) }}"
-                                                   class="btn btn-sm btn-warning"
-                                                   title="Editar">
-                                                    <i class="fa-solid fa-edit"></i>
-                                                </a>
-                                            @endcan
+                                            <a href="{{ route('admin.grupos.edit', $grupo) }}"
+                                               class="btn btn-sm btn-warning"
+                                               title="Editar">
+                                                <i class="fa-solid fa-edit"></i>
+                                            </a>
 
-                                            @can('grupos.eliminar')
-                                                <form action="{{ route('admin.grupos.destroy', $grupo) }}"
-                                                      method="POST"
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('¿Está seguro de eliminar este grupo?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-danger"
-                                                            title="Eliminar">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endcan
+                                            <form action="{{ route('admin.grupos.destroy', $grupo) }}"
+                                                  method="POST"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('¿Está seguro de eliminar este grupo?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-danger"
+                                                        title="Eliminar">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
@@ -121,11 +111,9 @@
                                     <td colspan="5" class="text-center py-5">
                                         <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="text-muted mb-0">No hay grupos registrados.</p>
-                                        @can('grupos.crear')
-                                            <a href="{{ route('admin.grupos.create') }}" class="btn btn-primary mt-3">
-                                                <i class="fa-solid fa-plus"></i> Registrar Primer Grupo
-                                            </a>
-                                        @endcan
+                                        <a href="{{ route('admin.grupos.create') }}" class="btn btn-primary mt-3">
+                                            <i class="fa-solid fa-plus"></i> Registrar Primer Grupo
+                                        </a>
                                     </td>
                                 </tr>
                                     </td>
