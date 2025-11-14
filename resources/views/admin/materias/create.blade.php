@@ -95,34 +95,34 @@
                                                 class="form-select @error('nivel') is-invalid @enderror"
                                                 required>
                                             <option value="">Seleccione un nivel</option>
-                                            <option value="1er Semestre" {{ old('nivel') == '1er Semestre' ? 'selected' : '' }}>
+                                            <option value="1" {{ old('nivel') == '1' ? 'selected' : '' }}>
                                                 1er Semestre
                                             </option>
-                                            <option value="2do Semestre" {{ old('nivel') == '2do Semestre' ? 'selected' : '' }}>
+                                            <option value="2" {{ old('nivel') == '2' ? 'selected' : '' }}>
                                                 2do Semestre
                                             </option>
-                                            <option value="3er Semestre" {{ old('nivel') == '3er Semestre' ? 'selected' : '' }}>
+                                            <option value="3" {{ old('nivel') == '3' ? 'selected' : '' }}>
                                                 3er Semestre
                                             </option>
-                                            <option value="4to Semestre" {{ old('nivel') == '4to Semestre' ? 'selected' : '' }}>
+                                            <option value="4" {{ old('nivel') == '4' ? 'selected' : '' }}>
                                                 4to Semestre
                                             </option>
-                                            <option value="5to Semestre" {{ old('nivel') == '5to Semestre' ? 'selected' : '' }}>
+                                            <option value="5" {{ old('nivel') == '5' ? 'selected' : '' }}>
                                                 5to Semestre
                                             </option>
-                                            <option value="6to Semestre" {{ old('nivel') == '6to Semestre' ? 'selected' : '' }}>
+                                            <option value="6" {{ old('nivel') == '6' ? 'selected' : '' }}>
                                                 6to Semestre
                                             </option>
-                                            <option value="7mo Semestre" {{ old('nivel') == '7mo Semestre' ? 'selected' : '' }}>
+                                            <option value="7" {{ old('nivel') == '7' ? 'selected' : '' }}>
                                                 7mo Semestre
                                             </option>
-                                            <option value="8vo Semestre" {{ old('nivel') == '8vo Semestre' ? 'selected' : '' }}>
+                                            <option value="8" {{ old('nivel') == '8' ? 'selected' : '' }}>
                                                 8vo Semestre
                                             </option>
-                                            <option value="9no Semestre" {{ old('nivel') == '9no Semestre' ? 'selected' : '' }}>
+                                            <option value="9" {{ old('nivel') == '9' ? 'selected' : '' }}>
                                                 9no Semestre
                                             </option>
-                                            <option value="10mo Semestre" {{ old('nivel') == '10mo Semestre' ? 'selected' : '' }}>
+                                            <option value="10" {{ old('nivel') == '10' ? 'selected' : '' }}>
                                                 10mo Semestre
                                             </option>
                                         </select>

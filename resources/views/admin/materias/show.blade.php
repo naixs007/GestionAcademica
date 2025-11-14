@@ -50,7 +50,7 @@
                                     <i class="fa-solid fa-layer-group"></i> Nivel / Semestre
                                 </label>
                                 <p class="mb-0">
-                                    <span class="badge bg-secondary fs-6">{{ $materia->nivel }}</span>
+                                    <span class="badge bg-secondary fs-6">{{ $materia->nivel_texto }}</span>
                                 </p>
                             </div>
                             <div class="col-md-6 mb-3">

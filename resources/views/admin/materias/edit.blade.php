@@ -95,18 +95,18 @@
                                                     <option value="">Seleccione un nivel</option>
                                                     @for($i = 1; $i <= 10; $i++)
                                                         @php
-                                                            $nivel = match($i) {
+                                                            $nivelTexto = match($i) {
                                                                 1 => '1er Semestre',
                                                                 2 => '2do Semestre',
                                                                 3 => '3er Semestre',
+                                                                9 => '9no Semestre',
+                                                                10 => '10mo Semestre',
                                                                 default => $i . 'to Semestre'
                                                             };
-                                                            if ($i == 9) $nivel = '9no Semestre';
-                                                            if ($i == 10) $nivel = '10mo Semestre';
                                                         @endphp
-                                                        <option value="{{ $nivel }}"
-                                                                {{ old('nivel', $materia->nivel) == $nivel ? 'selected' : '' }}>
-                                                            {{ $nivel }}
+                                                        <option value="{{ $i }}"
+                                                                {{ old('nivel', $materia->nivel) == $i ? 'selected' : '' }}>
+                                                            {{ $nivelTexto }}
                                                         </option>
                                                     @endfor
                                                 </select>

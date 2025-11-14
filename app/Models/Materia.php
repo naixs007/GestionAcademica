@@ -16,6 +16,21 @@ class Materia extends Model
         'nivel',
     ];
 
+    /**
+     * Accessor para obtener el nivel en formato texto
+     */
+    public function getNivelTextoAttribute()
+    {
+        return match($this->nivel) {
+            1 => '1er Semestre',
+            2 => '2do Semestre',
+            3 => '3er Semestre',
+            9 => '9no Semestre',
+            10 => '10mo Semestre',
+            default => $this->nivel . 'to Semestre'
+        };
+    }
+
     // Relación muchos a muchos con Docentes a través de carga_academica
     public function docentes()
     {

@@ -58,7 +58,7 @@ class MateriaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.materias.index')
+            return redirect()->route('admin.materia.index')
                 ->with('success', 'Materia registrada exitosamente.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -116,7 +116,7 @@ class MateriaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.materias.index')
+            return redirect()->route('admin.materia.index')
                 ->with('success', 'Materia actualizada exitosamente.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -158,7 +158,7 @@ class MateriaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.materias.index')
+            return redirect()->route('admin.materia.index')
                 ->with('success', 'Materia eliminada exitosamente.');
         } catch (\Exception $e) {
             DB::rollBack();

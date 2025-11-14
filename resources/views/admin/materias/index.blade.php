@@ -68,7 +68,7 @@
                                         <strong>{{ $materia->nombre }}</strong>
                                     </td>
                                     <td>
-                                        <span class="badge bg-secondary">{{ $materia->nivel }}</span>
+                                        <span class="badge bg-secondary">{{ $materia->nivel_texto }}</span>
                                     </td>
                                     <td>
                                         <span class="badge bg-info">

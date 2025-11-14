@@ -13,13 +13,9 @@ return new class extends Migration
     {
         Schema::create('materias', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('docente_id')
-                ->constrained('docentes')
-                ->onDelete('cascade');
-
-            $table->string('nombre');
-            $table->string('codigo');
-            $table->char('nivel');
+            $table->string('nombre', 150);
+            $table->string('codigo', 20)->unique();
+            $table->integer('nivel');
             $table->integer('cargaHoraria');
             $table->timestamps();
         });
