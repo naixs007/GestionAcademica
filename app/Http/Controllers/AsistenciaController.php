@@ -5,17 +5,45 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Asistencia;
 use App\Models\Docente;
-use App\Models\Horario;
+use App\Models\Materia;
+use App\Models\Grupo;
+use App\Models\CargaAcademica;
+use Illuminate\Support\Facades\DB;
 
 class AsistenciaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $asistencias = Asistencia::orderByDesc('fecha')->paginate(15);
-        return view('admin.asistencia.index', compact('asistencias'));
+        $query = Asistencia::with(['docente.user', 'materia', 'grupo'])
+            ->orderByDesc('fecha')
+            ->orderByDesc('created_at');
+
+        // Filtros
+        if ($request->filled('fecha_desde')) {
+            $query->where('fecha', '>=', $request->fecha_desde);
+        }
+
+        if ($request->filled('fecha_hasta')) {
+            $query->where('fecha', '<=', $request->fecha_hasta);
+        }
+
+        if ($request->filled('docente_id')) {
+            $query->where('docente_id', $request->docente_id);
+        }
+
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        $asistencias = $query->paginate(20)->withQueryString();
+
+        // Para los filtros
+        $docentes = Docente::with('user')->orderBy('id')->get();
+
+        return view('admin.asistencia.index', compact('asistencias', 'docentes'));
     }
 
     /**
@@ -23,10 +51,26 @@ class AsistenciaController extends Controller
      */
     public function create()
     {
-        $docentes = Docente::with('user')->orderBy('id')->get();
-        $horarios = Horario::orderBy('id')->get();
+        // Obtener todas las cargas académicas con sus relaciones
+        $cargasAcademicas = CargaAcademica::with([
+            'docente.user',
+            'materia',
+            'grupo',
+            'horario',
+            'aula'
+        ])
+            ->orderBy('docente_id')
+            ->get();
 
-        return view('admin.asistencia.create', compact('docentes','horarios'));
+        // Agrupar por docente para facilitar la selección
+        $docentesConCargas = $cargasAcademicas->groupBy('docente_id')->map(function($cargas) {
+            return [
+                'docente' => $cargas->first()->docente,
+                'cargas' => $cargas
+            ];
+        });
+
+        return view('admin.asistencia.create', compact('docentesConCargas'));
     }
 
     /**
@@ -34,71 +78,102 @@ class AsistenciaController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'docente_id' => ['required','integer','exists:docentes,id'],
-            'horario_id' => ['required','integer','exists:horarios,id'],
-            'fecha' => ['required','date'],
-            'asistio' => ['required','in:0,1'],
-            'observaciones' => ['nullable','string'],
+        $validated = $request->validate([
+            'carga_academica_id' => ['required', 'integer', 'exists:carga_academica,id'],
+            'fecha' => ['required', 'date'],
+            'estado' => ['required', 'in:Presente,Ausente,Justificado,Tardanza'],
+            'hora_llegada' => ['nullable', 'date_format:H:i'],
+            'observaciones' => ['nullable', 'string', 'max:500'],
         ]);
 
+        // Obtener la carga académica
+        $carga = CargaAcademica::findOrFail($validated['carga_academica_id']);
+
+        // Verificar que no exista ya un registro para este docente, materia, grupo y fecha
+        $existe = Asistencia::where('docente_id', $carga->docente_id)
+            ->where('materia_id', $carga->materia_id)
+            ->where('grupo_id', $carga->grupo_id)
+            ->where('fecha', $validated['fecha'])
+            ->exists();
+
+        if ($existe) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Ya existe un registro de asistencia para este docente, materia, grupo y fecha.');
+        }
+
+        // Crear la asistencia
         Asistencia::create([
-            'docente_id' => $data['docente_id'],
-            'horario_id' => $data['horario_id'],
-            'estado' => $data['asistio'],
-            'fecha' => $data['fecha'],
-            'observaciones' => $data['observaciones'] ?? null,
+            'docente_id' => $carga->docente_id,
+            'materia_id' => $carga->materia_id,
+            'grupo_id' => $carga->grupo_id,
+            'horario_id' => $carga->horario_id,
+            'fecha' => $validated['fecha'],
+            'estado' => $validated['estado'],
+            'hora_llegada' => $validated['hora_llegada'],
+            'observaciones' => $validated['observaciones'],
         ]);
 
-        return redirect()->route('admin.asistencia.index')->with('status', 'Asistencia registrada.');
+        return redirect()->route('admin.asistencia.index')
+            ->with('success', 'Asistencia registrada exitosamente.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Asistencia $asistencia)
     {
-        $asistencia = Asistencia::findOrFail($id);
+        $asistencia->load(['docente.user', 'materia', 'grupo', 'horario']);
         return view('admin.asistencia.show', compact('asistencia'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Asistencia $asistencia)
     {
-        $asistencia = Asistencia::findOrFail($id);
+        $asistencia->load(['docente.user', 'materia', 'grupo', 'horario']);
         return view('admin.asistencia.edit', compact('asistencia'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Asistencia $asistencia)
     {
-        $data = $request->validate([
-            'fecha' => ['required','date'],
-            'asistio' => ['required','in:0,1'],
-            'observaciones' => ['nullable','string'],
+        $validated = $request->validate([
+            'fecha' => ['required', 'date'],
+            'estado' => ['required', 'in:Presente,Ausente,Justificado,Tardanza'],
+            'hora_llegada' => ['nullable', 'date_format:H:i'],
+            'observaciones' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $asistencia = Asistencia::findOrFail($id);
-        $asistencia->update([
-            'estado' => $data['asistio'],
-            'fecha' => $data['fecha'],
-            'observaciones' => $data['observaciones'] ?? null,
-        ]);
+        $asistencia->update($validated);
 
-        return redirect()->route('admin.asistencia.index')->with('status', 'Asistencia actualizada.');
+        return redirect()->route('admin.asistencia.index')
+            ->with('success', 'Asistencia actualizada exitosamente.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Asistencia $asistencia)
     {
-        $asistencia = Asistencia::findOrFail($id);
         $asistencia->delete();
-        return redirect()->route('admin.asistencia.index')->with('status', 'Asistencia eliminada.');
+
+        return redirect()->route('admin.asistencia.index')
+            ->with('success', 'Asistencia eliminada exitosamente.');
+    }
+
+    /**
+     * Obtener las materias de un docente vía AJAX
+     */
+    public function getMateriasByDocente($docenteId)
+    {
+        $cargas = CargaAcademica::with(['materia', 'grupo', 'horario', 'aula'])
+            ->where('docente_id', $docenteId)
+            ->get();
+
+        return response()->json($cargas);
     }
 }

@@ -133,20 +133,28 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     });
 
     // 3. ASISTENCIA (Todos los roles autenticados pueden ver, solo Admin/Decano pueden crear)
-    Route::get('asistencia', [AsistenciaController::class, 'index'])->name('asistencia.index');
-    Route::get('asistencia/{asistencia}', [AsistenciaController::class, 'show'])->name('asistencia.show');
 
+    // Rutas protegidas primero (antes de las rutas con parámetros dinámicos)
     Route::middleware('role:admin,super-admin,decano')->group(function () {
         Route::get('asistencia/create', [AsistenciaController::class, 'create'])->name('asistencia.create');
         Route::post('asistencia', [AsistenciaController::class, 'store'])->name('asistencia.store');
-        Route::get('asistencia/{asistencia}/edit', [AsistenciaController::class, 'edit'])->name('asistencia.edit');
-        Route::put('asistencia/{asistencia}', [AsistenciaController::class, 'update'])->name('asistencia.update');
-        Route::delete('asistencia/{asistencia}', [AsistenciaController::class, 'destroy'])->name('asistencia.destroy');
+
+        // Ruta AJAX para obtener materias por docente
+        Route::get('asistencia/get-materias/{docente}', [AsistenciaController::class, 'getMateriasByDocente'])
+            ->name('asistencia.get-materias');
 
         Route::get('asistencia/propia', function() {
             return "Ruta: admin.asistencia.propia (Asistencia Propia) - OK";
         })->name('asistencia.propia');
+
+        Route::get('asistencia/{asistencia}/edit', [AsistenciaController::class, 'edit'])->name('asistencia.edit');
+        Route::put('asistencia/{asistencia}', [AsistenciaController::class, 'update'])->name('asistencia.update');
+        Route::delete('asistencia/{asistencia}', [AsistenciaController::class, 'destroy'])->name('asistencia.destroy');
     });
+
+    // Rutas públicas (para todos los roles autenticados)
+    Route::get('asistencia', [AsistenciaController::class, 'index'])->name('asistencia.index');
+    Route::get('asistencia/{asistencia}', [AsistenciaController::class, 'show'])->name('asistencia.show');
 });
 
 
