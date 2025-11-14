@@ -109,7 +109,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
 
         // Carga Académica (Gestión de asignación de materias a docentes)
         Route::resource('carga-academica', CargaAcademicaController::class)
-            ->parameters(['carga-academica' => 'docente'])
+            ->parameters(['carga-academica' => 'cargaAcademica'])
             ->names('carga-academica');
 
         // Horario (Resource completo)

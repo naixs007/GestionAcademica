@@ -34,7 +34,7 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:100',
-            'capacidad' => 'required|integer|min:1|max:100',
+            'cupo_maximo' => 'required|integer|min:1|max:120',
         ]);
 
         try {
@@ -46,7 +46,7 @@ class GrupoController extends Controller
             Bitacora::create([
                 'user_id' => auth()->id(),
                 'usuario' => auth()->user()->name,
-                'descripcion' => "Creó el grupo '{$grupo->nombre}' con capacidad de {$grupo->capacidad} estudiantes",
+                'descripcion' => "Creó el grupo '{$grupo->nombre}' con cupo máximo de {$grupo->cupo_maximo} estudiantes",
                 'metodo' => 'POST',
                 'ruta' => request()->path(),
                 'direccion_ip' => request()->ip(),
@@ -89,21 +89,21 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:100',
-            'capacidad' => 'required|integer|min:1|max:100',
+            'cupo_maximo' => 'required|integer|min:1|max:120',
         ]);
 
         try {
             DB::beginTransaction();
 
             $oldNombre = $grupo->nombre;
-            $oldCapacidad = $grupo->capacidad;
+            $oldCupoMaximo = $grupo->cupo_maximo;
             $grupo->update($validated);
 
             // Registrar en bitácora
             Bitacora::create([
                 'user_id' => auth()->id(),
                 'usuario' => auth()->user()->name,
-                'descripcion' => "Actualizó el grupo '{$oldNombre}' a '{$grupo->nombre}' (Capacidad: {$oldCapacidad} → {$grupo->capacidad} estudiantes)",
+                'descripcion' => "Actualizó el grupo '{$oldNombre}' a '{$grupo->nombre}' (Cupo máximo: {$oldCupoMaximo} → {$grupo->cupo_maximo} estudiantes)",
                 'metodo' => 'PUT',
                 'ruta' => request()->path(),
                 'direccion_ip' => request()->ip(),
@@ -137,7 +137,7 @@ class GrupoController extends Controller
 
             // Capturar datos antes de eliminar
             $nombreGrupo = $grupo->nombre;
-            $capacidadGrupo = $grupo->capacidad;
+            $cupoMaximoGrupo = $grupo->cupo_maximo;
 
             $grupo->delete();
 
@@ -145,7 +145,7 @@ class GrupoController extends Controller
             Bitacora::create([
                 'user_id' => auth()->id(),
                 'usuario' => auth()->user()->name,
-                'descripcion' => "Eliminó el grupo '{$nombreGrupo}' (Capacidad: {$capacidadGrupo} estudiantes)",
+                'descripcion' => "Eliminó el grupo '{$nombreGrupo}' (Cupo máximo: {$cupoMaximoGrupo} estudiantes)",
                 'metodo' => 'DELETE',
                 'ruta' => request()->path(),
                 'direccion_ip' => request()->ip(),

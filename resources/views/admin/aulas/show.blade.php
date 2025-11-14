@@ -22,19 +22,23 @@
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <strong><i class="fa-solid fa-signature"></i> Nombre:</strong>
-                                <p class="mb-0 h4">{{ $aula->nombre }}</p>
+                                <strong><i class="fa-solid fa-signature"></i> Código:</strong>
+                                <p class="mb-0 h4">{{ $aula->codigo }}</p>
                             </div>
                             <div class="col-md-6">
                                 <strong><i class="fa-solid fa-tags"></i> Tipo:</strong>
                                 <p class="mb-0">
-                                    @if ($aula->tipo === 'aula')
+                                    @if ($aula->tipo === 'Presencial')
                                         <span class="badge bg-primary fs-6">
-                                            <i class="fa-solid fa-chalkboard"></i> Aula
+                                            <i class="fa-solid fa-chalkboard"></i> Presencial
                                         </span>
-                                    @else
+                                    @elseif ($aula->tipo === 'Laboratorio')
                                         <span class="badge bg-info fs-6">
                                             <i class="fa-solid fa-flask"></i> Laboratorio
+                                        </span>
+                                    @else
+                                        <span class="badge bg-success fs-6">
+                                            <i class="fa-solid fa-laptop"></i> Virtual
                                         </span>
                                     @endif
                                 </p>

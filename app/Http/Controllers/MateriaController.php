@@ -35,6 +35,7 @@ class MateriaController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:150',
             'codigo' => 'required|string|max:20|unique:materias,codigo',
+            'sigla' => 'required|string|max:20',
             'nivel' => 'required|integer|min:1|max:10',
             'cargaHoraria' => 'required|integer|min:1|max:20',
         ]);
@@ -92,6 +93,7 @@ class MateriaController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:150',
             'codigo' => 'required|string|max:20|unique:materias,codigo,' . $materia->id,
+            'sigla' => 'required|string|max:20',
             'nivel' => 'required|integer|min:1|max:10',
             'cargaHoraria' => 'required|integer|min:1|max:20',
         ]);

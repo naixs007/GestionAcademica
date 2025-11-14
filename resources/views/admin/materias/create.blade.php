@@ -43,7 +43,7 @@
                                     <div class="mb-4">
                                         <label for="codigo" class="form-label">
                                             <i class="fa-solid fa-barcode text-primary"></i>
-                                            <strong>Código de la Materia</strong> <span class="text-danger">*</span>
+                                            <strong>Código/Sigla de la Materia</strong> <span class="text-danger">*</span>
                                         </label>
                                         <input type="text"
                                                name="codigo"
@@ -53,6 +53,7 @@
                                                maxlength="20"
                                                placeholder="Ej: MAT-101"
                                                required>
+                                        <input type="hidden" name="sigla" id="sigla" value="{{ old('codigo') }}">
                                         @error('codigo')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -211,4 +212,11 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Sincronizar código con sigla automáticamente
+        document.getElementById('codigo').addEventListener('input', function() {
+            document.getElementById('sigla').value = this.value;
+        });
+    </script>
 </x-admin-layout>

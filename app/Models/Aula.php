@@ -10,13 +10,21 @@ class Aula extends Model
     use HasFactory;
     protected $table = 'aulas';
     protected $fillable = [
-        'nombre',
+        'codigo',
         'capacidad',
         'tipo',
     ];
 
+    // Relación con asignaciones de carga académica
+    public function cargasAcademicas()
+    {
+        return $this->hasMany(CargaAcademica::class);
+    }
+
+    // Relación indirecta con materias a través de carga_academica
     public function materias()
     {
-        return $this->belongsToMany(Materia::class, 'materia_aula', 'aula_id', 'materia_id');
+        return $this->belongsToMany(Materia::class, 'carga_academica', 'aula_id', 'materia_id')
+            ->withTimestamps();
     }
 }

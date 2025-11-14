@@ -21,62 +21,35 @@
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <strong><i class="fa-solid fa-book"></i> Materia:</strong>
-                                <p class="mb-0">{{ $horario->materia->nombre ?? 'N/A' }}</p>
-                                <small class="text-muted">Código: {{ $horario->materia->codigo ?? 'N/A' }}</small>
-                            </div>
-                            <div class="col-md-6">
                                 <strong><i class="fa-solid fa-calendar-day"></i> Días de la Semana:</strong>
                                 <p class="mb-0">
-                                    @if (is_array($horario->diaSemana))
-                                        @foreach ($horario->diaSemana as $dia)
-                                            <span class="badge bg-primary me-1">{{ $dia }}</span>
+                                    @if(isset($horario->dias_relacionados) && count($horario->dias_relacionados) > 0)
+                                        @foreach($horario->dias_relacionados as $dia)
+                                            <span class="badge bg-primary fs-6 me-1">{{ $dia }}</span>
                                         @endforeach
                                     @else
-                                        <span class="badge bg-primary">{{ $horario->diaSemana }}</span>
+                                        <span class="badge bg-primary fs-6">{{ $horario->dia_semana }}</span>
                                     @endif
                                 </p>
                             </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <strong><i class="fa-solid fa-clock"></i> Hora de Inicio:</strong>
-                                <p class="mb-0">{{ \Carbon\Carbon::parse($horario->horaInicio)->format('H:i') }}</p>
-                            </div>
-                            <div class="col-md-4">
-                                <strong><i class="fa-solid fa-clock"></i> Hora de Fin:</strong>
-                                <p class="mb-0">{{ \Carbon\Carbon::parse($horario->horaFin)->format('H:i') }}</p>
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <strong><i class="fa-solid fa-hourglass"></i> Duración:</strong>
                                 <p class="mb-0">
-                                    {{ \Carbon\Carbon::parse($horario->horaInicio)->diffInMinutes(\Carbon\Carbon::parse($horario->horaFin)) }}
-                                    minutos
+                                    <span class="badge bg-info fs-6">
+                                        {{ $horario->duracion_formateada }}
+                                    </span>
                                 </p>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <strong><i class="fa-solid fa-chalkboard"></i> Modalidad:</strong>
-                                <p class="mb-0">
-                                    @if ($horario->modalidad === 'presencial')
-                                        <span class="badge bg-primary">
-                                            <i class="fa-solid fa-building"></i> Presencial
-                                        </span>
-                                    @else
-                                        <span class="badge bg-info">
-                                            <i class="fa-solid fa-laptop"></i> Virtual
-                                        </span>
-                                    @endif
-                                </p>
+                                <strong><i class="fa-solid fa-clock"></i> Hora de Inicio:</strong>
+                                <p class="mb-0 h5">{{ $horario->hora_inicio }}</p>
                             </div>
                             <div class="col-md-6">
-                                <strong><i class="fa-solid fa-calendar-check"></i> Asistencias Registradas:</strong>
-                                <p class="mb-0">
-                                    <span class="badge bg-secondary">{{ $horario->asistencias->count() }}</span>
-                                </p>
+                                <strong><i class="fa-solid fa-clock"></i> Hora de Fin:</strong>
+                                <p class="mb-0 h5">{{ $horario->hora_fin }}</p>
                             </div>
                         </div>
 
@@ -92,48 +65,6 @@
                         </div>
                     </div>
                 </div>
-
-                @if ($horario->asistencias->count() > 0)
-                    <div class="card mt-3">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="fa-solid fa-list"></i> Asistencias Registradas</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-sm table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Fecha</th>
-                                            <th>Docente</th>
-                                            <th>Estado</th>
-                                            <th>Observaciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($horario->asistencias->take(10) as $asistencia)
-                                            <tr>
-                                                <td>{{ $asistencia->fecha->format('d/m/Y') }}</td>
-                                                <td>{{ $asistencia->docente->user->name ?? 'N/A' }}</td>
-                                                <td>
-                                                    <span
-                                                        class="badge {{ $asistencia->estadoAsistencia === 'presente' ? 'bg-success' : 'bg-danger' }}">
-                                                        {{ ucfirst($asistencia->estadoAsistencia) }}
-                                                    </span>
-                                                </td>
-                                                <td>{{ $asistencia->observaciones ?? '-' }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            @if ($horario->asistencias->count() > 10)
-                                <p class="text-muted text-center mb-0">
-                                    Mostrando 10 de {{ $horario->asistencias->count() }} asistencias registradas
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                @endif
             </div>
 
             <div class="col-md-4">
