@@ -4,7 +4,7 @@
             <h2 class="h4">
                 <i class="fa-solid fa-file-lines text-primary"></i> Bitácora de Acciones
             </h2>
-            <form method="GET" class="d-flex" action="{{ route('bitacora.index') }}">
+            <form method="GET" class="d-flex" action="{{ route('admin.bitacora.index') }}">
                 <input type="text" name="action" class="form-control me-2" placeholder="Filtrar por acción o usuario" value="{{ request('action') }}">
                 <button class="btn btn-outline-secondary">
                     <i class="fa-solid fa-filter"></i> Filtrar

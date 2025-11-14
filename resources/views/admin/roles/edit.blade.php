@@ -46,7 +46,7 @@
                                 <label class="form-label fw-bold">
                                     <i class="fa-solid fa-tag"></i> Nombre del Rol <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
+                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                        value="{{ old('name', $role->name) }}" required placeholder="Ej: Coordinador">
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -91,7 +91,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            @php 
+                            @php
                                 $assigned = $role->permissions->pluck('id')->toArray();
                                 $allPermissions = \Spatie\Permission\Models\Permission::orderBy('name')->get();
                                 $groupedPermissions = $allPermissions->groupBy(function($perm) {
@@ -122,7 +122,7 @@
                                             </h6>
                                             @foreach($permissions as $perm)
                                                 <div class="form-check mb-2">
-                                                    <input type="checkbox" name="permissions[]" value="{{ $perm->id }}" 
+                                                    <input type="checkbox" name="permissions[]" value="{{ $perm->id }}"
                                                            id="perm-{{ $perm->id }}" class="form-check-input permission-checkbox"
                                                            {{ in_array($perm->id, old('permissions', $assigned)) ? 'checked' : '' }}>
                                                     <label for="perm-{{ $perm->id }}" class="form-check-label">

@@ -48,13 +48,13 @@ class UserController extends Controller
     {
         $currentUser = Auth::user();
         $user->load('roles', 'permissions');
-        
+
         // Determinar qué campos mostrar según el rol del usuario actual
         // Admin/Super-admin ven todo
         $canViewFull = $currentUser->hasAnyRole(['admin', 'super-admin']);
         // Decano ve nombre, correo, teléfono y estado
         $canViewBasic = $currentUser->hasRole('decano') || $canViewFull;
-        
+
         return view('admin.users.show', compact('user', 'canViewFull', 'canViewBasic'));
     }
 
@@ -116,12 +116,12 @@ class UserController extends Controller
         if (!empty($data['password'])) {
             $updateData['password'] = Hash::make($data['password']);
         }
-        
+
         // Solo actualizar teléfono si se proporciona
         if (!empty($data['telefono'])) {
             $updateData['telefono'] = $data['telefono'];
         }
-        
+
         // Solo actualizar estado si se proporciona
         if (!empty($data['estado'])) {
             $updateData['estado'] = $data['estado'];
@@ -190,10 +190,13 @@ class UserController extends Controller
     {
         // Validación y normalización
         $data = $request->validate([
-            'roles' => ['nullable','array'],
+            'roles' => ['required', 'array', 'size:1'], // Exactamente 1 rol
             'roles.*' => ['integer', 'exists:roles,id'],
             'permissions' => ['nullable','array'],
             'permissions.*' => ['integer', 'exists:permissions,id'],
+        ], [
+            'roles.required' => 'Debe seleccionar un rol.',
+            'roles.size' => 'Solo puede asignar un rol por usuario.',
         ]);
 
         $newRoleIds = $data['roles'] ?? [];
@@ -219,10 +222,12 @@ class UserController extends Controller
             $detalles = [];
 
             if ($rolesChanged) {
+                $oldRoleNames = Role::whereIn('id', $oldRoleIds)->pluck('name')->toArray();
+                $newRoleNames = Role::whereIn('id', $newRoleIds)->pluck('name')->toArray();
                 $detalles[] = sprintf(
-                    'Roles: [%s] -> [%s]',
-                    implode(',', $oldRoleIds),
-                    implode(',', $newRoleIds)
+                    'Rol: [%s] -> [%s]',
+                    implode(',', $oldRoleNames),
+                    implode(',', $newRoleNames)
                 );
             }
 
@@ -249,7 +254,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('admin.users.index')
-            ->with('status', 'Roles y permisos actualizados correctamente.');
+            ->with('status', 'Rol y permisos actualizados correctamente.');
     }
 
     public function getRolesData(User $user)

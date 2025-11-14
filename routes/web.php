@@ -31,8 +31,6 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     Route::view('about', 'about')->name('about');
-    // Ruta para la Bitácora
-    Route::get('bitacora', [UserController::class, 'bitacora'])->name('bitacora.index');
 
     // Rutas de Perfil (Generales para cualquier usuario)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -65,81 +63,90 @@ Route::get('/docente/dashboard', function () {
 // Todas las rutas bajo el prefijo 'admin' requieren autenticación y verificación
 Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(function () {
 
-    // 1. Recurso User (Mantenemos este si ya funciona con UserController)
-    Route::resource('users', UserController::class)->names('users');
+    // 1. Recurso User (Solo Admin y Super-Admin)
+    Route::middleware('role:admin,super-admin')->group(function () {
+        Route::resource('users', UserController::class)->names('users');
 
-    // Rutas específicas para roles y permisos de user (Ajustadas a singular 'user')
-    Route::get('user/{user}/roles-permission', [UserController::class, 'editRoles'])
-    ->name('user.roles.edit');
-    Route::put('user/{user}/roles-permission', [UserController::class, 'updateRoles'])
-    ->name('user.roles.update');
-    Route::get('user/{user}/roles/data', [UserController::class, 'getRolesData'])
-    ->name('user.roles.data');
+        // Rutas específicas para roles y permisos de user
+        Route::get('user/{user}/roles-permission', [UserController::class, 'editRoles'])
+            ->name('user.roles.edit');
+        Route::put('user/{user}/roles-permission', [UserController::class, 'updateRoles'])
+            ->name('user.roles.update');
+        Route::get('user/{user}/roles/data', [UserController::class, 'getRolesData'])
+            ->name('user.roles.data');
 
+        // Roles y Permisos (CRUD básico)
+        Route::resource('roles', RoleController::class)->names('roles');
+        Route::get('roles/template/{template}/permissions', [RoleController::class, 'getTemplatePermissions'])
+            ->name('roles.template.permissions');
+        Route::resource('permissions', PermissionController::class)->names('permissions');
 
-    // 2. RECURSOS ACADÉMICOS (VERSIONES TEMPORALES CON FUNCIONES ANÓNIMAS)
+        // Panel unificado de Seguridad (Usuarios, Roles, Permisos)
+        Route::get('security', [SecurityController::class, 'index'])->name('security.index');
 
-    // Docente (Resource completo)
-    Route::resource('docentes', DocenteController::class)->names('docentes');
+        // Configuración de Parámetros Generales (Solo Admin)
+        Route::get('configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
+        Route::get('configuracion/editar', [ConfiguracionController::class, 'edit'])->name('configuracion.edit');
+        Route::put('configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
+        Route::post('configuracion/reset', [ConfiguracionController::class, 'reset'])->name('configuracion.reset');
 
-    // Materia (Resource completo)
-    Route::resource('materia', MateriaController::class)
-        ->parameters(['materia' => 'materia'])
-        ->names('materia');
+        // Bitácora (Solo Admin)
+        Route::get('bitacora', [UserController::class, 'bitacora'])->name('bitacora.index');
+    });
 
-    // Grupo (Resource completo)
-    Route::resource('grupos', GrupoController::class)->names('grupos');
+    // 2. RECURSOS ACADÉMICOS (Admin, Super-Admin, Decano)
+    Route::middleware('role:admin,super-admin,decano')->group(function () {
+        // Docente (Resource completo)
+        Route::resource('docentes', DocenteController::class)->names('docentes');
 
-    // Carga Académica (Gestión de asignación de materias a docentes)
-    Route::resource('carga-academica', CargaAcademicaController::class)
-        ->parameters(['carga-academica' => 'docente'])
-        ->names('carga-academica');
+        // Materia (Resource completo)
+        Route::resource('materia', MateriaController::class)
+            ->parameters(['materia' => 'materia'])
+            ->names('materia');
 
-    // Configuración de Parámetros Generales
-    Route::get('configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
-    Route::get('configuracion/editar', [ConfiguracionController::class, 'edit'])->name('configuracion.edit');
-    Route::put('configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
-    Route::post('configuracion/reset', [ConfiguracionController::class, 'reset'])->name('configuracion.reset');
+        // Grupo (Resource completo)
+        Route::resource('grupos', GrupoController::class)->names('grupos');
 
-    // Horario (Resource completo)
-    Route::resource('horario', HorarioController::class)
-        ->parameters(['horario' => 'horario'])
-        ->names('horario');
+        // Carga Académica (Gestión de asignación de materias a docentes)
+        Route::resource('carga-academica', CargaAcademicaController::class)
+            ->parameters(['carga-academica' => 'docente'])
+            ->names('carga-academica');
 
-    // Aula (Resource completo)
-    Route::resource('aula', AulaController::class)
-        ->parameters(['aula' => 'aula'])
-        ->names('aula');
+        // Horario (Resource completo)
+        Route::resource('horario', HorarioController::class)
+            ->parameters(['horario' => 'horario'])
+            ->names('horario');
 
-    // 3. REPORTE (Temporal)
-    // Route::get('reporte', [ReporteController::class, 'index'])->name('reporte.index'); // RUTA ORIGINAL
-    Route::get('reporte', function() {
-        return "Ruta: admin.reporte.index (Listado de Reportes) - OK";
-    })->name('reporte.index');
+        // Aula (Resource completo)
+        Route::resource('aula', AulaController::class)
+            ->parameters(['aula' => 'aula'])
+            ->names('aula');
 
-    // Route::get('reporte/download', [ReporteController::class, 'download'])->name('reporte.download'); // RUTA ORIGINAL
-    Route::get('reporte/download', function() {
-        return "Ruta: admin.reporte.download (Descarga de Reporte) - OK";
-    })->name('reporte.download');
+        // Reportes
+        Route::get('reporte', function() {
+            return "Ruta: admin.reporte.index (Listado de Reportes) - OK";
+        })->name('reporte.index');
 
-    // 4. ASISTENCIA
-    // Usar la ruta resource que apunta al AsistenciaController (crea index/create/store/show/edit/update/destroy)
-    Route::resource('asistencia', AsistenciaController::class)->names('asistencia');
+        Route::get('reporte/download', function() {
+            return "Ruta: admin.reporte.download (Descarga de Reporte) - OK";
+        })->name('reporte.download');
+    });
 
-    // Roles y Permisos (CRUD básico)
-    Route::resource('roles', RoleController::class)->names('roles');
-    Route::get('roles/template/{template}/permissions', [RoleController::class, 'getTemplatePermissions'])
-        ->name('roles.template.permissions');
-    Route::resource('permissions', PermissionController::class)->names('permissions');
+    // 3. ASISTENCIA (Todos los roles autenticados pueden ver, solo Admin/Decano pueden crear)
+    Route::get('asistencia', [AsistenciaController::class, 'index'])->name('asistencia.index');
+    Route::get('asistencia/{asistencia}', [AsistenciaController::class, 'show'])->name('asistencia.show');
 
-    // Panel unificado de Seguridad (Usuarios, Roles, Permisos)
-    Route::get('security', [SecurityController::class, 'index'])->name('security.index');
+    Route::middleware('role:admin,super-admin,decano')->group(function () {
+        Route::get('asistencia/create', [AsistenciaController::class, 'create'])->name('asistencia.create');
+        Route::post('asistencia', [AsistenciaController::class, 'store'])->name('asistencia.store');
+        Route::get('asistencia/{asistencia}/edit', [AsistenciaController::class, 'edit'])->name('asistencia.edit');
+        Route::put('asistencia/{asistencia}', [AsistenciaController::class, 'update'])->name('asistencia.update');
+        Route::delete('asistencia/{asistencia}', [AsistenciaController::class, 'destroy'])->name('asistencia.destroy');
 
-    // Ruta específica de asistencia propia (si necesitas una acción personalizada la puedes implementar
-    // en AsistenciaController como 'editPropia' y registrar la ruta apuntando al método)
-    Route::get('asistencia/propia', function() {
-        return "Ruta: admin.asistencia.propia (Asistencia Propia) - OK";
-    })->name('asistencia.propia');
+        Route::get('asistencia/propia', function() {
+            return "Ruta: admin.asistencia.propia (Asistencia Propia) - OK";
+        })->name('asistencia.propia');
+    });
 });
 
 
