@@ -1,0 +1,450 @@
+/* ===========================================
+   UTILIDADES RESPONSIVE GLOBALES
+   =========================================== */
+
+/* Mejoras generales para responsive */
+* {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Contenedores responsive */
+.container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+@media (max-width: 576px) {
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+/* ===========================================
+   TABLAS RESPONSIVE
+   =========================================== */
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+    /* Hacer tablas más compactas en móviles */
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .table-sm th,
+    .table-sm td {
+        padding: 0.25rem;
+    }
+
+    /* Ocultar columnas menos importantes en móvil */
+    .table .d-none.d-md-table-cell {
+        display: none !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.4rem;
+    }
+}
+
+/* ===========================================
+   BOTONES RESPONSIVE
+   =========================================== */
+
+@media (max-width: 768px) {
+    /* Botones en stack en móvil */
+    .btn-group-responsive {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-group-responsive .btn {
+        width: 100%;
+    }
+
+    /* Botones más pequeños */
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-lg {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Botones de acción compactos */
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    /* Ocultar texto en botones, solo iconos */
+    .btn .d-none.d-lg-inline {
+        display: none !important;
+    }
+}
+
+/* ===========================================
+   CARDS Y PANELES
+   =========================================== */
+
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-header {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    .card-header {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* ===========================================
+   FORMULARIOS RESPONSIVE
+   =========================================== */
+
+@media (max-width: 768px) {
+    /* Hacer inputs más fáciles de tocar */
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Evita zoom en iOS */
+        padding: 0.625rem 0.875rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 0.35rem;
+    }
+
+    /* Columnas de formulario en stack */
+    .row.g-3 {
+        --bs-gutter-y: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-control,
+    .form-select {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+    }
+}
+
+/* ===========================================
+   HEADERS Y TÍTULOS
+   =========================================== */
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    h4 {
+        font-size: 1.1rem;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+
+    /* Headers de página con botones */
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .d-flex.justify-content-between > * {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* ===========================================
+   BADGES Y ETIQUETAS
+   =========================================== */
+
+@media (max-width: 576px) {
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.25em 0.5em;
+    }
+}
+
+/* ===========================================
+   MODALS
+   =========================================== */
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+
+    .modal-header,
+    .modal-footer {
+        padding: 0.75rem;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+}
+
+/* ===========================================
+   NAVEGACIÓN Y PAGINACIÓN
+   =========================================== */
+
+@media (max-width: 576px) {
+    .pagination {
+        font-size: 0.85rem;
+    }
+
+    .page-link {
+        padding: 0.375rem 0.625rem;
+    }
+
+    /* Ocultar números de página en móvil, solo prev/next */
+    .pagination .page-item:not(.active):not(:first-child):not(:last-child) {
+        display: none;
+    }
+}
+
+/* ===========================================
+   ALERTAS
+   =========================================== */
+
+@media (max-width: 576px) {
+    .alert {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ===========================================
+   BREADCRUMBS
+   =========================================== */
+
+@media (max-width: 576px) {
+    .breadcrumb {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+}
+
+/* ===========================================
+   UTILIDADES DE ESPACIADO RESPONSIVE
+   =========================================== */
+
+@media (max-width: 768px) {
+    .py-6 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .py-5 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    .py-4 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .mb-6 {
+        margin-bottom: 2rem !important;
+    }
+
+    .mb-5 {
+        margin-bottom: 1.5rem !important;
+    }
+}
+
+/* ===========================================
+   FLEX RESPONSIVE
+   =========================================== */
+
+@media (max-width: 768px) {
+    /* Convertir flex a column en móvil */
+    .flex-md-row {
+        flex-direction: column !important;
+    }
+
+    .gap-md-3 {
+        gap: 1rem !important;
+    }
+}
+
+/* ===========================================
+   SCROLLBARS RESPONSIVE
+   =========================================== */
+
+/* Scrollbar más delgado en móviles */
+@media (max-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}
+
+/* ===========================================
+   ELEMENTOS ESPECÍFICOS
+   =========================================== */
+
+/* Lista de descripción responsive */
+@media (max-width: 768px) {
+    .row dl {
+        margin-bottom: 0;
+    }
+
+    .row dt {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .row dd {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Dropdown menus */
+@media (max-width: 576px) {
+    .dropdown-menu {
+        font-size: 0.875rem;
+    }
+}
+
+/* ===========================================
+   PRINT STYLES
+   =========================================== */
+
+@media print {
+    /* Ocultar elementos no necesarios */
+    .btn,
+    .badge,
+    .sidebar,
+    .menu-toggle,
+    nav,
+    .pagination {
+        display: none !important;
+    }
+
+    /* Ajustar contenido para impresión */
+    main {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+
+    .card {
+        border: 1px solid #dee2e6;
+        box-shadow: none;
+    }
+
+    /* Expandir tablas */
+    .table-responsive {
+        overflow: visible;
+    }
+
+    /* Colores en escala de grises */
+    * {
+        color: #000 !important;
+        background-color: #fff !important;
+    }
+}
+
+/* ===========================================
+   ACCESIBILIDAD
+   =========================================== */
+
+/* Mejorar contraste de foco */
+@media (hover: none) {
+    .btn:focus,
+    .form-control:focus,
+    a:focus {
+        outline: 3px solid #0d6efd;
+        outline-offset: 2px;
+    }
+}
+
+/* Aumentar área de toque en dispositivos táctiles */
+@media (hover: none) and (pointer: coarse) {
+    .btn,
+    a {
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

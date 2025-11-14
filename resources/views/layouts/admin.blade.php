@@ -16,8 +16,11 @@
 
 </head>
 <body>
+    <!-- Overlay oscuro para móviles -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Botón toggle móvil-->
-    <button class="menu-toggle" id="menuToggle">
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
         <i class="bi bi-list"></i>
     </button>
 
@@ -28,18 +31,37 @@
     @include('layouts.partials.admin.sidebar')
 
     <!-- Contenido principal-->
-    <main class="p-4" style="margin-left: 260px;">
-
+    <main>
       {{ $slot }}
     </main>
 
     <script>
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
 
+        // Toggle sidebar en móvil
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
         });
+
+        // Cerrar sidebar al hacer click en overlay
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Cerrar sidebar al hacer click en un enlace (solo en móvil)
+        if (window.innerWidth <= 992) {
+            const sidebarLinks = sidebar.querySelectorAll('.menu a:not(.submenu-toggle)');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+            });
+        }
 
         // Manejo de submenús desplegables
         document.addEventListener('DOMContentLoaded', function() {
@@ -59,6 +81,14 @@
                     }
                 });
             });
+        });
+
+        // Ajustar al cambiar tamaño de ventana
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
         });
     </script>
 </body>
