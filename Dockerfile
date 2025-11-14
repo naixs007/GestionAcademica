@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     libonig-dev \
-    && docker-php-ext-install pdo_pgsql mbstring zip
+    && docker-php-ext-install pdo_pgsql mbstring zip bcmath
 
 # Copiar Composer desde la imagen oficial
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
