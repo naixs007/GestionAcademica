@@ -126,29 +126,140 @@
                                 <p class="mb-0"><strong>Carga Horaria:</strong> <span id="infoCargaMateria">-</span> hrs/semana</p>
                             </div>
 
-                            {{-- Seleccionar Grupo (opcional) --}}
+                            {{-- Seleccionar Grupo --}}
                             <div class="mb-4">
                                 <label for="grupo_id" class="form-label fw-bold">
-                                    <i class="fa-solid fa-users-rectangle text-primary"></i> Grupo (Opcional)
+                                    <i class="fa-solid fa-users-rectangle text-primary"></i> Grupo <span class="text-danger">*</span>
                                 </label>
-                                @if($grupos->count() > 0)
-                                    <select name="grupo_id" id="grupo_id" class="form-select @error('grupo_id') is-invalid @enderror">
-                                        <option value="">-- Sin asignar a grupo específico --</option>
-                                        @foreach($grupos as $grupo)
-                                            <option value="{{ $grupo->id }}" {{ old('grupo_id') == $grupo->id ? 'selected' : '' }}>
-                                                {{ $grupo->nombre }} (Cap: {{ $grupo->capacidad }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input type="text" class="form-control" value="No hay grupos registrados" disabled>
-                                @endif
+                                @forelse($grupos as $grupo)
+                                    @if($loop->first)
+                                        <select name="grupo_id" id="grupo_id" class="form-select @error('grupo_id') is-invalid @enderror" required>
+                                            <option value="">-- Seleccionar grupo --</option>
+                                    @endif
+                                    <option value="{{ $grupo->id }}"
+                                            data-cupo="{{ $grupo->cupo_maximo }}"
+                                            {{ old('grupo_id') == $grupo->id ? 'selected' : '' }}>
+                                        {{ $grupo->nombre }} - Cupo: {{ $grupo->cupo_maximo }} estudiantes
+                                    </option>
+                                    @if($loop->last)
+                                        </select>
+                                    @endif
+                                @empty
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fa-solid fa-exclamation-triangle"></i>
+                                        No hay grupos registrados.
+                                        <a href="{{ route('admin.grupo.create') }}" class="alert-link">Registrar grupo</a>
+                                    </div>
+                                @endforelse
                                 @error('grupo_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                                 <small class="form-text text-muted">
-                                    <i class="fa-solid fa-info-circle"></i> Opcional: Puede asignar la materia a un grupo específico.
+                                    <i class="fa-solid fa-info-circle"></i> Seleccione el grupo al que se asignará la materia.
                                 </small>
+                            </div>
+
+                            {{-- Seleccionar Horario --}}
+                            <div class="mb-4">
+                                <label for="horario_id" class="form-label fw-bold">
+                                    <i class="fa-solid fa-clock text-primary"></i> Horario <span class="text-danger">*</span>
+                                </label>
+                                @forelse($horarios as $horario)
+                                    @if($loop->first)
+                                        <select name="horario_id" id="horario_id" class="form-select @error('horario_id') is-invalid @enderror" required>
+                                            <option value="">-- Seleccionar horario --</option>
+                                    @endif
+                                    <option value="{{ $horario->id }}" {{ old('horario_id') == $horario->id ? 'selected' : '' }}>
+                                        @if(isset($horario->dias_agrupados) && count($horario->dias_agrupados) > 0)
+                                            @foreach($horario->dias_agrupados as $dia)
+                                                {{ $dia }}{{ !$loop->last ? ', ' : '' }}
+                                            @endforeach
+                                        @else
+                                            {{ $horario->dia_semana }}
+                                        @endif
+                                        | {{ substr($horario->hora_inicio, 0, 5) }} - {{ substr($horario->hora_fin, 0, 5) }} ({{ $horario->duracion_formateada }})
+                                    </option>
+                                    @if($loop->last)
+                                        </select>
+                                    @endif
+                                @empty
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fa-solid fa-exclamation-triangle"></i>
+                                        No hay horarios registrados.
+                                        <a href="{{ route('admin.horario.create') }}" class="alert-link">Registrar horario</a>
+                                    </div>
+                                @endforelse
+                                @error('horario_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="form-text text-muted">
+                                    <i class="fa-solid fa-info-circle"></i> Seleccione el bloque horario en que se impartirá la clase.
+                                </small>
+                            </div>
+
+                            {{-- Seleccionar Aula --}}
+                            <div class="mb-4">
+                                <label for="aula_id" class="form-label fw-bold">
+                                    <i class="fa-solid fa-door-open text-primary"></i> Aula <span class="text-danger">*</span>
+                                </label>
+                                @forelse($aulas as $aula)
+                                    @if($loop->first)
+                                        <select name="aula_id" id="aula_id" class="form-select @error('aula_id') is-invalid @enderror" required>
+                                            <option value="">-- Seleccionar aula --</option>
+                                    @endif
+                                    <option value="{{ $aula->id }}"
+                                            data-tipo="{{ $aula->tipo }}"
+                                            data-capacidad="{{ $aula->capacidad }}"
+                                            {{ old('aula_id') == $aula->id ? 'selected' : '' }}>
+                                        {{ $aula->codigo }} - {{ $aula->tipo }} (Cap: {{ $aula->capacidad }})
+                                    </option>
+                                    @if($loop->last)
+                                        </select>
+                                    @endif
+                                @empty
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fa-solid fa-exclamation-triangle"></i>
+                                        No hay aulas registradas.
+                                        <a href="{{ route('admin.aula.create') }}" class="alert-link">Registrar aula</a>
+                                    </div>
+                                @endforelse
+                                @error('aula_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="form-text text-muted">
+                                    <i class="fa-solid fa-info-circle"></i> Seleccione el aula donde se impartirá la clase.
+                                </small>
+                            </div>
+
+                            {{-- Gestión y Periodo --}}
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="gestion" class="form-label fw-bold">
+                                        <i class="fa-solid fa-calendar text-primary"></i> Gestión <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" name="gestion" id="gestion"
+                                           class="form-control @error('gestion') is-invalid @enderror"
+                                           value="{{ old('gestion', date('Y')) }}"
+                                           min="2020" max="2099" required>
+                                    @error('gestion')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">Año académico (ej: {{ date('Y') }})</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="periodo" class="form-label fw-bold">
+                                        <i class="fa-solid fa-calendar-days text-primary"></i> Periodo <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="periodo" id="periodo" class="form-select @error('periodo') is-invalid @enderror" required>
+                                        <option value="">-- Seleccionar --</option>
+                                        <option value="1" {{ old('periodo') == '1' ? 'selected' : '' }}>Periodo 1</option>
+                                        <option value="2" {{ old('periodo') == '2' ? 'selected' : '' }}>Periodo 2</option>
+                                    </select>
+                                    @error('periodo')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">Periodo académico (1 o 2)</small>
+                                </div>
                             </div>
 
                             {{-- Botones --}}
@@ -178,8 +289,10 @@
                         <ol class="mb-0 ps-3">
                             <li class="mb-2">Seleccione el <strong>docente</strong> que impartirá la materia.</li>
                             <li class="mb-2">Elija la <strong>materia</strong> a asignar.</li>
-                            <li class="mb-2">Opcionalmente, asocie un <strong>grupo</strong> específico.</li>
-                            <li>Verifique que la carga horaria no exceda el límite del docente.</li>
+                            <li class="mb-2">Seleccione el <strong>grupo</strong> de estudiantes.</li>
+                            <li class="mb-2">Defina el <strong>horario</strong> de la clase.</li>
+                            <li class="mb-2">Asigne el <strong>aula</strong> donde se impartirá.</li>
+                            <li>Complete la <strong>gestión</strong> y <strong>periodo</strong> académico.</li>
                         </ol>
                     </div>
                 </div>
@@ -200,9 +313,17 @@
                             <label class="text-muted small">Materias Disponibles</label>
                             <h4 class="mb-0 text-success">{{ $materias->count() }}</h4>
                         </div>
-                        <div>
+                        <div class="mb-3">
                             <label class="text-muted small">Grupos Registrados</label>
                             <h4 class="mb-0 text-info">{{ $grupos->count() }}</h4>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Horarios Disponibles</label>
+                            <h4 class="mb-0 text-warning">{{ $horarios->count() }}</h4>
+                        </div>
+                        <div>
+                            <label class="text-muted small">Aulas Disponibles</label>
+                            <h4 class="mb-0 text-secondary">{{ $aulas->count() }}</h4>
                         </div>
                     </div>
                 </div>

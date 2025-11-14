@@ -21,14 +21,7 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="text-muted small">
-                                    <i class="fa-solid fa-id-badge"></i> ID Grupo
-                                </label>
-                                <p class="mb-0">
-                                    <span class="badge bg-secondary fs-6">#{{ $grupo->id }}</span>
-                                </p>
-                            </div>
+
                             <div class="col-md-6 mb-3">
                                 <label class="text-muted small">
                                     <i class="fa-solid fa-tag"></i> Nombre del Grupo
@@ -43,7 +36,7 @@
                                 </label>
                                 <p class="mb-0">
                                     <span class="badge bg-info fs-6">
-                                        {{ $grupo->capacidad }} estudiantes
+                                        {{ $grupo->cupo_maximo }} estudiantes
                                     </span>
                                 </p>
                             </div>
@@ -139,7 +132,7 @@
                             <div class="col-md-4 mb-3">
                                 <div class="p-3 border rounded">
                                     <i class="fa-solid fa-users fa-2x text-info mb-2"></i>
-                                    <h4 class="mb-0">{{ $grupo->capacidad }}</h4>
+                                    <h4 class="mb-0">{{ $grupo->cupo_maximo }}</h4>
                                     <small class="text-muted">Capacidad Máxima</small>
                                 </div>
                             </div>
@@ -153,7 +146,7 @@
                             <div class="col-md-4 mb-3">
                                 <div class="p-3 border rounded">
                                     <i class="fa-solid fa-user-plus fa-2x text-warning mb-2"></i>
-                                    <h4 class="mb-0">{{ $grupo->capacidad }}</h4>
+                                    <h4 class="mb-0">{{ $grupo->cupo_maximo }}</h4>
                                     <small class="text-muted">Cupos Disponibles</small>
                                 </div>
                             </div>
@@ -215,7 +208,7 @@
                             <span>
                                 <i class="fa-solid fa-users text-info"></i> Capacidad:
                             </span>
-                            <strong>{{ $grupo->capacidad }}</strong>
+                            <strong>{{ $grupo->cupo_maximo }}</strong>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <span>

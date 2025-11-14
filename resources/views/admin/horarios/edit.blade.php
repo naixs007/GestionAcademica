@@ -27,99 +27,53 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="materia_id" class="form-label">
-                                <i class="fa-solid fa-book"></i> Materia <span class="text-danger">*</span>
-                            </label>
-                            <select name="materia_id" id="materia_id"
-                                class="form-select @error('materia_id') is-invalid @enderror" required>
-                                <option value="">Seleccione una materia</option>
-                                @foreach ($materias as $materia)
-                                    <option value="{{ $materia->id }}"
-                                        {{ old('materia_id', $horario->materia_id) == $materia->id ? 'selected' : '' }}>
-                                        {{ $materia->codigo }} - {{ $materia->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('materia_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
                             <label class="form-label">
-                                <i class="fa-solid fa-calendar-day"></i> Días de la Semana <span
-                                    class="text-danger">*</span>
+                                <i class="fa-solid fa-calendar-day"></i> Días de la Semana <span class="text-danger">*</span>
                             </label>
-                            <div class="@error('diaSemana') is-invalid @enderror">
+                            <div class="@error('dias_semana') is-invalid @enderror">
                                 @php
-                                    $dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-                                    $diasSeleccionados = old(
-                                        'diaSemana',
-                                        is_array($horario->diaSemana) ? $horario->diaSemana : [$horario->diaSemana],
-                                    );
+                                    $dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                                    $oldDias = old('dias_semana', $horario->dias_relacionados ?? [$horario->dia_semana]);
                                 @endphp
                                 @foreach ($dias as $dia)
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="diaSemana[]"
+                                        <input class="form-check-input" type="checkbox" name="dias_semana[]"
                                             value="{{ $dia }}" id="dia{{ $loop->index }}"
-                                            {{ in_array($dia, $diasSeleccionados) ? 'checked' : '' }}>
+                                            {{ in_array($dia, $oldDias) ? 'checked' : '' }}>
                                         <label class="form-check-label" for="dia{{ $loop->index }}">
                                             {{ $dia }}
                                         </label>
                                     </div>
                                 @endforeach
                             </div>
-                            @error('diaSemana')
+                            @error('dias_semana')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">Seleccione al menos un día</small>
+                            <small class="text-muted">Puede seleccionar múltiples días para aplicar el mismo horario</small>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="horaInicio" class="form-label">
+                        <div class="col-md-3 mb-3">
+                            <label for="hora_inicio" class="form-label">
                                 <i class="fa-solid fa-clock"></i> Hora de Inicio <span class="text-danger">*</span>
                             </label>
-                            <input type="time" name="horaInicio" id="horaInicio"
-                                class="form-control @error('horaInicio') is-invalid @enderror"
-                                value="{{ old('horaInicio', \Carbon\Carbon::parse($horario->horaInicio)->format('H:i')) }}"
+                            <input type="time" name="hora_inicio" id="hora_inicio"
+                                class="form-control @error('hora_inicio') is-invalid @enderror"
+                                value="{{ old('hora_inicio', substr($horario->hora_inicio, 0, 5)) }}"
                                 required>
-                            @error('horaInicio')
+                            @error('hora_inicio')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <label for="horaFin" class="form-label">
+                        <div class="col-md-3 mb-3">
+                            <label for="hora_fin" class="form-label">
                                 <i class="fa-solid fa-clock"></i> Hora de Fin <span class="text-danger">*</span>
                             </label>
-                            <input type="time" name="horaFin" id="horaFin"
-                                class="form-control @error('horaFin') is-invalid @enderror"
-                                value="{{ old('horaFin', \Carbon\Carbon::parse($horario->horaFin)->format('H:i')) }}"
+                            <input type="time" name="hora_fin" id="hora_fin"
+                                class="form-control @error('hora_fin') is-invalid @enderror"
+                                value="{{ old('hora_fin', substr($horario->hora_fin, 0, 5)) }}"
                                 required>
-                            @error('horaFin')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="modalidad" class="form-label">
-                                <i class="fa-solid fa-chalkboard"></i> Modalidad <span class="text-danger">*</span>
-                            </label>
-                            <select name="modalidad" id="modalidad"
-                                class="form-select @error('modalidad') is-invalid @enderror" required>
-                                <option value="">Seleccione modalidad</option>
-                                <option value="presencial"
-                                    {{ old('modalidad', $horario->modalidad) == 'presencial' ? 'selected' : '' }}>
-                                    Presencial
-                                </option>
-                                <option value="virtual"
-                                    {{ old('modalidad', $horario->modalidad) == 'virtual' ? 'selected' : '' }}>
-                                    Virtual
-                                </option>
-                            </select>
-                            @error('modalidad')
+                            @error('hora_fin')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

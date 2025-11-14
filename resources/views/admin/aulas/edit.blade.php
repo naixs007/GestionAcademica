@@ -27,13 +27,13 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="nombre" class="form-label">
-                                <i class="fa-solid fa-signature"></i> Nombre <span class="text-danger">*</span>
+                            <label for="codigo" class="form-label">
+                                <i class="fa-solid fa-signature"></i> Código <span class="text-danger">*</span>
                             </label>
-                            <input type="text" name="nombre" id="nombre"
-                                class="form-control @error('nombre') is-invalid @enderror"
-                                value="{{ old('nombre', $aula->nombre) }}" required maxlength="100">
-                            @error('nombre')
+                            <input type="text" name="codigo" id="codigo"
+                                class="form-control @error('codigo') is-invalid @enderror"
+                                value="{{ old('codigo', $aula->codigo) }}" required maxlength="100">
+                            @error('codigo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -45,12 +45,16 @@
                             <select name="tipo" id="tipo"
                                 class="form-select @error('tipo') is-invalid @enderror" required>
                                 <option value="">Seleccione tipo</option>
-                                <option value="aula" {{ old('tipo', $aula->tipo) == 'aula' ? 'selected' : '' }}>
-                                    Aula
+                                <option value="Presencial" {{ old('tipo', $aula->tipo) == 'Presencial' ? 'selected' : '' }}>
+                                    Presencial
                                 </option>
-                                <option value="laboratorio"
-                                    {{ old('tipo', $aula->tipo) == 'laboratorio' ? 'selected' : '' }}>
+                                <option value="Laboratorio"
+                                    {{ old('tipo', $aula->tipo) == 'Laboratorio' ? 'selected' : '' }}>
                                     Laboratorio
+                                </option>
+                                <option value="Virtual"
+                                    {{ old('tipo', $aula->tipo) == 'Virtual' ? 'selected' : '' }}>
+                                    Virtual
                                 </option>
                             </select>
                             @error('tipo')

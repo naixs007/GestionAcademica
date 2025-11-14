@@ -32,12 +32,12 @@ class AulaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|max:100|unique:aulas,nombre',
+            'codigo' => 'required|string|max:100|unique:aulas,codigo',
             'capacidad' => 'required|integer|min:1|max:200',
-            'tipo' => 'required|in:aula,laboratorio',
+            'tipo' => 'required|in:Presencial,Laboratorio,Virtual',
         ], [
-            'nombre.unique' => 'Ya existe un aula con este nombre.',
-            'tipo.in' => 'El tipo debe ser aula o laboratorio.',
+            'codigo.unique' => 'Ya existe un aula con este código.',
+            'tipo.in' => 'El tipo debe ser Presencial, Laboratorio o Virtual.',
         ]);
 
         try {
@@ -49,7 +49,7 @@ class AulaController extends Controller
             Bitacora::create([
                 'user_id' => auth()->id(),
                 'usuario' => auth()->user()->name,
-                'descripcion' => "Creó el {$aula->tipo} '{$aula->nombre}' con capacidad de {$aula->capacidad} personas",
+                'descripcion' => "Creó el {$aula->tipo} '{$aula->codigo}' con capacidad de {$aula->capacidad} personas",
                 'metodo' => 'POST',
                 'ruta' => request()->path(),
                 'direccion_ip' => request()->ip(),
@@ -91,18 +91,18 @@ class AulaController extends Controller
     public function update(Request $request, Aula $aula)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|max:100|unique:aulas,nombre,' . $aula->id,
+            'codigo' => 'required|string|max:100|unique:aulas,codigo,' . $aula->id,
             'capacidad' => 'required|integer|min:1|max:200',
-            'tipo' => 'required|in:aula,laboratorio',
+            'tipo' => 'required|in:Presencial,Laboratorio,Virtual',
         ], [
-            'nombre.unique' => 'Ya existe un aula con este nombre.',
-            'tipo.in' => 'El tipo debe ser aula o laboratorio.',
+            'codigo.unique' => 'Ya existe un aula con este código.',
+            'tipo.in' => 'El tipo debe ser Presencial, Laboratorio o Virtual.',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $oldNombre = $aula->nombre;
+            $oldCodigo = $aula->codigo;
             $oldTipo = $aula->tipo;
             $aula->update($validated);
 
@@ -110,7 +110,7 @@ class AulaController extends Controller
             Bitacora::create([
                 'user_id' => auth()->id(),
                 'usuario' => auth()->user()->name,
-                'descripcion' => "Actualizó el {$oldTipo} '{$oldNombre}' a '{$aula->nombre}' (Tipo: {$aula->tipo}, Capacidad: {$aula->capacidad} personas)",
+                'descripcion' => "Actualizó el {$oldTipo} '{$oldCodigo}' a '{$aula->codigo}' (Tipo: {$aula->tipo}, Capacidad: {$aula->capacidad} personas)",
                 'metodo' => 'PUT',
                 'ruta' => request()->path(),
                 'direccion_ip' => request()->ip(),
@@ -143,7 +143,7 @@ class AulaController extends Controller
             DB::beginTransaction();
 
             // Capturar datos antes de eliminar
-            $nombreAula = $aula->nombre;
+            $codigoAula = $aula->codigo;
             $tipoAula = $aula->tipo;
             $capacidadAula = $aula->capacidad;
 
@@ -153,7 +153,7 @@ class AulaController extends Controller
             Bitacora::create([
                 'user_id' => auth()->id(),
                 'usuario' => auth()->user()->name,
-                'descripcion' => "Eliminó el {$tipoAula} '{$nombreAula}' (Capacidad: {$capacidadAula} personas)",
+                'descripcion' => "Eliminó el {$tipoAula} '{$codigoAula}' (Capacidad: {$capacidadAula} personas)",
                 'metodo' => 'DELETE',
                 'ruta' => request()->path(),
                 'direccion_ip' => request()->ip(),

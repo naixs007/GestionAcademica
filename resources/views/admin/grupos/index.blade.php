@@ -63,7 +63,7 @@
                                     </td>
                                     <td>
                                         <span class="badge bg-info">
-                                            <i class="fa-solid fa-users"></i> {{ $grupo->capacidad }} estudiantes
+                                            <i class="fa-solid fa-users"></i> {{ $grupo->cupo_maximo }} estudiantes
                                         </span>
                                     </td>
                                     <td>

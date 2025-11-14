@@ -26,13 +26,13 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="nombre" class="form-label">
-                                <i class="fa-solid fa-signature"></i> Nombre <span class="text-danger">*</span>
+                            <label for="codigo" class="form-label">
+                                <i class="fa-solid fa-signature"></i> Código <span class="text-danger">*</span>
                             </label>
-                            <input type="text" name="nombre" id="nombre"
-                                class="form-control @error('nombre') is-invalid @enderror" value="{{ old('nombre') }}"
+                            <input type="text" name="codigo" id="codigo"
+                                class="form-control @error('codigo') is-invalid @enderror" value="{{ old('codigo') }}"
                                 placeholder="Ej: Aula 101, Lab. Física" required maxlength="100">
-                            @error('nombre')
+                            @error('codigo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <small class="text-muted">Máximo 100 caracteres</small>
@@ -45,11 +45,14 @@
                             <select name="tipo" id="tipo"
                                 class="form-select @error('tipo') is-invalid @enderror" required>
                                 <option value="">Seleccione tipo</option>
-                                <option value="aula" {{ old('tipo') == 'aula' ? 'selected' : '' }}>
-                                    <i class="fa-solid fa-chalkboard"></i> Aula
+                                <option value="Presencial" {{ old('tipo') == 'Presencial' ? 'selected' : '' }}>
+                                    <i class="fa-solid fa-chalkboard"></i> Presencial
                                 </option>
-                                <option value="laboratorio" {{ old('tipo') == 'laboratorio' ? 'selected' : '' }}>
+                                <option value="Laboratorio" {{ old('tipo') == 'Laboratorio' ? 'selected' : '' }}>
                                     <i class="fa-solid fa-flask"></i> Laboratorio
+                                </option>
+                                <option value="Virtual" {{ old('tipo') == 'Virtual' ? 'selected' : '' }}>
+                                    <i class="fa-solid fa-laptop"></i> Virtual
                                 </option>
                             </select>
                             @error('tipo')
@@ -93,10 +96,11 @@
             <div class="card-body">
                 <ul>
                     <li>Todos los campos marcados con <span class="text-danger">*</span> son obligatorios.</li>
-                    <li>El nombre debe ser único, no puede duplicarse.</li>
-                    <li><strong>Tipo Aula:</strong> Espacio físico para clases teóricas.</li>
+                    <li>El código debe ser único, no puede duplicarse (Ej: 225-10).</li>
+                    <li><strong>Tipo Presencial:</strong> Espacio físico para clases teóricas tradicionales.</li>
                     <li><strong>Tipo Laboratorio:</strong> Espacio equipado para clases prácticas y experimentales.</li>
-                    <li>La capacidad indica el número máximo de personas que puede albergar el espacio.</li>
+                    <li><strong>Tipo Virtual:</strong> Aula para clases en línea o mediante plataforma digital.</li>
+                    <li>La capacidad indica el número máximo de personas que puede albergar el espacio (1-200).</li>
                 </ul>
             </div>
         </div>

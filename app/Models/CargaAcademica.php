@@ -15,6 +15,10 @@ class CargaAcademica extends Model
         'docente_id',
         'materia_id',
         'grupo_id',
+        'horario_id',
+        'aula_id',
+        'gestion',
+        'periodo',
     ];
 
     // Relaciones
@@ -31,5 +35,34 @@ class CargaAcademica extends Model
     public function grupo()
     {
         return $this->belongsTo(Grupo::class);
+    }
+
+    public function horario()
+    {
+        return $this->belongsTo(Horario::class);
+    }
+
+    public function aula()
+    {
+        return $this->belongsTo(Aula::class);
+    }
+
+    /**
+     * Scope para filtrar por gestión y periodo
+     */
+    public function scopeGestionPeriodo($query, $gestion, $periodo)
+    {
+        return $query->where('gestion', $gestion)->where('periodo', $periodo);
+    }
+
+    /**
+     * Scope para filtrar por la gestión y periodo actual
+     */
+    public function scopeActual($query)
+    {
+        $gestionActual = date('Y');
+        $periodoActual = date('n') <= 6 ? '1' : '2';
+
+        return $query->gestionPeriodo($gestionActual, $periodoActual);
     }
 }

@@ -36,7 +36,6 @@ class DocenteController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id|unique:docentes,user_id',
-            'cargaHoraria' => 'required|integer|min:1|max:48',
             'categoria' => 'required|string|max:100',
             'profesion' => 'nullable|string|max:150',
         ]);
@@ -56,7 +55,7 @@ class DocenteController extends Controller
             Bitacora::create([
                 'user_id' => auth()->id(),
                 'usuario' => auth()->user()->name,
-                'descripcion' => "Creó el docente '{$user->name}' (Categoría: {$docente->categoria}, Carga horaria: {$docente->cargaHoraria}h)",
+                'descripcion' => "Creó el docente '{$user->name}' (Categoría: {$docente->categoria})",
                 'metodo' => 'POST',
                 'ruta' => request()->path(),
                 'direccion_ip' => request()->ip(),
@@ -102,7 +101,6 @@ class DocenteController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id|unique:docentes,user_id,' . $docente->id,
-            'cargaHoraria' => 'required|integer|min:1|max:48',
             'categoria' => 'required|string|max:100',
             'profesion' => 'nullable|string|max:150',
         ]);
@@ -134,7 +132,7 @@ class DocenteController extends Controller
             Bitacora::create([
                 'user_id' => auth()->id(),
                 'usuario' => auth()->user()->name,
-                'descripcion' => "Actualizó el docente '{$oldUserName}' a '{$currentUser->name}' (Categoría: {$docente->categoria}, Carga horaria: {$docente->cargaHoraria}h)",
+                'descripcion' => "Actualizó el docente '{$oldUserName}' a '{$currentUser->name}' (Categoría: {$docente->categoria})",
                 'metodo' => 'PUT',
                 'ruta' => request()->path(),
                 'direccion_ip' => request()->ip(),

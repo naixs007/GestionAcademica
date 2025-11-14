@@ -12,7 +12,7 @@ class Grupo extends Model
 
     protected $fillable = [
         'nombre',
-        'capacidad',
+        'cupo_maximo',
     ];
 
     // Relación muchos a muchos con Materias a través de carga_academica

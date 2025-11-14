@@ -32,7 +32,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Nombre</th>
+                                <th>Código</th>
                                 <th>Tipo</th>
                                 <th>Capacidad</th>
                                 <th>Materias Asignadas</th>
@@ -43,16 +43,20 @@
                             @forelse($aulas as $aula)
                                 <tr>
                                     <td>
-                                        <strong>{{ $aula->nombre }}</strong>
+                                        <strong>{{ $aula->codigo }}</strong>
                                     </td>
                                     <td>
-                                        @if ($aula->tipo === 'aula')
+                                        @if ($aula->tipo === 'Presencial')
                                             <span class="badge bg-primary">
-                                                <i class="fa-solid fa-chalkboard"></i> Aula
+                                                <i class="fa-solid fa-chalkboard"></i> Presencial
                                             </span>
-                                        @else
+                                        @elseif ($aula->tipo === 'Laboratorio')
                                             <span class="badge bg-info">
                                                 <i class="fa-solid fa-flask"></i> Laboratorio
+                                            </span>
+                                        @else
+                                            <span class="badge bg-success">
+                                                <i class="fa-solid fa-laptop"></i> Virtual
                                             </span>
                                         @endif
                                     </td>

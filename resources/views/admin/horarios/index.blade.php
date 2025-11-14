@@ -32,12 +32,10 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Materia</th>
-                                <th>Día</th>
+                                <th>Días de la Semana</th>
                                 <th>Hora Inicio</th>
                                 <th>Hora Fin</th>
-                                <th>Modalidad</th>
-                                <th>Asistencias</th>
+                                <th>Duración</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -45,34 +43,23 @@
                             @forelse($horarios as $horario)
                                 <tr>
                                     <td>
-                                        <strong>{{ $horario->materia->nombre ?? 'N/A' }}</strong><br>
-                                        <small class="text-muted">{{ $horario->materia->codigo ?? '' }}</small>
-                                    </td>
-                                    <td>
-                                        @if (is_array($horario->diaSemana))
-                                            @foreach ($horario->diaSemana as $dia)
-                                                <span class="badge bg-secondary me-1">{{ $dia }}</span>
+                                        @if(isset($horario->dias_agrupados))
+                                            @foreach($horario->dias_agrupados as $dia)
+                                                <span class="badge bg-primary me-1">{{ $dia }}</span>
                                             @endforeach
                                         @else
-                                            {{ $horario->diaSemana }}
-                                        @endif
-                                    </td>
-                                    <td>{{ \Carbon\Carbon::parse($horario->horaInicio)->format('H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($horario->horaFin)->format('H:i') }}</td>
-                                    <td>
-                                        @if ($horario->modalidad === 'presencial')
-                                            <span class="badge bg-primary">
-                                                <i class="fa-solid fa-building"></i> Presencial
-                                            </span>
-                                        @else
-                                            <span class="badge bg-info">
-                                                <i class="fa-solid fa-laptop"></i> Virtual
-                                            </span>
+                                            <span class="badge bg-primary">{{ $horario->dia_semana }}</span>
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge bg-secondary">
-                                            {{ $horario->asistencias->count() ?? 0 }}
+                                        <i class="fa-solid fa-clock"></i> {{ $horario->hora_inicio }}
+                                    </td>
+                                    <td>
+                                        <i class="fa-solid fa-clock"></i> {{ $horario->hora_fin }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ $horario->duracion_formateada }}
                                         </span>
                                     </td>
                                     <td>
@@ -99,7 +86,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">
+                                    <td colspan="5" class="text-center text-muted py-4">
                                         <i class="fa-solid fa-calendar-xmark fa-3x mb-3"></i>
                                         <p>No hay horarios registrados</p>
                                     </td>

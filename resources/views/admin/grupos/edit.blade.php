@@ -65,21 +65,21 @@
                                                 @enderror
                                             </div>
 
-                                            {{-- Capacidad --}}
+                                            {{-- Cupo Máximo --}}
                                             <div class="mb-3">
-                                                <label for="capacidad" class="form-label">
+                                                <label for="cupo_maximo" class="form-label">
                                                     <i class="fa-solid fa-users text-info"></i>
-                                                    <strong>Capacidad Máxima</strong> <span class="text-danger">*</span>
+                                                    <strong>Cupo Máximo</strong> <span class="text-danger">*</span>
                                                 </label>
                                                 <input type="number"
-                                                       name="capacidad"
-                                                       id="capacidad"
-                                                       class="form-control @error('capacidad') is-invalid @enderror"
-                                                       value="{{ old('capacidad', $grupo->capacidad) }}"
+                                                       name="cupo_maximo"
+                                                       id="cupo_maximo"
+                                                       class="form-control @error('cupo_maximo') is-invalid @enderror"
+                                                       value="{{ old('cupo_maximo', $grupo->cupo_maximo) }}"
                                                        min="1"
-                                                       max="100"
+                                                       max="120"
                                                        required>
-                                                @error('capacidad')
+                                                @error('cupo_maximo')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
 
@@ -87,11 +87,11 @@
                                                 <div class="progress mt-2" style="height: 20px;">
                                                     <div class="progress-bar bg-info"
                                                          role="progressbar"
-                                                         style="width: {{ ($grupo->capacidad / 100) * 100 }}%"
-                                                         aria-valuenow="{{ $grupo->capacidad }}"
+                                                         style="width: {{ ($grupo->cupo_maximo / 120) * 100 }}%"
+                                                         aria-valuenow="{{ $grupo->cupo_maximo }}"
                                                          aria-valuemin="0"
-                                                         aria-valuemax="100">
-                                                        {{ $grupo->capacidad }} estudiantes
+                                                         aria-valuemax="120">
+                                                        {{ $grupo->cupo_maximo }} estudiantes
                                                     </div>
                                                 </div>
                                             </div>
@@ -145,9 +145,9 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between mb-2">
                                                 <span>
-                                                    <i class="fa-solid fa-users text-info"></i> Capacidad:
+                                                    <i class="fa-solid fa-users text-info"></i> Cupo Máximo:
                                                 </span>
-                                                <strong>{{ $grupo->capacidad }}</strong>
+                                                <strong>{{ $grupo->cupo_maximo }}</strong>
                                             </div>
                                             <div class="d-flex justify-content-between mb-2">
                                                 <span>
@@ -172,7 +172,7 @@
                                 <strong>Importante:</strong>
                                 <ul class="mb-0 mt-2">
                                     <li>Si cambia la materia asignada, verifique que sea coherente con el plan de estudios.</li>
-                                    <li>La capacidad no debe ser menor que el número de estudiantes ya inscritos.</li>
+                                    <li>El cupo máximo no debe ser menor que el número de estudiantes ya inscritos.</li>
                                     <li>Cualquier cambio afectará inmediatamente a los registros asociados.</li>
                                 </ul>
                             </div>
@@ -218,11 +218,11 @@
     </div>
 
     <script>
-        // Actualizar la barra de progreso cuando cambie la capacidad
-        document.getElementById('capacidad').addEventListener('input', function() {
+        // Actualizar la barra de progreso cuando cambie el cupo máximo
+        document.getElementById('cupo_maximo').addEventListener('input', function() {
             const value = this.value;
             const progressBar = document.querySelector('.progress-bar');
-            const percentage = (value / 100) * 100;
+            const percentage = (value / 120) * 100;
             progressBar.style.width = percentage + '%';
             progressBar.textContent = value + ' estudiantes';
         });

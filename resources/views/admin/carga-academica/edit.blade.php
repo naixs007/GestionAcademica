@@ -25,75 +25,73 @@
         @endif
 
         <div class="row">
-            {{-- Información del Docente --}}
+            {{-- Información Actual --}}
             <div class="col-lg-4">
                 <div class="card shadow-sm mb-3">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-info text-white">
                         <h5 class="mb-0">
-                            <i class="fa-solid fa-user-tie"></i> Docente
+                            <i class="fa-solid fa-info-circle"></i> Asignación Actual
                         </h5>
                     </div>
-                    <div class="card-body text-center">
-                        <div class="avatar-circle-large bg-primary text-white mb-3 mx-auto">
-                            {{ substr($docente->user->name, 0, 2) }}
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fa-solid fa-user-tie"></i> Docente:
+                            </small>
+                            <p class="mb-0"><strong>{{ $cargaAcademica->docente->user->name }}</strong></p>
                         </div>
-                        <h4 class="mb-1">{{ $docente->user->name }}</h4>
-                        <p class="text-muted mb-3">{{ $docente->user->email }}</p>
 
-                        <div class="row text-start">
-                            <div class="col-12 mb-2">
-                                <small class="text-muted">Categoría:</small>
-                                <p class="mb-0"><span class="badge bg-info">{{ $docente->categoria }}</span></p>
-                            </div>
-                            <div class="col-12 mb-2">
-                                <small class="text-muted">Carga Horaria Máxima:</small>
-                                <p class="mb-0"><strong>{{ $docente->cargaHoraria }} horas/semana</strong></p>
-                            </div>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fa-solid fa-book"></i> Materia:
+                            </small>
+                            <p class="mb-0">
+                                <span class="badge bg-primary">{{ $cargaAcademica->materia->sigla }}</span>
+                                {{ $cargaAcademica->materia->nombre }}
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fa-solid fa-users"></i> Grupo:
+                            </small>
+                            <p class="mb-0">
+                                <span class="badge bg-info">{{ $cargaAcademica->grupo->nombre }}</span>
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fa-solid fa-door-open"></i> Aula:
+                            </small>
+                            <p class="mb-0">
+                                <strong>{{ $cargaAcademica->aula->codigo }}</strong>
+                                <span class="badge bg-secondary ms-1">{{ $cargaAcademica->aula->tipo }}</span>
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fa-solid fa-calendar"></i> Gestión:
+                            </small>
+                            <p class="mb-0"><strong>{{ $cargaAcademica->gestion }} - Período {{ $cargaAcademica->periodo }}</strong></p>
+                        </div>
+
+                        <div>
+                            <small class="text-muted">
+                                <i class="fa-solid fa-clock"></i> Horario:
+                            </small>
+                            <p class="mb-0">
+                                {{ substr($cargaAcademica->horario->hora_inicio, 0, 5) }} -
+                                {{ substr($cargaAcademica->horario->hora_fin, 0, 5) }}
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                {{-- Estadísticas Actuales --}}
-                <div class="card shadow-sm">
-                    <div class="card-header bg-info text-white">
-                        <h6 class="mb-0">
-                            <i class="fa-solid fa-chart-bar"></i> Estado Actual
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        @php
-                            $cargasActuales = $docente->cargasAcademicas->count();
-                            $materiasActuales = $docente->materias->count();
-                            $cargaActual = $docente->materias->sum('cargaHoraria');
-                            $porcentajeActual = $docente->cargaHoraria > 0 ? ($cargaActual / $docente->cargaHoraria) * 100 : 0;
-                        @endphp
-
-                        <div class="mb-3">
-                            <label class="text-muted small">Asignaciones</label>
-                            <h4 class="mb-0 text-primary">{{ $cargasActuales }}</h4>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="text-muted small">Materias Únicas</label>
-                            <h4 class="mb-0 text-info">{{ $materiasActuales }}</h4>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="text-muted small">Carga Horaria Actual</label>
-                            <h4 class="mb-0 text-success">{{ $cargaActual }} / {{ $docente->cargaHoraria }} hrs</h4>
-                        </div>
-
-                        <div>
-                            <label class="text-muted small">Porcentaje de Carga</label>
-                            <div class="progress" style="height: 25px;">
-                                <div class="progress-bar bg-{{ $porcentajeActual >= 100 ? 'danger' : ($porcentajeActual >= 75 ? 'warning' : 'success') }}"
-                                     role="progressbar"
-                                     style="width: {{ min($porcentajeActual, 100) }}%">
-                                    {{ number_format($porcentajeActual, 1) }}%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="alert alert-warning">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <strong>Nota:</strong> Modifique los campos necesarios y guarde los cambios.
                 </div>
             </div>
 
@@ -102,115 +100,144 @@
                 <div class="card shadow-sm">
                     <div class="card-header bg-warning text-dark">
                         <h5 class="mb-0">
-                            <i class="fa-solid fa-book-open"></i> Gestionar Materias Asignadas
+                            <i class="fa-solid fa-wpforms"></i> Datos de la Asignación
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('admin.carga-academica.update', $docente->id) }}" method="POST" id="formEditarCarga">
+                        <form action="{{ route('admin.carga-academica.update', $cargaAcademica->id) }}" method="POST">
                             @csrf
                             @method('PUT')
 
-                            <div class="alert alert-info">
-                                <i class="fa-solid fa-info-circle"></i>
-                                <strong>Instrucciones:</strong> Seleccione las materias y grupos que desea asignar a este docente.
-                                Las asignaciones actuales no seleccionadas serán eliminadas.
+                            {{-- Seleccionar Docente --}}
+                            <div class="mb-4">
+                                <label for="docente_id" class="form-label fw-bold">
+                                    <i class="fa-solid fa-chalkboard-user text-primary"></i> Docente <span class="text-danger">*</span>
+                                </label>
+                                <select name="docente_id" id="docente_id" class="form-select @error('docente_id') is-invalid @enderror" required>
+                                    <option value="">-- Seleccionar docente --</option>
+                                    @foreach($docentes as $docente)
+                                        <option value="{{ $docente->id }}"
+                                                {{ old('docente_id', $cargaAcademica->docente_id) == $docente->id ? 'selected' : '' }}>
+                                            {{ $docente->user->name }} - {{ $docente->categoria }} ({{ $docente->cargaHoraria }} hrs/semana)
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('docente_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            {{-- Lista de materias disponibles --}}
+                            {{-- Seleccionar Materia --}}
                             <div class="mb-4">
-                                <label class="form-label fw-bold mb-3">
-                                    <i class="fa-solid fa-book text-primary"></i> Materias Disponibles <span class="text-danger">*</span>
+                                <label for="materia_id" class="form-label fw-bold">
+                                    <i class="fa-solid fa-book text-primary"></i> Materia <span class="text-danger">*</span>
                                 </label>
+                                <select name="materia_id" id="materia_id" class="form-select @error('materia_id') is-invalid @enderror" required>
+                                    <option value="">-- Seleccionar materia --</option>
+                                    @foreach($materias as $materia)
+                                        <option value="{{ $materia->id }}"
+                                                {{ old('materia_id', $cargaAcademica->materia_id) == $materia->id ? 'selected' : '' }}>
+                                            {{ $materia->codigo }} - {{ $materia->nombre }}
+                                            ({{ $materia->cargaHoraria }} hrs - {{ $materia->nivel }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('materia_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                                @if($materias->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th width="50" class="text-center">
-                                                        <input type="checkbox" id="selectAll" title="Seleccionar todas">
-                                                    </th>
-                                                    <th>Código</th>
-                                                    <th>Nombre de la Materia</th>
-                                                    <th>Nivel</th>
-                                                    <th class="text-center">Horas/Semana</th>
-                                                    <th class="text-center">Estado</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($materias as $materia)
-                                                    @php
-                                                        $esAsignada = $docente->materias->contains($materia->id);
-                                                    @endphp
-                                                    <tr class="{{ $esAsignada ? 'table-success' : '' }}">
-                                                        <td class="text-center">
-                                                            <input type="checkbox"
-                                                                   name="materias[]"
-                                                                   value="{{ $materia->id }}"
-                                                                   class="form-check-input materia-checkbox"
-                                                                   data-carga="{{ $materia->cargaHoraria }}"
-                                                                   {{ $esAsignada ? 'checked' : '' }}>
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge bg-primary">{{ $materia->codigo }}</span>
-                                                        </td>
-                                                        <td>
-                                                            <strong>{{ $materia->nombre }}</strong>
-                                                        </td>
-                                                        <td>{{ $materia->nivel }}</td>
-                                                        <td class="text-center"><strong>{{ $materia->cargaHoraria }}</strong></td>
-                                                        <td class="text-center">
-                                                            @if($esAsignada)
-                                                                <span class="badge bg-success">
-                                                                    <i class="fa-solid fa-check"></i> Asignada
-                                                                </span>
-                                                            @else
-                                                                <span class="badge bg-secondary">
-                                                                    <i class="fa-solid fa-circle"></i> Disponible
-                                                                </span>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
+                            {{-- Seleccionar Grupo --}}
+                            <div class="mb-4">
+                                <label for="grupo_id" class="form-label fw-bold">
+                                    <i class="fa-solid fa-users-rectangle text-primary"></i> Grupo <span class="text-danger">*</span>
+                                </label>
+                                <select name="grupo_id" id="grupo_id" class="form-select @error('grupo_id') is-invalid @enderror" required>
+                                    <option value="">-- Seleccionar grupo --</option>
+                                    @foreach($grupos as $grupo)
+                                        <option value="{{ $grupo->id }}"
+                                                {{ old('grupo_id', $cargaAcademica->grupo_id) == $grupo->id ? 'selected' : '' }}>
+                                            {{ $grupo->nombre }} - Cupo: {{ $grupo->cupo_maximo }} estudiantes
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('grupo_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Seleccionar Horario --}}
+                            <div class="mb-4">
+                                <label for="horario_id" class="form-label fw-bold">
+                                    <i class="fa-solid fa-clock text-primary"></i> Horario <span class="text-danger">*</span>
+                                </label>
+                                <select name="horario_id" id="horario_id" class="form-select @error('horario_id') is-invalid @enderror" required>
+                                    <option value="">-- Seleccionar horario --</option>
+                                    @foreach($horarios as $horario)
+                                        <option value="{{ $horario->id }}" {{ old('horario_id', $cargaAcademica->horario_id) == $horario->id ? 'selected' : '' }}>
+                                            @if(isset($horario->dias_agrupados) && count($horario->dias_agrupados) > 0)
+                                                @foreach($horario->dias_agrupados as $dia)
+                                                    {{ $dia }}{{ !$loop->last ? ', ' : '' }}
                                                 @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>                                    {{-- Resumen de carga seleccionada --}}
-                                    <div class="alert alert-primary mt-3" id="resumenCarga">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <strong>Materias Seleccionadas:</strong>
-                                                <span id="materiasCount">{{ $docente->materias->count() }}</span>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <strong>Carga Total:</strong>
-                                                <span id="cargaTotal">{{ $docente->materias->sum('cargaHoraria') }}</span> hrs
-                                            </div>
-                                            <div class="col-md-4">
-                                                <strong>Disponible:</strong>
-                                                <span id="cargaDisponible">{{ $docente->cargaHoraria - $docente->materias->sum('cargaHoraria') }}</span> hrs
-                                            </div>
-                                        </div>
-                                        <div class="progress mt-2" style="height: 20px;">
-                                            <div class="progress-bar"
-                                                 id="progressBar"
-                                                 role="progressbar"
-                                                 style="width: {{ min($porcentajeActual, 100) }}%">
-                                            </div>
-                                        </div>
-                                    </div>
+                                            @else
+                                                {{ $horario->dia_semana }}
+                                            @endif
+                                            | {{ substr($horario->hora_inicio, 0, 5) }} - {{ substr($horario->hora_fin, 0, 5) }} ({{ $horario->duracion_formateada }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('horario_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                                    <div class="alert alert-warning" id="alertaExceso" style="display: none;">
-                                        <i class="fa-solid fa-exclamation-triangle"></i>
-                                        <strong>¡Atención!</strong> La carga horaria seleccionada excede el límite del docente.
-                                    </div>
+                            {{-- Seleccionar Aula --}}
+                            <div class="mb-4">
+                                <label for="aula_id" class="form-label fw-bold">
+                                    <i class="fa-solid fa-door-open text-primary"></i> Aula <span class="text-danger">*</span>
+                                </label>
+                                <select name="aula_id" id="aula_id" class="form-select @error('aula_id') is-invalid @enderror" required>
+                                    <option value="">-- Seleccionar aula --</option>
+                                    @foreach($aulas as $aula)
+                                        <option value="{{ $aula->id }}"
+                                                {{ old('aula_id', $cargaAcademica->aula_id) == $aula->id ? 'selected' : '' }}>
+                                            {{ $aula->codigo }} - {{ $aula->tipo }} (Cap: {{ $aula->capacidad }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('aula_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                                @else
-                                    <div class="alert alert-warning">
-                                        <i class="fa-solid fa-exclamation-triangle"></i>
-                                        No hay materias disponibles para asignar.
-                                        <a href="{{ route('admin.materia.create') }}" class="alert-link">Registrar nueva materia</a>
-                                    </div>
-                                @endif
+                            {{-- Gestión y Periodo --}}
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="gestion" class="form-label fw-bold">
+                                        <i class="fa-solid fa-calendar text-primary"></i> Gestión <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" name="gestion" id="gestion"
+                                           class="form-control @error('gestion') is-invalid @enderror"
+                                           value="{{ old('gestion', $cargaAcademica->gestion) }}"
+                                           min="2020" max="2099" required>
+                                    @error('gestion')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">Año académico (ej: {{ date('Y') }})</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="periodo" class="form-label fw-bold">
+                                        <i class="fa-solid fa-calendar-days text-primary"></i> Periodo <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="periodo" id="periodo" class="form-select @error('periodo') is-invalid @enderror" required>
+                                        <option value="">-- Seleccionar periodo --</option>
+                                        <option value="1" {{ old('periodo', $cargaAcademica->periodo) == 1 ? 'selected' : '' }}>1° Semestre</option>
+                                        <option value="2" {{ old('periodo', $cargaAcademica->periodo) == 2 ? 'selected' : '' }}>2° Semestre</option>
+                                    </select>
+                                    @error('periodo')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
 
                             {{-- Botones --}}
@@ -218,148 +245,14 @@
                                 <a href="{{ route('admin.carga-academica.index') }}" class="btn btn-secondary">
                                     <i class="fa-solid fa-times"></i> Cancelar
                                 </a>
-                                @if($materias->count() > 0)
-                                    <button type="submit" class="btn btn-success" id="btnSubmit">
-                                        <i class="fa-solid fa-save"></i> Guardar Cambios
-                                    </button>
-                                @endif
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa-solid fa-save"></i> Guardar Cambios
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
-
-                {{-- Materias actualmente asignadas --}}
-                @if($docente->cargasAcademicas->count() > 0)
-                    <div class="card shadow-sm mt-3">
-                        <div class="card-header bg-success text-white">
-                            <h6 class="mb-0">
-                                <i class="fa-solid fa-check-circle"></i> Asignaciones Actuales de Carga Académica
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Materia</th>
-                                            <th>Grupo</th>
-                                            <th>Horas</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($docente->cargasAcademicas as $carga)
-                                            <tr>
-                                                <td>
-                                                    <span class="badge bg-primary">{{ $carga->materia->codigo }}</span>
-                                                    <br>
-                                                    <small>{{ $carga->materia->nombre }}</small>
-                                                </td>
-                                                <td>
-                                                    @if($carga->grupo)
-                                                        <span class="badge bg-info">{{ $carga->grupo->nombre }}</span>
-                                                    @else
-                                                        <span class="text-muted">Sin grupo</span>
-                                                    @endif
-                                                </td>
-                                                <td><strong>{{ $carga->materia->cargaHoraria }}</strong> hrs</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                @endif
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const checkboxes = document.querySelectorAll('.materia-checkbox');
-            const selectAll = document.getElementById('selectAll');
-            const materiasCount = document.getElementById('materiasCount');
-            const cargaTotal = document.getElementById('cargaTotal');
-            const cargaDisponible = document.getElementById('cargaDisponible');
-            const progressBar = document.getElementById('progressBar');
-            const alertaExceso = document.getElementById('alertaExceso');
-            const cargaMaxima = {{ $docente->cargaHoraria }};
-
-            // Función para actualizar el resumen
-            function actualizarResumen() {
-                let count = 0;
-                let totalHoras = 0;
-
-                checkboxes.forEach(checkbox => {
-                    if(checkbox.checked) {
-                        count++;
-                        totalHoras += parseInt(checkbox.dataset.carga);
-                    }
-                });
-
-                const disponible = cargaMaxima - totalHoras;
-                const porcentaje = (totalHoras / cargaMaxima) * 100;
-
-                materiasCount.textContent = count;
-                cargaTotal.textContent = totalHoras;
-                cargaDisponible.textContent = disponible;
-
-                // Actualizar barra de progreso
-                progressBar.style.width = Math.min(porcentaje, 100) + '%';
-
-                if(porcentaje >= 100) {
-                    progressBar.classList.remove('bg-success', 'bg-warning');
-                    progressBar.classList.add('bg-danger');
-                    alertaExceso.style.display = 'block';
-                } else if(porcentaje >= 75) {
-                    progressBar.classList.remove('bg-success', 'bg-danger');
-                    progressBar.classList.add('bg-warning');
-                    alertaExceso.style.display = 'none';
-                } else {
-                    progressBar.classList.remove('bg-warning', 'bg-danger');
-                    progressBar.classList.add('bg-success');
-                    alertaExceso.style.display = 'none';
-                }
-
-                progressBar.textContent = porcentaje.toFixed(1) + '%';
-            }
-
-            // Evento para cada checkbox
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    actualizarResumen();
-                });
-            });
-
-            // Seleccionar/Deseleccionar todas
-            if(selectAll) {
-                selectAll.addEventListener('change', function() {
-                    checkboxes.forEach(checkbox => {
-                        checkbox.checked = this.checked;
-                    });
-                    actualizarResumen();
-                });
-            }
-
-            // Actualizar al cargar la página
-            actualizarResumen();
-        });
-    </script>
-
-    <style>
-        .avatar-circle-large {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 2.5rem;
-        }
-
-        .table-success {
-            background-color: #d1f2eb !important;
-        }
-    </style>
 </x-admin-layout>

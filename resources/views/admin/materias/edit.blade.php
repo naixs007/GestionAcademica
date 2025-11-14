@@ -51,7 +51,7 @@
                                             <div class="mb-3">
                                                 <label for="codigo" class="form-label">
                                                     <i class="fa-solid fa-barcode text-primary"></i>
-                                                    <strong>Código</strong> <span class="text-danger">*</span>
+                                                    <strong>Código/Sigla</strong> <span class="text-danger">*</span>
                                                 </label>
                                                 <input type="text"
                                                        name="codigo"
@@ -60,6 +60,7 @@
                                                        value="{{ old('codigo', $materia->codigo) }}"
                                                        maxlength="20"
                                                        required>
+                                                <input type="hidden" name="sigla" id="sigla" value="{{ old('codigo', $materia->codigo) }}">
                                                 @error('codigo')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
@@ -256,6 +257,11 @@
     </div>
 
     <script>
+        // Sincronizar código con sigla automáticamente
+        document.getElementById('codigo').addEventListener('input', function() {
+            document.getElementById('sigla').value = this.value;
+        });
+
         // Actualizar la barra de progreso cuando cambie la carga horaria
         document.getElementById('cargaHoraria').addEventListener('input', function() {
             const value = this.value;
