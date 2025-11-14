@@ -247,7 +247,6 @@
                                         <i class="fa-solid fa-trash"></i> Eliminar Materia
                                     </button>
                                 </form>
-                            @endcan
                         </div>
                     </div>
                 </div>
