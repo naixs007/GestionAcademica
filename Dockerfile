@@ -17,19 +17,19 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Usamos una imagen FPM ligera (Alpine)
 FROM php:8.2-fpm-alpine AS production
 
-# Instalar dependencias del sistema necesarias y PostgreSQL
-RUN apk add --no-cache \
-    nginx \
-    git \
-    libpq \
-    libzip \
-    libonig \
-    bash \
+# 1. Instalar dependencias del sistema y extensiones de PHP en un solo RUN
+RUN apk update \
+    && apk add --no-cache \
+        nginx \
+        git \
+        libpq \
+        libzip \
+        libonig \
+        bash \
+    # Instalar y habilitar las extensiones de PHP necesarias (pgsql es crucial)
+    && docker-php-ext-install pdo_pgsql mbstring zip bcmath \
     # Limpieza de caché
     && rm -rf /var/cache/apk/*
-
-# Instalar extensiones de PHP necesarias (pgsql es crucial)
-RUN docker-php-ext-install pdo_pgsql mbstring zip bcmath
 
 # Establece el directorio de trabajo
 WORKDIR /var/www/html
@@ -40,8 +40,8 @@ COPY . /var/www/html/
 # Copia las dependencias instaladas en la etapa builder
 COPY --from=builder /app/vendor /var/www/html/vendor
 
-# Copia los archivos de configuración auxiliares
-# NOTA: Debes crear la carpeta .docker/ y los archivos entrypoint.sh y nginx.conf
+# Copia los archivos de configuración auxiliares (Entrypoint y NGINX)
+# Verifica que la carpeta .docker/ y estos archivos existan en tu repositorio
 COPY .docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY .docker/nginx.conf /etc/nginx/nginx.conf
 
