@@ -26,6 +26,7 @@ RUN apk update \
         libzip \
         bash \
         libpq-dev \
+        libzip-dev \
         oniguruma-dev \
     # Instalar y habilitar las extensiones de PHP necesarias (pgsql es crucial)
     && docker-php-ext-install pdo_pgsql mbstring zip bcmath \
