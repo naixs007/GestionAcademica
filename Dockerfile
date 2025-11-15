@@ -22,9 +22,8 @@ RUN apk update \
     && apk add --no-cache \
         nginx \
         git \
-        libpq \
-        libzip \
         bash \
+        # Paquetes de desarrollo para compilación de extensiones:
         libpq-dev \
         libzip-dev \
         oniguruma-dev \
