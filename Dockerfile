@@ -24,8 +24,8 @@ RUN apk update \
         git \
         libpq \
         libzip \
-        libonig \
         bash \
+        oniguruma-dev \
     # Instalar y habilitar las extensiones de PHP necesarias (pgsql es crucial)
     && docker-php-ext-install pdo_pgsql mbstring zip bcmath \
     # Limpieza de caché
