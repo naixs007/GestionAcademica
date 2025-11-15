@@ -9,7 +9,7 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 
 # Instala las dependencias de Laravel (solo producción)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # ----------------------------------------------------
 # ETAPA 2: PRODUCCIÓN - Configuración de PHP-FPM y NGINX
