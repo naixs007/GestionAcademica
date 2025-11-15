@@ -8,6 +8,9 @@ WORKDIR /app
 # Copia solo los archivos necesarios para la instalación de Composer
 COPY composer.json composer.lock ./
 
+# Copias el reto de los archivos
+COPY . .
+
 # Instala las dependencias de Laravel (solo producción)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
