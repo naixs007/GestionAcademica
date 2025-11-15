@@ -58,8 +58,16 @@ class Materia extends Model
         return $this->belongsToMany(Aula::class, 'materia_aula', 'materia_id', 'aula_id');
     }
 
+    // Relación con horarios a través de carga académica
     public function horarios()
     {
-        return $this->hasMany(Horario::class);
+        return $this->hasManyThrough(
+            Horario::class,
+            CargaAcademica::class,
+            'materia_id',    // Foreign key en carga_academica
+            'id',            // Foreign key en horarios
+            'id',            // Local key en materias
+            'horario_id'     // Local key en carga_academica
+        );
     }
 }
