@@ -9,7 +9,7 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 
 # Instala las dependencias de Laravel (solo producción)
-RUN RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # ----------------------------------------------------
 # ETAPA 2: PRODUCCIÓN - Configuración de PHP-FPM y NGINX
@@ -17,7 +17,7 @@ RUN RUN composer install --no-dev --optimize-autoloader --no-interaction --ignor
 # Usamos una imagen FPM ligera (Alpine)
 FROM php:8.2-fpm-alpine AS production
 
-# 1. Instalar dependencias del sistema y extensiones de PHP en un solo RUN
+# 1. Instalar dependencias del sistema y extensiones de PHP en un solo 'RUN'
 RUN apk update \
     && apk add --no-cache \
         nginx \
