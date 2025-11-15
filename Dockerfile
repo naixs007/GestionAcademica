@@ -1,26 +1,37 @@
 # ----------------------------------------------------
-# ETAPA 1: BUILDER - Para instalar dependencias de Composer
+# ETAPA 1: ASSETS BUILDER (Node.js/Vite)
 # ----------------------------------------------------
-FROM composer:2 AS builder
+FROM node:18-alpine AS node_builder
 
 WORKDIR /app
 
-# Copia solo los archivos necesarios para la instalación de Composer
-COPY composer.json composer.lock ./
+# Copia los archivos necesarios para Node/Vite
+COPY package.json package-lock.json ./
+RUN npm install
 
-# Copias el reto de los archivos
+# Copia los archivos del proyecto y compila Vite
+COPY . .
+RUN npm run build # <-- ESTO CREA public/build/manifest.json
+
+# ----------------------------------------------------
+# ETAPA 2: PHP DEPENDENCY BUILDER (Composer)
+# ----------------------------------------------------
+FROM composer:2 AS php_builder
+
+WORKDIR /app
+
+# Copia el código completo (incluye 'artisan' para scripts)
 COPY . .
 
-# Instala las dependencias de Laravel (solo producción)
+# Instala dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # ----------------------------------------------------
-# ETAPA 2: PRODUCCIÓN - Configuración de PHP-FPM y NGINX
+# ETAPA 3: PRODUCCIÓN (PHP-FPM/NGINX)
 # ----------------------------------------------------
-# Usamos una imagen FPM ligera (Alpine)
 FROM php:8.2-fpm-alpine AS production
 
-# 1. Instalar dependencias del sistema y extensiones de PHP en un solo 'RUN'
+# 1. Instalar dependencias del sistema y extensiones de PHP
 RUN apk update \
     && apk add --no-cache \
         nginx \
@@ -30,7 +41,7 @@ RUN apk update \
         libpq-dev \
         libzip-dev \
         oniguruma-dev \
-    # Instalar y habilitar las extensiones de PHP necesarias (pgsql es crucial)
+    # Instalar y habilitar las extensiones de PHP
     && docker-php-ext-install pdo_pgsql mbstring zip bcmath \
     # Limpieza de caché
     && rm -rf /var/cache/apk/*
@@ -38,14 +49,16 @@ RUN apk update \
 # Establece el directorio de trabajo
 WORKDIR /var/www/html
 
-# Copia los archivos de la aplicación desde el directorio local
+# Copia los archivos base de la aplicación
 COPY . /var/www/html/
 
-# Copia las dependencias instaladas en la etapa builder
-COPY --from=builder /app/vendor /var/www/html/vendor
+# Copia los activos compilados desde la etapa 'node_builder' (¡CRUCIAL para Vite!)
+COPY --from=node_builder /app/public/build /var/www/html/public/build
 
-# Copia los archivos de configuración auxiliares (Entrypoint y NGINX)
-# Verifica que la carpeta .docker/ y estos archivos existan en tu repositorio
+# Copia la carpeta 'vendor' desde la etapa 'php_builder'
+COPY --from=php_builder /app/vendor /var/www/html/vendor
+
+# Copia los archivos de configuración auxiliares
 COPY .docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY .docker/nginx.conf /etc/nginx/nginx.conf
 
@@ -56,8 +69,8 @@ RUN chown -R www-data:www-data /var/www/html \
 # El puerto 8000 es el que usará NGINX para escuchar
 EXPOSE 8000
 
-# Usamos el entrypoint.sh para ejecutar las migraciones ANTES de iniciar los servicios
+# Script de entrada que ejecuta las migraciones antes de iniciar NGINX
 ENTRYPOINT ["entrypoint.sh"]
 
-# El comando final que ejecuta el entrypoint.sh (que inicia NGINX y PHP-FPM)
+# Iniciar NGINX
 CMD ["nginx", "-g", "daemon off;"]
