@@ -53,6 +53,41 @@
             menuToggle.addEventListener('click', () => {
                 sidebar.classList.toggle('active');
             });
+
+            // Cerrar enlaces del menú cuando se hace clic en un enlace (responsive)
+            const sidebarLinks = sidebar.querySelectorAll('.menu a:not(.submenu-toggle)');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+            });
+
+            // Manejo de submenús desplegables
+            const menuToggles = document.querySelectorAll('.submenu-toggle[data-target]');
+            menuToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Obtener el submenú objetivo
+                    const targetId = this.getAttribute('data-target');
+                    const targetSubmenu = document.getElementById(targetId);
+
+                    if (targetSubmenu) {
+                        // Toggle del submenú
+                        targetSubmenu.classList.toggle('show');
+
+                        // Rotar el ícono chevron
+                        const chevron = this.querySelector('.fa-chevron-down');
+                        if (chevron) {
+                            chevron.style.transform = targetSubmenu.classList.contains('show')
+                                ? 'rotate(180deg)'
+                                : 'rotate(0deg)';
+                        }
+                    }
+                });
+            });
         }
 
         // Auto-cerrar alertas después de 5 segundos

@@ -22,20 +22,26 @@
                 <div class="row">
                     <div class="col-md-6 mb-4">
                         <h6 class="text-muted mb-3"><i class="fa-solid fa-user-tie"></i> Información del Docente</h6>
-                        <table class="table table-sm table-borderless">
-                            <tr>
-                                <th width="40%">Nombre:</th>
-                                <td><strong>{{ $habilitacion->docente->user->name }}</strong></td>
-                            </tr>
-                            <tr>
-                                <th>Email:</th>
-                                <td>{{ $habilitacion->docente->user->email }}</td>
-                            </tr>
-                            <tr>
-                                <th>Especialidad:</th>
-                                <td>{{ $habilitacion->docente->especialidad ?? '-' }}</td>
-                            </tr>
-                        </table>
+                        @if($habilitacion->docente && $habilitacion->docente->user)
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <th width="40%">Nombre:</th>
+                                    <td><strong>{{ $habilitacion->docente->user->name }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ $habilitacion->docente->user->email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Especialidad:</th>
+                                    <td>{{ $habilitacion->docente->especialidad ?? '-' }}</td>
+                                </tr>
+                            </table>
+                        @else
+                            <div class="alert alert-warning">
+                                <i class="fa-solid fa-exclamation-triangle"></i> No se encontró información del docente
+                            </div>
+                        @endif
                     </div>
 
                     <div class="col-md-6 mb-4">

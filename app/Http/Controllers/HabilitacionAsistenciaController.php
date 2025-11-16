@@ -141,10 +141,21 @@ class HabilitacionAsistenciaController extends Controller
                 ->with('error', 'No se puede eliminar una habilitación que ya fue utilizada.');
         }
 
-        $habilitacion->delete();
+        try {
+            $id = $habilitacion->id;
+            $eliminado = $habilitacion->delete();
 
-        return redirect()->route('admin.habilitaciones.index')
-            ->with('success', 'Habilitación eliminada exitosamente.');
+            if ($eliminado) {
+                return redirect()->route('admin.habilitaciones.index')
+                    ->with('success', "Habilitación #{$id} eliminada exitosamente.");
+            } else {
+                return redirect()->back()
+                    ->with('error', 'No se pudo eliminar la habilitación. Intente nuevamente.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error al eliminar: ' . $e->getMessage());
+        }
     }
 
     /**

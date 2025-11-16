@@ -32,35 +32,25 @@
             </a>
 
             <div id="asistencia-menu" class="submenu {{ Route::is('docente.asistencia.*') ? 'show' : '' }}">
-                {{-- VER MI ASISTENCIA --}}
-                <a href="{{ route('docente.asistencia.index') }}"
-                    class="{{ Route::is('docente.asistencia.index') ? 'active' : '' }}">
-                    <i class="fa-solid fa-list"></i> Ver Mi Asistencia
-                </a>
-
                 {{-- MARCAR ASISTENCIA --}}
                 <a href="{{ route('docente.asistencia.marcar') }}"
                     class="{{ Route::is('docente.asistencia.marcar') ? 'active' : '' }}">
                     <i class="fa-solid fa-hand-pointer"></i> Marcar Asistencia
+                </a>
+
+                {{-- VER MI ASISTENCIA --}}
+                <a href="{{ route('docente.asistencia.index') }}"
+                    class="{{ Route::is('docente.asistencia.index') ? 'active' : '' }}">
+                    <i class="fa-solid fa-list"></i> Ver Mi Historial
                 </a>
             </div>
 
             <hr>
         @endif
 
-        {{-- Mi Carga Académica --}}
-        @if ($user && $user->hasRole('docente'))
-            <a href="{{ route('docente.carga-academica') }}"
-                class="{{ Route::is('docente.carga-academica') ? 'active' : '' }}">
-                <i class="fa-solid fa-book"></i> Mi Carga Académica
-            </a>
-
-            <hr>
-        @endif
-
         {{-- Mi Perfil --}}
         <a href="{{ route('profile.edit') }}" class="{{ Route::is('profile.*') ? 'active' : '' }}">
-            <i class="fa-solid fa-user"></i> Mi Perfil
+            <i class="fa-solid fa-user-circle"></i> Mi Perfil
         </a>
     </div>
 </div>

@@ -171,24 +171,10 @@
 
         {{-- 5. Reportes (Admin, Super-Admin, Decano) --}}
         @if ($user && $user->hasAnyRole(['admin', 'super-admin', 'decano']))
-            <a href="#"
-                class="submenu-toggle {{ Route::is('admin.reporte.*') ? 'active' : '' }}"
-                data-target="reportes-menu">
-                <i class="fa-solid fa-chart-line"></i> Reportes y Estadísticas
-                <i class="fa-solid fa-chevron-down ms-auto"></i>
+            <a href="{{ route('admin.reportes.docentes.index') }}"
+                class="{{ Route::is('admin.reportes.docentes.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-chart-line"></i> Reportes de Docentes
             </a>
-
-            <div id="reportes-menu" class="submenu {{ Route::is('admin.reporte.*') ? 'show' : '' }}">
-                <a href="{{ route('admin.reporte.index') }}"
-                    class="{{ Route::is('admin.reporte.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-file-chart-column"></i> Ver Reportes
-                </a>
-
-                <a href="{{ route('admin.reporte.download') }}"
-                    class="{{ Route::is('admin.reporte.download') ? 'active' : '' }}">
-                    <i class="fa-solid fa-download"></i> Descargar Reportes
-                </a>
-            </div>
 
             <hr>
         @endif

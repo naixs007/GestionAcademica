@@ -76,4 +76,10 @@ class Docente extends Model
     {
         return $this->hasMany(CargaAcademica::class);
     }
+
+    // Relación con habilitaciones de asistencia
+    public function habilitacionesAsistencia()
+    {
+        return $this->hasMany(HabilitacionAsistencia::class);
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\AulaController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\ReporteDocenteController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AsistenciaController;
@@ -146,13 +147,11 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
             ->names('aula');
 
         // Reportes
-        Route::get('reporte', function() {
-            return "Ruta: admin.reporte.index (Listado de Reportes) - OK";
-        })->name('reporte.index');
-
-        Route::get('reporte/download', function() {
-            return "Ruta: admin.reporte.download (Descarga de Reporte) - OK";
-        })->name('reporte.download');
+        Route::prefix('reportes')->name('reportes.')->group(function () {
+            Route::get('docentes', [ReporteDocenteController::class, 'index'])->name('docentes.index');
+            Route::get('docentes/pdf', [ReporteDocenteController::class, 'descargarPDF'])->name('docentes.pdf');
+            Route::get('docentes/comparar', [ReporteDocenteController::class, 'comparar'])->name('docentes.comparar');
+        });
     });
 
     // 3. ASISTENCIA (Todos los roles autenticados pueden ver, solo Admin/Decano pueden crear)
@@ -181,11 +180,16 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
 
     // 4. HABILITACIONES DE ASISTENCIA (Solo Admin/Decano)
     Route::middleware('role:admin,super-admin,decano')->group(function () {
-        Route::resource('habilitaciones', HabilitacionAsistenciaController::class)->names('habilitaciones');
-        Route::patch('habilitaciones/{habilitacion}/cancelar', [HabilitacionAsistenciaController::class, 'cancelar'])
-            ->name('habilitaciones.cancelar');
+        // Rutas específicas ANTES del resource
         Route::get('habilitaciones/get-materias/{docente}', [HabilitacionAsistenciaController::class, 'getMateriasByDocente'])
             ->name('habilitaciones.get-materias');
+        Route::patch('habilitaciones/{habilitacion}/cancelar', [HabilitacionAsistenciaController::class, 'cancelar'])
+            ->name('habilitaciones.cancelar');
+
+        // Resource routes al final con parámetro explícito
+        Route::resource('habilitaciones', HabilitacionAsistenciaController::class)
+            ->names('habilitaciones')
+            ->parameters(['habilitaciones' => 'habilitacion']);
     });
 });
 

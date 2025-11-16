@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use App\Models\HabilitacionAsistencia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,5 +37,10 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production' || env('FORCE_HTTPS')) {
              URL::forceScheme('https');
         }
+
+        // Binding explícito para habilitaciones
+        Route::bind('habilitacion', function ($value) {
+            return HabilitacionAsistencia::findOrFail($value);
+        });
     }
 }

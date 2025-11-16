@@ -41,6 +41,12 @@ RUN apk update \
         libpq-dev \
         libzip-dev \
         oniguruma-dev \
+        # Dependencias para DomPDF (generación de PDFs):
+        fontconfig \
+        ttf-dejavu \
+        ttf-droid \
+        ttf-freefont \
+        ttf-liberation \
     # Instalar y habilitar las extensiones de PHP
     && docker-php-ext-install pdo_pgsql mbstring zip bcmath \
     # Limpieza de caché
