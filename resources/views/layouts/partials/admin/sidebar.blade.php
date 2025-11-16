@@ -138,13 +138,19 @@
         {{-- 4. Control de Asistencia Docente (Admin, Super-Admin, Decano) --}}
         @if ($user && $user->hasAnyRole(['admin', 'super-admin', 'decano']))
             <a href="#"
-                class="submenu-toggle {{ Route::is('admin.asistencia.*') ? 'active' : '' }}"
+                class="submenu-toggle {{ Route::is('admin.asistencia.*') || Route::is('admin.habilitaciones.*') ? 'active' : '' }}"
                 data-target="asistencia-menu">
                 <i class="fa-solid fa-square-check"></i> Control de Asistencia Docente
                 <i class="fa-solid fa-chevron-down ms-auto"></i>
             </a>
 
-            <div id="asistencia-menu" class="submenu {{ Route::is('admin.asistencia.*') ? 'show' : '' }}">
+            <div id="asistencia-menu" class="submenu {{ Route::is('admin.asistencia.*') || Route::is('admin.habilitaciones.*') ? 'show' : '' }}">
+                {{-- HABILITAR MARCADO --}}
+                <a href="{{ route('admin.habilitaciones.index') }}"
+                    class="{{ Route::is('admin.habilitaciones.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-toggle-on"></i> Habilitar Marcado
+                </a>
+
                 {{-- VER ASISTENCIAS --}}
                 <a href="{{ route('admin.asistencia.index') }}"
                     class="{{ Route::is('admin.asistencia.index') ? 'active' : '' }}">

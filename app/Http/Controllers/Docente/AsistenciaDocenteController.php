@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Asistencia;
 use App\Models\Docente;
 use App\Models\CargaAcademica;
+use App\Models\HabilitacionAsistencia;
 use App\Services\AsistenciaService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class AsistenciaDocenteController extends Controller
@@ -73,15 +75,34 @@ class AsistenciaDocenteController extends Controller
                 ->with('error', 'No se encontró información del docente.');
         }
 
-        // Obtener cargas académicas del docente para hoy
-        $diaHoy = Carbon::now()->locale('es')->dayName;
+        // Obtener SOLO las habilitaciones activas de hoy
+        $habilitacionesHoy = HabilitacionAsistencia::with([
+            'cargaAcademica.materia',
+            'cargaAcademica.grupo',
+            'cargaAcademica.horario',
+            'cargaAcademica.aula'
+        ])
+            ->activas()
+            ->hoy()
+            ->paraDocente($docente->id)
+            ->get();
 
+        // Obtener los IDs de las cargas habilitadas
+        $cargasHabilitadasIds = $habilitacionesHoy->pluck('carga_academica_id')->toArray();
+
+        // MODO PRUEBA: Si hay habilitaciones, mostrar todas las cargas habilitadas sin filtrar por día
+        // Esto permite probar el sistema cualquier día de la semana
         $cargasHoy = CargaAcademica::with(['materia', 'grupo', 'horario', 'aula'])
             ->where('docente_id', $docente->id)
-            ->whereHas('horario', function($query) use ($diaHoy) {
-                $query->where('dia_semana', 'LIKE', '%' . $diaHoy . '%');
-            })
+            ->whereIn('id', $cargasHabilitadasIds)
             ->get();
+
+        // Mapear habilitaciones con sus cargas
+        $cargasHoy = $cargasHoy->map(function($carga) use ($habilitacionesHoy) {
+            $habilitacion = $habilitacionesHoy->firstWhere('carga_academica_id', $carga->id);
+            $carga->habilitacion_id = $habilitacion ? $habilitacion->id : null;
+            return $carga;
+        });
 
         return view('docente.asistencia.marcar', compact('docente', 'cargasHoy'));
     }
@@ -103,7 +124,35 @@ class AsistenciaDocenteController extends Controller
 
         $validated = $request->validate([
             'carga_academica_id' => 'required|integer|exists:carga_academica,id',
+            'habilitacion_id' => 'required|integer|exists:habilitaciones_asistencia,id',
+            'password' => 'required|string',
         ]);
+
+        // Verificar contraseña
+        if (!Hash::check($validated['password'], $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Contraseña incorrecta.'
+            ], 401);
+        }
+
+        // Verificar que la habilitación existe y está activa
+        $habilitacion = HabilitacionAsistencia::find($validated['habilitacion_id']);
+
+        if (!$habilitacion || !$habilitacion->estaDisponible()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Esta habilitación ya no está disponible.'
+            ], 403);
+        }
+
+        // Verificar que la habilitación pertenece al docente
+        if ($habilitacion->docente_id != $docente->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Esta habilitación no le pertenece.'
+            ], 403);
+        }
 
         // Obtener la carga académica y verificar que pertenece al docente
         $carga = CargaAcademica::with(['horario', 'materia', 'grupo'])
@@ -131,6 +180,9 @@ class AsistenciaDocenteController extends Controller
                 'message' => $resultado['message']
             ], 403);
         }
+
+        // Marcar la habilitación como utilizada
+        $habilitacion->marcarComoUtilizada();
 
         return response()->json([
             'success' => true,

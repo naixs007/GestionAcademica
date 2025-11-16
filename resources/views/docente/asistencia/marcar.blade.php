@@ -40,8 +40,10 @@
                             $horaInicio = \Carbon\Carbon::parse($carga->horario->hora_inicio);
                             $horaApertura = $horaInicio->copy()->subMinutes(15);
                             $horaCierre = $horaInicio->copy()->addMinutes(15);
-                            $esVentanaActiva = $ahora->between($horaApertura, $horaCierre);
-                            $esVentanaFutura = $ahora->lessThan($horaApertura);
+
+                            // MODO PRUEBA: Siempre permitir marcar si hay habilitación (para testing)
+                            $esVentanaActiva = true; // Cambiar a: $ahora->between($horaApertura, $horaCierre); en producción
+                            $esVentanaFutura = false;
 
                             // Verificar si ya marcó
                             $yaMarcado = \App\Models\Asistencia::where('docente_id', $docente->id)
@@ -68,10 +70,17 @@
                                             <i class="fa-solid fa-check-circle"></i> Ya marcaste tu asistencia para esta clase.
                                         </div>
                                     @elseif($esVentanaActiva)
-                                        <div class="alert alert-success mb-2">
-                                            <i class="fa-solid fa-clock"></i> <strong>Ventana Activa</strong> - Cierra a las {{ $horaCierre->format('H:i') }}
+                                        <div class="alert alert-warning mb-2">
+                                            <i class="fa-solid fa-flask"></i> <strong>MODO PRUEBA:</strong> Ventana de tiempo deshabilitada para testing
                                         </div>
-                                        <button type="button" class="btn btn-success btn-marcar" data-carga-id="{{ $carga->id }}" data-materia="{{ $carga->materia->nombre }}">
+                                        <div class="alert alert-info mb-2">
+                                            <i class="fa-solid fa-shield-check"></i> <strong>Habilitación activa:</strong> El administrador ha habilitado el marcado para esta clase.
+                                        </div>
+                                        <button type="button"
+                                                class="btn btn-success btn-marcar"
+                                                data-carga-id="{{ $carga->id }}"
+                                                data-habilitacion-id="{{ $carga->habilitacion_id }}"
+                                                data-materia="{{ $carga->materia->nombre }}">
                                             <i class="fa-solid fa-hand-pointer"></i> Marcar Asistencia
                                         </button>
                                     @elseif($esVentanaFutura)
@@ -101,26 +110,48 @@ document.addEventListener('DOMContentLoaded', function() {
     botonesMarcar.forEach(boton => {
         boton.addEventListener('click', function() {
             const cargaId = this.getAttribute('data-carga-id');
+            const habilitacionId = this.getAttribute('data-habilitacion-id');
             const materia = this.getAttribute('data-materia');
 
+            // Mostrar modal para confirmar con contraseña
             Swal.fire({
-                title: '¿Confirmar Asistencia?',
-                text: `Vas a marcar tu asistencia para: ${materia}`,
+                title: 'Confirmar Asistencia',
+                html: `
+                    <p class="mb-3"><strong>Materia:</strong> ${materia}</p>
+                    <div class="alert alert-warning">
+                        <i class="fa-solid fa-shield-check"></i>
+                        Para confirmar tu asistencia, ingresa tu contraseña
+                    </div>
+                    <input type="password"
+                           id="password-confirm"
+                           class="swal2-input"
+                           placeholder="Tu contraseña"
+                           autocomplete="current-password">
+                `,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sí, marcar',
-                cancelButtonText: 'Cancelar'
+                confirmButtonText: '<i class="fa-solid fa-check"></i> Confirmar',
+                cancelButtonText: 'Cancelar',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const password = document.getElementById('password-confirm').value;
+                    if (!password) {
+                        Swal.showValidationMessage('Debes ingresar tu contraseña');
+                        return false;
+                    }
+                    return password;
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    marcarAsistencia(cargaId);
+                    marcarAsistencia(cargaId, habilitacionId, result.value);
                 }
             });
         });
     });
 
-    function marcarAsistencia(cargaId) {
+    function marcarAsistencia(cargaId, habilitacionId, password) {
         Swal.fire({
             title: 'Registrando...',
             text: 'Por favor espere',
@@ -138,16 +169,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                carga_academica_id: cargaId
+                carga_academica_id: cargaId,
+                habilitacion_id: habilitacionId,
+                password: password
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Error en la petición');
+                });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 Swal.fire({
                     icon: 'success',
                     title: '¡Asistencia Marcada!',
-                    text: data.message,
+                    html: `
+                        <p>${data.message}</p>
+                        ${data.data.hora_llegada ? `<p class="text-muted">Hora de llegada: <strong>${data.data.hora_llegada}</strong></p>` : ''}
+                    `,
                     confirmButtonColor: '#28a745'
                 }).then(() => {
                     window.location.reload();
@@ -165,8 +208,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
-                title: 'Error de Conexión',
-                text: 'No se pudo conectar con el servidor.',
+                title: 'Error',
+                text: error.message || 'No se pudo conectar con el servidor.',
                 confirmButtonColor: '#dc3545'
             });
         });

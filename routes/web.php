@@ -14,6 +14,7 @@ use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\CargaAcademicaController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\HabilitacionAsistenciaController;
 use App\Http\Controllers\Docente\AsistenciaDocenteController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -177,6 +178,15 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     // Rutas públicas (para todos los roles autenticados)
     Route::get('asistencia', [AsistenciaController::class, 'index'])->name('asistencia.index');
     Route::get('asistencia/{asistencia}', [AsistenciaController::class, 'show'])->name('asistencia.show');
+
+    // 4. HABILITACIONES DE ASISTENCIA (Solo Admin/Decano)
+    Route::middleware('role:admin,super-admin,decano')->group(function () {
+        Route::resource('habilitaciones', HabilitacionAsistenciaController::class)->names('habilitaciones');
+        Route::patch('habilitaciones/{habilitacion}/cancelar', [HabilitacionAsistenciaController::class, 'cancelar'])
+            ->name('habilitaciones.cancelar');
+        Route::get('habilitaciones/get-materias/{docente}', [HabilitacionAsistenciaController::class, 'getMateriasByDocente'])
+            ->name('habilitaciones.get-materias');
+    });
 });
 
 
