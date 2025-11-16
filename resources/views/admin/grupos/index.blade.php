@@ -85,24 +85,26 @@
                                                 <i class="fa-solid fa-eye"></i>
                                             </a>
 
-                                            <a href="{{ route('admin.grupos.edit', $grupo) }}"
-                                               class="btn btn-sm btn-warning"
-                                               title="Editar">
-                                                <i class="fa-solid fa-edit"></i>
-                                            </a>
+                                            @if(auth()->user()->hasAnyRole(['admin', 'super-admin']))
+                                                <a href="{{ route('admin.grupos.edit', $grupo) }}"
+                                                   class="btn btn-sm btn-warning"
+                                                   title="Editar">
+                                                    <i class="fa-solid fa-edit"></i>
+                                                </a>
 
-                                            <form action="{{ route('admin.grupos.destroy', $grupo) }}"
-                                                  method="POST"
-                                                  class="d-inline"
-                                                  onsubmit="return confirm('¿Está seguro de eliminar este grupo?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-danger"
-                                                        title="Eliminar">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
+                                                <form action="{{ route('admin.grupos.destroy', $grupo) }}"
+                                                      method="POST"
+                                                      class="d-inline"
+                                                      onsubmit="return confirm('¿Está seguro de eliminar este grupo?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger"
+                                                            title="Eliminar">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -111,9 +113,11 @@
                                     <td colspan="5" class="text-center py-5">
                                         <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="text-muted mb-0">No hay grupos registrados.</p>
-                                        <a href="{{ route('admin.grupos.create') }}" class="btn btn-primary mt-3">
-                                            <i class="fa-solid fa-plus"></i> Registrar Primer Grupo
-                                        </a>
+                                        @if(auth()->user()->hasAnyRole(['admin', 'super-admin']))
+                                            <a href="{{ route('admin.grupos.create') }}" class="btn btn-primary mt-3">
+                                                <i class="fa-solid fa-plus"></i> Registrar Primer Grupo
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                                     </td>

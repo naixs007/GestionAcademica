@@ -112,7 +112,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
     });
 
     // 2. RECURSOS ACADÉMICOS (Admin, Super-Admin, Decano)
-    Route::middleware('role:admin,super-admin,decano')->group(function () {
+    Route::middleware(['role:admin,super-admin,decano', 'restrict.decano'])->group(function () {
         // Docente (Resource completo)
         Route::resource('docentes', DocenteController::class)->names('docentes');
 

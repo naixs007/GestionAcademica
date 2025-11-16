@@ -2,7 +2,7 @@
 
 @section('title', 'Dashboard Docente')
 
-@section('content')\n<div class="container-fluid py-4">
+@section('content')<div class="container-fluid py-4">
     <h2 class="mb-4">
         <i class="fa-solid fa-gauge"></i> Bienvenido, {{ auth()->user()->name }}
     </h2>

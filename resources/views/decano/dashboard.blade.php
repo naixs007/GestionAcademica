@@ -1,52 +1,188 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de {{auth()->user()->name}}</title>
+@extends('layouts.decano')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@section('title', 'Dashboard Decano')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('content')
+<div class="container-fluid">
+    {{-- Encabezado --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fa-solid fa-gauge text-primary me-2"></i>
+                Panel del Decano
+            </h2>
+            <p class="text-muted mb-0">Bienvenido, {{ auth()->user()->name }}</p>
+        </div>
+    </div>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    {{-- Tarjetas de Resumen --}}
+    <div class="row g-4 mb-4">
+        {{-- Docentes --}}
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Docentes</h6>
+                            <h3 class="mb-0">{{ \App\Models\Docente::count() }}</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="fa-solid fa-chalkboard-user fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ route('admin.docentes.index') }}" class="text-decoration-none text-primary small">
+                        Ver todos <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-</head>
-<body>
+        {{-- Materias --}}
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Materias</h6>
+                            <h3 class="mb-0">{{ \App\Models\Materia::count() }}</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="fa-solid fa-book fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ route('admin.materia.index') }}" class="text-decoration-none text-success small">
+                        Ver todas <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-    <button class="menu-toggle" id="menuToggle">
-        <i class="bi bi-list"></i>
-    </button>
+        {{-- Grupos --}}
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Grupos Activos</h6>
+                            <h3 class="mb-0">{{ \App\Models\Grupo::count() }}</h3>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="fa-solid fa-users-rectangle fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ route('admin.grupos.index') }}" class="text-decoration-none text-info small">
+                        Ver todos <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-    @include('layouts.partials.admin.navigation')
+        {{-- Asistencias Hoy --}}
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Asistencias Hoy</h6>
+                            <h3 class="mb-0">{{ \App\Models\Asistencia::whereDate('fecha', today())->count() }}</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="fa-solid fa-clipboard-check fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ route('admin.asistencia.index') }}" class="text-decoration-none text-warning small">
+                        Ver detalles <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    @include('layouts.partials.admin.sidebar')
-
-    <main class="p-4" style="margin-left: 260px;">
-        <div class="container-fluid">
-            <h2>Panel de {{auth()->user()->name}}</h2>
-            <p>Bienvenido, {{auth()->user()->name}}. Utilizando temporalmente la estructura de navegación y sidebar del Administrador.</p>
-
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="alert alert-info">
-                        **Recuerda:** Los enlaces de navegación pueden ser incorrectos si la barra del administrador tiene rutas a las que el decano no debe acceder.
+    {{-- Acciones Rápidas --}}
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-bolt text-warning me-2"></i>
+                        Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ route('admin.carga-academica.index') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fa-solid fa-list-check d-block mb-2 fa-2x"></i>
+                                <span>Asignar Carga Académica</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ route('admin.habilitaciones.index') }}" class="btn btn-outline-success w-100 py-3">
+                                <i class="fa-solid fa-toggle-on d-block mb-2 fa-2x"></i>
+                                <span>Habilitar Marcado</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ route('admin.reportes.docentes.index') }}" class="btn btn-outline-info w-100 py-3">
+                                <i class="fa-solid fa-chart-line d-block mb-2 fa-2x"></i>
+                                <span>Ver Reportes</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ route('admin.docentes.index') }}" class="btn btn-outline-secondary w-100 py-3">
+                                <i class="fa-solid fa-chalkboard-user d-block mb-2 fa-2x"></i>
+                                <span>Gestionar Docentes</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ route('admin.horario.index') }}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="fa-solid fa-clock d-block mb-2 fa-2x"></i>
+                                <span>Gestionar Horarios</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ route('admin.asistencia.create') }}" class="btn btn-outline-danger w-100 py-3">
+                                <i class="fa-solid fa-plus-circle d-block mb-2 fa-2x"></i>
+                                <span>Registrar Asistencia</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
 
-    <script>
-        const menuToggle = document.getElementById('menuToggle');
-        // Asegúrate de que tu sidebar incluido tenga el ID 'sidebar'
-        const sidebar = document.getElementById('sidebar');
-
-        if (menuToggle && sidebar) {
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
-            });
-        }
-    </script>
-</body>
-</html>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-info-circle text-info me-2"></i>
+                        Información
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-3">
+                        <i class="fa-solid fa-user-shield me-2"></i>
+                        <strong>Rol:</strong> Decano
+                    </div>
+                    <div class="alert alert-success mb-3">
+                        <i class="fa-solid fa-calendar-day me-2"></i>
+                        <strong>Fecha:</strong> {{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
+                    </div>
+                    <div class="alert alert-warning mb-0">
+                        <i class="fa-solid fa-clock me-2"></i>
+                        <strong>Hora:</strong> {{ now()->format('h:i A') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

@@ -106,24 +106,26 @@
                                                 <i class="fa-solid fa-eye"></i>
                                             </a>
 
-                                            <a href="{{ route('admin.docentes.edit', $docente) }}"
-                                               class="btn btn-sm btn-warning"
-                                               title="Editar">
-                                                <i class="fa-solid fa-edit"></i>
-                                            </a>
+                                            @if(auth()->user()->hasAnyRole(['admin', 'super-admin']))
+                                                <a href="{{ route('admin.docentes.edit', $docente) }}"
+                                                   class="btn btn-sm btn-warning"
+                                                   title="Editar">
+                                                    <i class="fa-solid fa-edit"></i>
+                                                </a>
 
-                                            <form action="{{ route('admin.docentes.destroy', $docente) }}"
-                                                  method="POST"
-                                                  class="d-inline"
-                                                  onsubmit="return confirm('¿Está seguro de eliminar este docente?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-danger"
-                                                        title="Eliminar">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
+                                                <form action="{{ route('admin.docentes.destroy', $docente) }}"
+                                                      method="POST"
+                                                      class="d-inline"
+                                                      onsubmit="return confirm('¿Está seguro de eliminar este docente?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger"
+                                                            title="Eliminar">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -132,9 +134,11 @@
                                     <td colspan="8" class="text-center py-5">
                                         <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="text-muted mb-0">No hay docentes registrados.</p>
-                                        <a href="{{ route('admin.docentes.create') }}" class="btn btn-primary mt-3">
-                                            <i class="fa-solid fa-plus"></i> Registrar Primer Docente
-                                        </a>
+                                        @if(auth()->user()->hasAnyRole(['admin', 'super-admin']))
+                                            <a href="{{ route('admin.docentes.create') }}" class="btn btn-primary mt-3">
+                                                <i class="fa-solid fa-plus"></i> Registrar Primer Docente
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforelse
