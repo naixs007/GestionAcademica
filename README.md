@@ -1,59 +1,257 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎓 Sistema de Gestión Académica
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web completo para la gestión de asistencias, cargas académicas, docentes y materias en instituciones educativas.
 
-## About Laravel
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat&logo=laravel)](https://laravel.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat&logo=postgresql)](https://www.postgresql.org)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=flat&logo=bootstrap)](https://getbootstrap.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Características Principales
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 👤 Gestión de Usuarios
+- **3 Roles:** Admin, Decano, Docente
+- Sistema de permisos con Spatie Permission
+- Gestión completa de usuarios y roles
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 👨‍🏫 Gestión de Docentes
+- Registro completo de docentes
+- Asignación de cargas académicas
+- Control de asistencias con habilitaciones
 
-## Learning Laravel
+### 📚 Gestión Académica
+- Materias y grupos
+- Horarios y aulas
+- Asignación de cargas por docente
+- Prevención de conflictos de horario
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### ✅ Control de Asistencia
+- Sistema de habilitaciones para marcado
+- Marcado con confirmación de contraseña
+- Ventana de tiempo configurable (±15 minutos)
+- Registro manual por administradores
+- Estados: Asistencia, Falta, Tardanza, Justificada
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 📊 Reportes
+- Reportes personalizables de docentes
+- Exportación a PDF con DomPDF
+- Estadísticas de asistencias y habilitaciones
+- Filtros por fechas y secciones
 
-## Laravel Sponsors
+## 🚀 Instalación Local
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Requisitos Previos
+- PHP >= 8.2
+- Composer
+- Node.js >= 18.x
+- PostgreSQL >= 14
+- Git
 
-### Premium Partners
+### Pasos de Instalación
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/naixs007/GestionAcademica.git
+cd GestionAcademica
 
-## Contributing
+# 2. Instalar dependencias PHP
+composer install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 3. Instalar dependencias Node
+npm install
 
-## Code of Conduct
+# 4. Copiar archivo de entorno
+cp .env.example .env
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 5. Generar clave de aplicación
+php artisan key:generate
 
-## Security Vulnerabilities
+# 6. Configurar base de datos en .env
+# DB_CONNECTION=pgsql
+# DB_HOST=127.0.0.1
+# DB_PORT=5432
+# DB_DATABASE=gestionacademica
+# DB_USERNAME=tu_usuario
+# DB_PASSWORD=tu_contraseña
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 7. Ejecutar migraciones y seeders
+php artisan migrate --seed
 
-## License
+# 8. Crear link simbólico de storage
+php artisan storage:link
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 9. Compilar assets
+npm run build
+
+# 10. Iniciar servidor de desarrollo
+php artisan serve
+```
+
+Acceder a: `http://localhost:8000`
+
+### Credenciales por Defecto
+
+**Administrador:**
+- Email: `admin@admin.com`
+- Contraseña: `password`
+
+**Decano:**
+- Email: `decano@decano.com`
+- Contraseña: `password`
+
+**Docente:**
+- Email: `docente@docente.com`
+- Contraseña: `password`
+
+## 🐳 Despliegue con Docker
+
+### Construcción de la Imagen
+
+```bash
+docker build -t gestion-academica:latest .
+```
+
+### Ejecución
+
+```bash
+docker run -d \
+  -p 8000:8000 \
+  -e APP_KEY="base64:tu-key-generada" \
+  -e DB_HOST="host.docker.internal" \
+  -e DB_PORT="5432" \
+  -e DB_DATABASE="gestionacademica" \
+  -e DB_USERNAME="postgres" \
+  -e DB_PASSWORD="tu-password" \
+  -e RUN_SEEDERS="true" \
+  --name gestion-academica \
+  gestion-academica:latest
+```
+
+## ☁️ Despliegue en la Nube
+
+**⚠️ IMPORTANTE: Si la información no se ve reflejada en producción, consulta:**
+
+📖 **[GUÍA COMPLETA DE DESPLIEGUE](DESPLIEGUE.md)**
+
+### Diagnóstico Rápido
+
+```bash
+# Ejecutar script de verificación
+chmod +x verificar-sistema.sh
+./verificar-sistema.sh
+```
+
+### Problemas Comunes
+
+| Problema | Solución |
+|----------|----------|
+| Base de datos vacía | `php artisan db:seed --force` |
+| Assets sin cargar | `npm run build` |
+| Error de permisos | `chmod -R 775 storage bootstrap/cache` |
+| APP_KEY faltante | `php artisan key:generate` |
+| PDFs no generan | Instalar fuentes (ver Dockerfile) |
+
+### Plataformas Soportadas
+
+- ✅ Railway
+- ✅ Render
+- ✅ Heroku
+- ✅ AWS (EC2, ECS, Elastic Beanstalk)
+- ✅ DigitalOcean
+- ✅ VPS (Ubuntu/Debian)
+
+## 🛠️ Tecnologías Utilizadas
+
+### Backend
+- **Laravel 12.x** - Framework PHP
+- **PostgreSQL** - Base de datos
+- **Spatie Laravel Permission** - Roles y permisos
+- **DomPDF** - Generación de PDFs
+
+### Frontend
+- **Bootstrap 5.3.3** - Framework CSS
+- **Vite** - Build tool
+- **Font Awesome 6.5** - Iconos
+- **SweetAlert2** - Alertas elegantes
+
+### DevOps
+- **Docker** - Containerización
+- **Nginx** - Servidor web
+- **PHP-FPM** - Process manager
+
+## 📁 Estructura del Proyecto
+
+```
+GestionAcademica/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── Admin/              # Controladores de administración
+│   │   ├── Docente/            # Controladores de docentes
+│   │   └── ReporteDocenteController.php
+│   ├── Models/                 # Modelos Eloquent
+│   └── Services/               # Servicios de negocio
+├── resources/
+│   ├── views/
+│   │   ├── admin/              # Vistas de administración
+│   │   ├── docente/            # Vistas de docentes
+│   │   ├── decano/             # Vistas de decano
+│   │   └── layouts/            # Layouts maestros
+│   ├── css/                    # Estilos personalizados
+│   └── js/                     # JavaScript
+├── database/
+│   ├── migrations/             # Migraciones de BD
+│   └── seeders/                # Seeders de datos
+├── .docker/                    # Configuración Docker
+│   ├── entrypoint.sh
+│   └── nginx.conf
+├── Dockerfile                  # Imagen Docker
+└── DESPLIEGUE.md              # Guía de despliegue
+```
+
+## 🧪 Testing
+
+```bash
+# Ejecutar tests
+php artisan test
+
+# Con coverage
+php artisan test --coverage
+```
+
+## 📝 Documentación Adicional
+
+- [Guía de Despliegue](DESPLIEGUE.md)
+- [Sistema de Asistencia](SISTEMA_ASISTENCIA.md)
+- [Configuración de API](API_CONFIGURACION.md)
+- [Pruebas de Habilitaciones](PRUEBA_HABILITACIONES.md)
+
+## 🤝 Contribuir
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add: AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+
+## 👥 Autores
+
+- **Desenvolvimento Inicial** - [naixs007](https://github.com/naixs007)
+
+## 🆘 Soporte
+
+¿Problemas al desplegar? ¿La información no se muestra en la nube?
+
+1. Revisa la [Guía de Despliegue](DESPLIEGUE.md)
+2. Ejecuta el script de diagnóstico: `./verificar-sistema.sh`
+3. Revisa los logs: `tail -f storage/logs/laravel.log`
+4. Abre un [Issue](https://github.com/naixs007/GestionAcademica/issues)
+
+---
+
+⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub

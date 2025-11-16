@@ -1,0 +1,62 @@
+# Ignorar archivos de entorno local
+.env
+.env.backup
+.env.production
+
+# Ignorar dependencias (se instalan en el build)
+/node_modules
+/vendor
+
+# Ignorar archivos de desarrollo
+npm-debug.log
+yarn-error.log
+
+# Ignorar archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de Git
+.git
+.gitignore
+.gitattributes
+
+# Ignorar archivos de IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Ignorar archivos de testing
+/tests
+phpunit.xml
+.phpunit.result.cache
+
+# Ignorar storage excepto structure
+/storage/*.key
+/storage/app/*
+!/storage/app/.gitignore
+!/storage/app/public
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore
+
+# Ignorar public/build durante desarrollo (se genera en producción)
+/public/hot
+/public/storage
+
+# Ignorar documentación
+README.md
+*.md
+!database/README.md
+
+# Ignorar Docker compose para desarrollo
+docker-compose.yml
+docker-compose.override.yml
