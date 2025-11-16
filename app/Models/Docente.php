@@ -19,6 +19,11 @@ class Docente extends Model
     ];
 
     /**
+     * Atributos que se agregan automáticamente cuando se serializa el modelo
+     */
+    protected $appends = ['cargaHoraria'];
+
+    /**
      * Calcula la carga horaria total del docente en horas decimales
      * Suma la cargaHoraria de todas las materias asignadas
      * Si no hay gestión/periodo específico, usa todas las cargas activas

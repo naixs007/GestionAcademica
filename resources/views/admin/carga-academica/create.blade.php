@@ -362,21 +362,30 @@
             const btnSubmit = document.getElementById('btnSubmit');
             const alertasContainer = document.getElementById('alertasConflictos');
 
-            // Mostrar información del docente seleccionado
-            if(docenteSelect) {
-                docenteSelect.addEventListener('change', function() {
-                    const option = this.options[this.selectedIndex];
-                    if(this.value) {
-                        const cargaActual = parseFloat(option.dataset.cargaActual);
-                        const cargaMaxima = parseFloat(option.dataset.cargaMaxima);
-                        const porcentaje = (cargaActual / cargaMaxima * 100).toFixed(2);
+            // Función para actualizar carga horaria del docente según gestión/periodo
+            function actualizarCargaDocente() {
+                if(!docenteSelect || !docenteSelect.value) return;
+                if(!gestionInput || !gestionInput.value) return;
+                if(!periodoSelect || !periodoSelect.value) return;
 
-                        document.getElementById('infoCategoria').textContent = option.dataset.categoria;
+                const docenteId = docenteSelect.value;
+                const gestion = gestionInput.value;
+                const periodo = periodoSelect.value;
+                const option = docenteSelect.options[docenteSelect.selectedIndex];
+                const cargaMaxima = parseFloat(option.dataset.cargaMaxima);
+
+                // Llamada AJAX para obtener carga actualizada
+                fetch(`{{ url('admin/carga-academica/api/docente') }}/${docenteId}/carga?gestion=${gestion}&periodo=${periodo}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const cargaActual = data.cargaActual;
+                        const porcentaje = data.porcentaje;
+
                         document.getElementById('infoCargaActual').textContent = cargaActual.toFixed(2);
                         document.getElementById('infoCargaMaxima').textContent = cargaMaxima.toFixed(2);
 
                         const badgePorcentaje = document.getElementById('infoPorcentaje');
-                        badgePorcentaje.textContent = porcentaje + '%';
+                        badgePorcentaje.textContent = porcentaje.toFixed(2) + '%';
 
                         // Cambiar color del badge según el porcentaje
                         badgePorcentaje.className = 'badge';
@@ -387,13 +396,34 @@
                         } else {
                             badgePorcentaje.classList.add('bg-danger');
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener carga del docente:', error);
+                    });
+            }
 
+            // Mostrar información del docente seleccionado
+            if(docenteSelect) {
+                docenteSelect.addEventListener('change', function() {
+                    const option = this.options[this.selectedIndex];
+                    if(this.value) {
+                        document.getElementById('infoCategoria').textContent = option.dataset.categoria;
                         docenteInfo.classList.remove('d-none');
+                        actualizarCargaDocente(); // Actualizar con periodo/gestión actual
                     } else {
                         docenteInfo.classList.add('d-none');
                     }
                     verificarConflictos();
                 });
+            }
+
+            // Actualizar carga cuando cambien gestión o periodo
+            if(gestionInput) {
+                gestionInput.addEventListener('change', actualizarCargaDocente);
+                gestionInput.addEventListener('input', actualizarCargaDocente);
+            }
+            if(periodoSelect) {
+                periodoSelect.addEventListener('change', actualizarCargaDocente);
             }
 
             // Mostrar información de la materia seleccionada

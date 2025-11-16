@@ -642,4 +642,57 @@ class CargaAcademicaController extends Controller
 
         return view('admin.carga-academica.docente', compact('docente', 'estadisticas'));
     }
+
+    /**
+     * Obtiene la carga horaria de un docente para gestión/periodo específico (API)
+     */
+    public function getCargaDocente(Request $request, $docenteId)
+    {
+        $docente = Docente::findOrFail($docenteId);
+
+        $gestion = $request->query('gestion');
+        $periodo = $request->query('periodo');
+
+        if (!$gestion || !$periodo) {
+            // Si no hay gestión/periodo, usar los más recientes
+            $cargaMasReciente = $docente->cargasAcademicas()
+                ->orderBy('gestion', 'desc')
+                ->orderBy('periodo', 'desc')
+                ->first();
+
+            if ($cargaMasReciente) {
+                $gestion = $cargaMasReciente->gestion;
+                $periodo = $cargaMasReciente->periodo;
+            } else {
+                return response()->json([
+                    'cargaActual' => 0,
+                    'cargaMaxima' => $docente->carga_maxima_horas ?? 24,
+                    'porcentaje' => 0,
+                    'gestion' => null,
+                    'periodo' => null
+                ]);
+            }
+        }
+
+        $totalCargaHoraria = $docente->cargasAcademicas()
+            ->where('gestion', $gestion)
+            ->where('periodo', $periodo)
+            ->with('materia')
+            ->get()
+            ->sum(function ($carga) {
+                return $carga->materia ? $carga->materia->cargaHoraria : 0;
+            });
+
+        $cargaMaxima = $docente->carga_maxima_horas ?? 24;
+        $porcentaje = ($totalCargaHoraria / $cargaMaxima) * 100;
+
+        return response()->json([
+            'cargaActual' => round($totalCargaHoraria, 2),
+            'cargaMaxima' => $cargaMaxima,
+            'porcentaje' => round($porcentaje, 2),
+            'gestion' => $gestion,
+            'periodo' => $periodo
+        ]);
+    }
 }
+

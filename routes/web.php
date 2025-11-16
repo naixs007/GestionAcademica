@@ -128,6 +128,10 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
         Route::get('carga-academica/docente/{docente}', [CargaAcademicaController::class, 'verDocente'])
             ->name('carga-academica.docente');
 
+        // Ruta AJAX para obtener carga horaria de un docente (con filtro de periodo/gestión)
+        Route::get('carga-academica/api/docente/{docente}/carga', [CargaAcademicaController::class, 'getCargaDocente'])
+            ->name('carga-academica.api.carga-docente');
+
         Route::resource('carga-academica', CargaAcademicaController::class)
             ->parameters(['carga-academica' => 'cargaAcademica'])
             ->names('carga-academica');

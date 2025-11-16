@@ -66,7 +66,6 @@ COPY --from=php_builder /app/vendor /var/www/html/vendor
 
 # Copia los archivos de configuración auxiliares
 COPY .docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY .docker/entrypoint-safe.sh /usr/local/bin/entrypoint-safe.sh
 COPY .docker/nginx.conf /etc/nginx/nginx.conf
 
 # Crear directorios necesarios y configurar permisos
@@ -76,8 +75,7 @@ RUN mkdir -p /var/www/html/storage/framework/{sessions,views,cache} \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache \
-    && chmod +x /usr/local/bin/entrypoint.sh \
-    && chmod +x /usr/local/bin/entrypoint-safe.sh
+    && chmod +x /usr/local/bin/entrypoint.sh
 
 # El puerto 8000 es el que usará NGINX para escuchar
 EXPOSE 8000

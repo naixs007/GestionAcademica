@@ -174,11 +174,11 @@
                     </div>
                     <div class="alert alert-success mb-3">
                         <i class="fa-solid fa-calendar-day me-2"></i>
-                        <strong>Fecha:</strong> {{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
+                        <strong>Fecha:</strong> {{ now()->format('d/m/Y') }}
                     </div>
                     <div class="alert alert-warning mb-0">
                         <i class="fa-solid fa-clock me-2"></i>
-                        <strong>Hora:</strong> {{ now()->format('h:i A') }}
+                        <strong>Hora:</strong> {{ now()->format('H:i') }}
                     </div>
                 </div>
             </div>
