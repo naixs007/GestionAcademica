@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Salir inmediatamente si un comando falla
-set -e
+# NO salir inmediatamente en errores menores
+# set -e
 
 echo "========================================="
 echo "Running entrypoint script..."
@@ -9,49 +9,69 @@ echo "========================================="
 
 # Esperar a que la base de datos esté lista
 echo "Waiting for database connection..."
+MAX_RETRIES=30
+RETRY_COUNT=0
+
 until php artisan db:show 2>/dev/null; do
-    echo "Database is unavailable - sleeping"
+    RETRY_COUNT=$((RETRY_COUNT+1))
+    if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+        echo "ERROR: Database connection timeout after $MAX_RETRIES retries"
+        exit 1
+    fi
+    echo "Database is unavailable - sleeping (attempt $RETRY_COUNT/$MAX_RETRIES)"
     sleep 2
 done
 echo "Database is ready!"
 
 # Limpiar caché antes de migrar
 echo "Clearing application cache..."
-php artisan cache:clear || true
-php artisan config:clear || true
-php artisan route:clear || true
-php artisan view:clear || true
+php artisan cache:clear 2>/dev/null || echo "  Cache already clear"
+php artisan config:clear 2>/dev/null || echo "  Config already clear"
+php artisan route:clear 2>/dev/null || echo "  Routes already clear"
+php artisan view:clear 2>/dev/null || echo "  Views already clear"
 
 # Ejecutar Migraciones
 echo "Running database migrations..."
-php artisan migrate --force
+if php artisan migrate --force 2>&1; then
+    echo "  Migrations completed successfully"
+else
+    echo "  ERROR: Migration failed"
+    echo "  Checking if tables already exist..."
+    php artisan migrate:status || true
+fi
 
 # Ejecutar los seeders solo si es necesario
-# IMPORTANTE: En producción, esto debe ejecutarse solo la primera vez
-# Si ya tienes datos, comenta esta línea
 if [ "${RUN_SEEDERS:-false}" = "true" ]; then
     echo "Running database seeders..."
-    php artisan db:seed --force
+    if php artisan db:seed --force 2>&1; then
+        echo "  Seeders completed successfully"
+    else
+        echo "  WARNING: Seeders failed (may already have data)"
+    fi
 else
     echo "Skipping seeders (set RUN_SEEDERS=true to run)"
 fi
 
 # Crear link simbólico para storage
 echo "Creating storage link..."
-php artisan storage:link || true
-
-# Optimizar la aplicación para producción
-echo "Optimizing application..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+if [ ! -L /var/www/html/public/storage ]; then
+    php artisan storage:link 2>/dev/null || echo "  Storage link already exists"
+else
+    echo "  Storage link already exists"
+fi
 
 # Verificar permisos de storage y bootstrap/cache
 echo "Setting permissions..."
-chmod -R 775 /var/www/html/storage
-chmod -R 775 /var/www/html/bootstrap/cache
-chown -R www-data:www-data /var/www/html/storage
-chown -R www-data:www-data /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage 2>/dev/null || true
+chmod -R 775 /var/www/html/bootstrap/cache 2>/dev/null || true
+chown -R www-data:www-data /var/www/html/storage 2>/dev/null || true
+chown -R www-data:www-data /var/www/html/bootstrap/cache 2>/dev/null || true
+
+# Optimizar la aplicación para producción
+echo "Optimizing application..."
+php artisan config:cache 2>&1 || echo "  Config cache failed"
+php artisan route:cache 2>&1 || echo "  Route cache failed"
+php artisan view:cache 2>&1 || echo "  View cache failed"
 
 # Inicia PHP-FPM en segundo plano
 echo "Starting PHP-FPM..."
