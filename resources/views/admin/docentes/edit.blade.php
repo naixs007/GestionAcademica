@@ -50,15 +50,15 @@
                                             {{-- Usuario --}}
                                             <div class="mb-3">
                                                 <label for="user_id" class="form-label">
-                                                    <i class="fa-solid fa-user text-primary"></i> 
+                                                    <i class="fa-solid fa-user text-primary"></i>
                                                     <strong>Usuario</strong> <span class="text-danger">*</span>
                                                 </label>
-                                                <select name="user_id" id="user_id" 
-                                                        class="form-select @error('user_id') is-invalid @enderror" 
+                                                <select name="user_id" id="user_id"
+                                                        class="form-select @error('user_id') is-invalid @enderror"
                                                         required>
                                                     <option value="">Seleccione un usuario</option>
                                                     @foreach($users as $user)
-                                                        <option value="{{ $user->id }}" 
+                                                        <option value="{{ $user->id }}"
                                                                 {{ old('user_id', $docente->user_id) == $user->id ? 'selected' : '' }}>
                                                             {{ $user->name }} ({{ $user->email }})
                                                         </option>
@@ -68,7 +68,7 @@
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                                 <small class="text-muted">
-                                                    <i class="fa-solid fa-info-circle"></i> 
+                                                    <i class="fa-solid fa-info-circle"></i>
                                                     Usuario actual: <strong>{{ $docente->user->name }}</strong>
                                                 </small>
                                             </div>
@@ -76,45 +76,46 @@
                                             {{-- Información del usuario actual --}}
                                             <div class="alert alert-info">
                                                 <small>
-                                                    <i class="fa-solid fa-envelope"></i> 
+                                                    <i class="fa-solid fa-envelope"></i>
                                                     <strong>Email:</strong> {{ $docente->user->email }}<br>
-                                                    <i class="fa-solid fa-phone"></i> 
+                                                    <i class="fa-solid fa-phone"></i>
                                                     <strong>Teléfono:</strong> {{ $docente->user->telefono ?? 'No registrado' }}
                                                 </small>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {{-- Carga Horaria --}}
+                                    {{-- Carga Máxima --}}
                                     <div class="mb-4">
-                                        <label for="cargaHoraria" class="form-label">
-                                            <i class="fa-solid fa-clock text-info"></i> 
-                                            <strong>Carga Horaria (horas/semana)</strong> <span class="text-danger">*</span>
+                                        <label for="carga_maxima_horas" class="form-label">
+                                            <i class="fa-solid fa-gauge-high text-danger"></i>
+                                            <strong>Carga Máxima (horas/semana)</strong> <span class="text-danger">*</span>
                                         </label>
-                                        <input type="number" 
-                                               name="cargaHoraria" 
-                                               id="cargaHoraria" 
-                                               class="form-control @error('cargaHoraria') is-invalid @enderror"
-                                               value="{{ old('cargaHoraria', $docente->cargaHoraria) }}"
+                                        <input type="number"
+                                               name="carga_maxima_horas"
+                                               id="carga_maxima_horas"
+                                               class="form-control @error('carga_maxima_horas') is-invalid @enderror"
+                                               value="{{ old('carga_maxima_horas', $docente->carga_maxima_horas ?? 24.00) }}"
                                                min="1"
                                                max="48"
+                                               step="0.01"
                                                required>
                                         @error('cargaHoraria')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <div class="progress mt-2" style="height: 20px;">
-                                            <div class="progress-bar bg-info" 
-                                                 role="progressbar" 
-                                                 style="width: {{ ($docente->cargaHoraria / 48) * 100 }}%"
-                                                 aria-valuenow="{{ $docente->cargaHoraria }}" 
-                                                 aria-valuemin="0" 
-                                                 aria-valuemax="48">
+                                            <div class="progress-bar bg-info"
+                                                 role="progressbar"
+                                                 style="width: {{ ($docente->cargaHoraria / 24) * 100 }}%"
+                                                 aria-valuenow="{{ $docente->cargaHoraria }}"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="24">
                                                 {{ $docente->cargaHoraria }} hrs
                                             </div>
                                         </div>
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
-                                            Entre 1 y 48 horas semanales
+                                            <i class="fa-solid fa-info-circle"></i>
+                                            Entre 1 y 24 horas semanales
                                         </small>
                                     </div>
                                 </div>
@@ -131,11 +132,11 @@
                                             {{-- Categoría --}}
                                             <div class="mb-3">
                                                 <label for="categoria" class="form-label">
-                                                    <i class="fa-solid fa-tag text-warning"></i> 
+                                                    <i class="fa-solid fa-tag text-warning"></i>
                                                     <strong>Categoría</strong> <span class="text-danger">*</span>
                                                 </label>
-                                                <select name="categoria" id="categoria" 
-                                                        class="form-select @error('categoria') is-invalid @enderror" 
+                                                <select name="categoria" id="categoria"
+                                                        class="form-select @error('categoria') is-invalid @enderror"
                                                         required>
                                                     <option value="">Seleccione una categoría</option>
                                                     <option value="Titular" {{ old('categoria', $docente->categoria) == 'Titular' ? 'selected' : '' }}>
@@ -162,12 +163,12 @@
                                             {{-- Profesión --}}
                                             <div class="mb-3">
                                                 <label for="profesion" class="form-label">
-                                                    <i class="fa-solid fa-graduation-cap text-success"></i> 
+                                                    <i class="fa-solid fa-graduation-cap text-success"></i>
                                                     <strong>Profesión</strong>
                                                 </label>
-                                                <input type="text" 
-                                                       name="profesion" 
-                                                       id="profesion" 
+                                                <input type="text"
+                                                       name="profesion"
+                                                       id="profesion"
                                                        class="form-control @error('profesion') is-invalid @enderror"
                                                        value="{{ old('profesion', $docente->profesion) }}"
                                                        maxlength="150"
@@ -176,7 +177,7 @@
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                                 <small class="text-muted">
-                                                    <i class="fa-solid fa-info-circle"></i> 
+                                                    <i class="fa-solid fa-info-circle"></i>
                                                     Profesión o título académico (opcional)
                                                 </small>
                                             </div>
@@ -217,7 +218,7 @@
                             {{-- Advertencia de cambios --}}
                             <div class="alert alert-warning mb-4">
                                 <i class="fa-solid fa-exclamation-triangle"></i>
-                                <strong>Importante:</strong> 
+                                <strong>Importante:</strong>
                                 <ul class="mb-0 mt-2">
                                     <li>Si cambia el usuario asociado, el rol de "docente" se transferirá al nuevo usuario.</li>
                                     <li>El usuario anterior perderá el rol de "docente" si no tiene otros vínculos.</li>
@@ -230,11 +231,11 @@
                                 <button type="submit" class="btn btn-warning btn-lg flex-fill">
                                     <i class="fa-solid fa-save"></i> Actualizar Docente
                                 </button>
-                                <a href="{{ route('admin.docentes.show', $docente) }}" 
+                                <a href="{{ route('admin.docentes.show', $docente) }}"
                                    class="btn btn-info btn-lg">
                                     <i class="fa-solid fa-eye"></i> Ver
                                 </a>
-                                <a href="{{ route('admin.docentes.index') }}" 
+                                <a href="{{ route('admin.docentes.index') }}"
                                    class="btn btn-outline-secondary btn-lg">
                                     <i class="fa-solid fa-times"></i> Cancelar
                                 </a>
@@ -270,7 +271,7 @@
         document.getElementById('cargaHoraria').addEventListener('input', function() {
             const value = this.value;
             const progressBar = document.querySelector('.progress-bar');
-            const percentage = (value / 48) * 100;
+            const percentage = (value / 24) * 100;
             progressBar.style.width = percentage + '%';
             progressBar.textContent = value + ' hrs';
         });

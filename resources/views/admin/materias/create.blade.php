@@ -149,17 +149,18 @@
                                                name="cargaHoraria"
                                                id="cargaHoraria"
                                                class="form-control @error('cargaHoraria') is-invalid @enderror"
-                                               value="{{ old('cargaHoraria', 4) }}"
+                                               value="{{ old('cargaHoraria', 4.5) }}"
                                                min="1"
                                                max="20"
-                                               placeholder="Ej: 4"
+                                               step="0.01"
+                                               placeholder="Ej: 4.50"
                                                required>
                                         @error('cargaHoraria')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
                                             <i class="fa-solid fa-info-circle"></i>
-                                            Horas semanales de clase (1-20)
+                                            Horas semanales de clase (1-24)
                                         </small>
                                     </div>
 

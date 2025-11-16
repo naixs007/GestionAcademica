@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('materias', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre', 150);
-            $table->string('codigo', 20)->unique();
-            $table->integer('nivel');
-            $table->double('cargaHoraria', 4, 2);
-            $table->timestamps();
+        Schema::table('docentes', function (Blueprint $table) {
+            $table->decimal('carga_maxima_horas', 5, 2)->default(24.00)->after('profesion');
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('materias');
+        Schema::table('docentes', function (Blueprint $table) {
+            $table->dropColumn('carga_maxima_horas');
+        });
     }
 };

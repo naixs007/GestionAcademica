@@ -48,6 +48,17 @@ class CargaAcademica extends Model
     }
 
     /**
+     * Relación con asistencias basada en múltiples columnas
+     * Como Asistencia no tiene carga_academica_id, usamos una query personalizada
+     */
+    public function asistencias()
+    {
+        return $this->hasMany(Asistencia::class, 'docente_id', 'docente_id')
+            ->where('materia_id', $this->materia_id)
+            ->where('grupo_id', $this->grupo_id);
+    }
+
+    /**
      * Scope para filtrar por gestión y periodo
      */
     public function scopeGestionPeriodo($query, $gestion, $periodo)

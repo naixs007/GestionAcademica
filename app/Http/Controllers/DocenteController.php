@@ -15,7 +15,7 @@ class DocenteController extends Controller
      */
     public function index()
     {
-        $docentes = Docente::with('user')->paginate(10);
+        $docentes = Docente::with(['user', 'cargasAcademicas.materia'])->paginate(10);
         return view('admin.docentes.index', compact('docentes'));
     }
 
@@ -38,6 +38,7 @@ class DocenteController extends Controller
             'user_id' => 'required|exists:users,id|unique:docentes,user_id',
             'categoria' => 'required|string|max:100',
             'profesion' => 'nullable|string|max:150',
+            'carga_maxima_horas' => 'required|numeric|min:1|max:48',
         ]);
 
         try {
@@ -103,6 +104,7 @@ class DocenteController extends Controller
             'user_id' => 'required|exists:users,id|unique:docentes,user_id,' . $docente->id,
             'categoria' => 'required|string|max:100',
             'profesion' => 'nullable|string|max:150',
+            'carga_maxima_horas' => 'required|numeric|min:1|max:48',
         ]);
 
         try {

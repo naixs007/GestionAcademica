@@ -48,10 +48,12 @@
                                             <option value="">-- Seleccionar docente --</option>
                                     @endif
                                     <option value="{{ $docente->id }}"
-                                            data-carga="{{ $docente->cargaHoraria }}"
+                                            data-carga-actual="{{ number_format($docente->cargaHoraria, 2) }}"
+                                            data-carga-maxima="{{ number_format($docente->carga_maxima_horas ?? 24, 2) }}"
                                             data-categoria="{{ $docente->categoria }}"
                                             {{ old('docente_id') == $docente->id ? 'selected' : '' }}>
-                                        {{ $docente->user->name }} - {{ $docente->categoria }} ({{ $docente->cargaHoraria }} hrs/semana)
+                                        {{ $docente->user->name }} - {{ $docente->categoria }}
+                                        ({{ number_format($docente->cargaHoraria, 2) }}/{{ number_format($docente->carga_maxima_horas ?? 24, 2) }} hrs)
                                     </option>
                                     @if($loop->last)
                                         </select>
@@ -77,7 +79,17 @@
                                     <i class="fa-solid fa-user"></i> Información del Docente
                                 </h6>
                                 <p class="mb-1"><strong>Categoría:</strong> <span id="infoCategoria">-</span></p>
-                                <p class="mb-0"><strong>Carga Horaria Disponible:</strong> <span id="infoCarga">-</span> hrs/semana</p>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p class="mb-0"><strong>Carga Actual:</strong> <span id="infoCargaActual">-</span> hrs</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-0"><strong>Carga Máxima:</strong> <span id="infoCargaMaxima">-</span> hrs</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-0"><strong>Uso:</strong> <span id="infoPorcentaje" class="badge bg-info">-</span></p>
+                                    </div>
+                                </div>
                             </div>
 
                             {{-- Seleccionar Materia --}}
@@ -91,12 +103,12 @@
                                             <option value="">-- Seleccionar materia --</option>
                                     @endif
                                     <option value="{{ $materia->id }}"
-                                            data-carga="{{ $materia->cargaHoraria }}"
+                                            data-carga="{{ number_format($materia->cargaHoraria, 2) }}"
                                             data-codigo="{{ $materia->codigo }}"
                                             data-nivel="{{ $materia->nivel }}"
                                             {{ old('materia_id') == $materia->id ? 'selected' : '' }}>
                                         {{ $materia->codigo }} - {{ $materia->nombre }}
-                                        ({{ $materia->cargaHoraria }} hrs - {{ $materia->nivel }})
+                                        ({{ number_format($materia->cargaHoraria, 2) }}h - Nivel {{ $materia->nivel }})
                                     </option>
                                     @if($loop->last)
                                         </select>
@@ -274,6 +286,11 @@
                         </form>
                     </div>
                 </div>
+
+                {{-- Alertas de conflictos --}}
+                <div id="alertasConflictos" class="mt-3">
+                    <!-- Las alertas se insertarán aquí dinámicamente -->
+                </div>
             </div>
 
             {{-- Información adicional --}}
@@ -335,25 +352,51 @@
         document.addEventListener('DOMContentLoaded', function() {
             const docenteSelect = document.getElementById('docente_id');
             const materiaSelect = document.getElementById('materia_id');
+            const grupoSelect = document.getElementById('grupo_id');
+            const horarioSelect = document.getElementById('horario_id');
+            const aulaSelect = document.getElementById('aula_id');
+            const gestionInput = document.getElementById('gestion');
+            const periodoSelect = document.getElementById('periodo');
             const docenteInfo = document.getElementById('docenteInfo');
             const materiaInfo = document.getElementById('materiaInfo');
             const btnSubmit = document.getElementById('btnSubmit');
+            const alertasContainer = document.getElementById('alertasConflictos');
 
             // Mostrar información del docente seleccionado
             if(docenteSelect) {
                 docenteSelect.addEventListener('change', function() {
                     const option = this.options[this.selectedIndex];
                     if(this.value) {
+                        const cargaActual = parseFloat(option.dataset.cargaActual);
+                        const cargaMaxima = parseFloat(option.dataset.cargaMaxima);
+                        const porcentaje = (cargaActual / cargaMaxima * 100).toFixed(2);
+
                         document.getElementById('infoCategoria').textContent = option.dataset.categoria;
-                        document.getElementById('infoCarga').textContent = option.dataset.carga;
+                        document.getElementById('infoCargaActual').textContent = cargaActual.toFixed(2);
+                        document.getElementById('infoCargaMaxima').textContent = cargaMaxima.toFixed(2);
+
+                        const badgePorcentaje = document.getElementById('infoPorcentaje');
+                        badgePorcentaje.textContent = porcentaje + '%';
+
+                        // Cambiar color del badge según el porcentaje
+                        badgePorcentaje.className = 'badge';
+                        if(porcentaje < 80) {
+                            badgePorcentaje.classList.add('bg-success');
+                        } else if(porcentaje < 100) {
+                            badgePorcentaje.classList.add('bg-warning');
+                        } else {
+                            badgePorcentaje.classList.add('bg-danger');
+                        }
+
                         docenteInfo.classList.remove('d-none');
                     } else {
                         docenteInfo.classList.add('d-none');
                     }
+                    verificarConflictos();
                 });
             }
 
-                        // Mostrar información de la materia seleccionada
+            // Mostrar información de la materia seleccionada
             if(materiaSelect) {
                 materiaSelect.addEventListener('change', function() {
                     const option = this.options[this.selectedIndex];
@@ -366,6 +409,85 @@
                         materiaInfo.classList.add('d-none');
                     }
                 });
+            }
+
+            // Verificar conflictos cuando cambien los campos relevantes
+            if(grupoSelect) grupoSelect.addEventListener('change', verificarConflictos);
+            if(horarioSelect) horarioSelect.addEventListener('change', verificarConflictos);
+            if(aulaSelect) aulaSelect.addEventListener('change', verificarConflictos);
+            if(gestionInput) gestionInput.addEventListener('change', verificarConflictos);
+            if(periodoSelect) periodoSelect.addEventListener('change', verificarConflictos);
+
+            function verificarConflictos() {
+                // Validar que los campos necesarios estén completos
+                const horarioId = horarioSelect?.value;
+                const gestion = gestionInput?.value;
+                const periodo = periodoSelect?.value;
+
+                if (!horarioId || !gestion || !periodo) {
+                    alertasContainer.innerHTML = '';
+                    return;
+                }
+
+                // Preparar datos para enviar
+                const data = {
+                    horario_id: horarioId,
+                    gestion: gestion,
+                    periodo: periodo,
+                    docente_id: docenteSelect?.value || null,
+                    aula_id: aulaSelect?.value || null,
+                    grupo_id: grupoSelect?.value || null
+                };
+
+                // Hacer petición AJAX
+                fetch('{{ route('admin.carga-academica.verificar-conflictos') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    mostrarAlertas(result.conflictos);
+                })
+                .catch(error => {
+                    console.error('Error al verificar conflictos:', error);
+                });
+            }
+
+            function mostrarAlertas(conflictos) {
+                alertasContainer.innerHTML = '';
+
+                if (conflictos.length === 0) {
+                    btnSubmit.disabled = false;
+                    return;
+                }
+
+                // Mostrar cada conflicto como una alerta
+                conflictos.forEach(conflicto => {
+                    const icono = conflicto.tipo === 'docente' ? 'fa-chalkboard-user' :
+                                 conflicto.tipo === 'aula' ? 'fa-door-open' : 'fa-users-rectangle';
+
+                    const alerta = document.createElement('div');
+                    alerta.className = 'alert alert-danger alert-dismissible fade show';
+                    alerta.innerHTML = `
+                        <h6 class="alert-heading">
+                            <i class="fa-solid ${icono}"></i>
+                            Conflicto detectado: ${conflicto.tipo.charAt(0).toUpperCase() + conflicto.tipo.slice(1)}
+                        </h6>
+                        <p class="mb-0">${conflicto.mensaje}</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    alertasContainer.appendChild(alerta);
+                });
+
+                // Deshabilitar botón de envío si hay conflictos
+                btnSubmit.disabled = true;
+
+                // Scroll suave hacia las alertas
+                alertasContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         });
     </script>

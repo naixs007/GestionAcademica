@@ -117,8 +117,11 @@
                                     <option value="">-- Seleccionar docente --</option>
                                     @foreach($docentes as $docente)
                                         <option value="{{ $docente->id }}"
+                                                data-carga-actual="{{ number_format($docente->cargaHoraria, 2) }}"
+                                                data-carga-maxima="{{ number_format($docente->carga_maxima_horas ?? 24, 2) }}"
                                                 {{ old('docente_id', $cargaAcademica->docente_id) == $docente->id ? 'selected' : '' }}>
-                                            {{ $docente->user->name }} - {{ $docente->categoria }} ({{ $docente->cargaHoraria }} hrs/semana)
+                                            {{ $docente->user->name }} - {{ $docente->categoria }}
+                                            ({{ number_format($docente->cargaHoraria, 2) }}/{{ number_format($docente->carga_maxima_horas ?? 24, 2) }} hrs)
                                         </option>
                                     @endforeach
                                 </select>
@@ -138,7 +141,7 @@
                                         <option value="{{ $materia->id }}"
                                                 {{ old('materia_id', $cargaAcademica->materia_id) == $materia->id ? 'selected' : '' }}>
                                             {{ $materia->codigo }} - {{ $materia->nombre }}
-                                            ({{ $materia->cargaHoraria }} hrs - {{ $materia->nivel }})
+                                            ({{ number_format($materia->cargaHoraria, 2) }}h - Nivel {{ $materia->nivel }})
                                         </option>
                                     @endforeach
                                 </select>

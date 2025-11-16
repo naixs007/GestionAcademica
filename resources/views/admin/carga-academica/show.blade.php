@@ -48,8 +48,24 @@
                                 <p class="mb-0">{{ $cargaAcademica->docente->profesion ?? 'No especificado' }}</p>
                             </div>
                             <div class="col-12 mb-2">
+                                <small class="text-muted">Carga Horaria Actual:</small>
+                                @php
+                                    // Calcular la carga horaria para la misma gestión y periodo de esta asignación
+                                    $cargasDelDocente = $cargaAcademica->docente->cargasAcademicas
+                                        ->where('gestion', $cargaAcademica->gestion)
+                                        ->where('periodo', $cargaAcademica->periodo);
+                                    $totalCarga = $cargasDelDocente->sum(function($carga) {
+                                        return $carga->materia ? $carga->materia->cargaHoraria : 0;
+                                    });
+                                @endphp
+                                <p class="mb-0">
+                                    <strong>{{ number_format($totalCarga, 2) }} hrs/semana</strong>
+                                    <small class="text-muted d-block">({{ $cargasDelDocente->count() }} materias en {{ $cargaAcademica->gestion }}-{{ $cargaAcademica->periodo }})</small>
+                                </p>
+                            </div>
+                            <div class="col-12 mb-2">
                                 <small class="text-muted">Carga Horaria Máxima:</small>
-                                <p class="mb-0"><strong>{{ $cargaAcademica->docente->cargaHoraria }} horas/semana</strong></p>
+                                <p class="mb-0"><strong>{{ number_format($cargaAcademica->docente->carga_maxima_horas ?? 24, 2) }} hrs/semana</strong></p>
                             </div>
                         </div>
                     </div>
@@ -109,7 +125,7 @@
                                 <small class="text-muted">
                                     <i class="fa-solid fa-clock"></i> Carga Horaria:
                                 </small>
-                                <p class="mb-0"><strong>{{ $cargaAcademica->materia->cargaHoraria }} horas/semana</strong></p>
+                                <p class="mb-0"><strong>{{ number_format($cargaAcademica->materia->cargaHoraria, 2) }} hrs/semana</strong></p>
                             </div>
                         </div>
                     </div>

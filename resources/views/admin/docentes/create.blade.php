@@ -42,15 +42,15 @@
                                     {{-- Usuario --}}
                                     <div class="mb-4">
                                         <label for="user_id" class="form-label">
-                                            <i class="fa-solid fa-user text-primary"></i> 
+                                            <i class="fa-solid fa-user text-primary"></i>
                                             <strong>Usuario</strong> <span class="text-danger">*</span>
                                         </label>
-                                        <select name="user_id" id="user_id" 
-                                                class="form-select @error('user_id') is-invalid @enderror" 
+                                        <select name="user_id" id="user_id"
+                                                class="form-select @error('user_id') is-invalid @enderror"
                                                 required>
                                             <option value="">Seleccione un usuario</option>
                                             @foreach($users as $user)
-                                                <option value="{{ $user->id }}" 
+                                                <option value="{{ $user->id }}"
                                                         {{ old('user_id') == $user->id ? 'selected' : '' }}>
                                                     {{ $user->name }} ({{ $user->email }})
                                                 </option>
@@ -60,32 +60,33 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
+                                            <i class="fa-solid fa-info-circle"></i>
                                             Seleccione el usuario que será registrado como docente
                                         </small>
                                     </div>
 
-                                    {{-- Carga Horaria --}}
+                                    {{-- Carga Horaria Máxima --}}
                                     <div class="mb-4">
-                                        <label for="cargaHoraria" class="form-label">
-                                            <i class="fa-solid fa-clock text-info"></i> 
-                                            <strong>Carga Horaria (horas/semana)</strong> <span class="text-danger">*</span>
+                                        <label for="carga_maxima_horas" class="form-label">
+                                            <i class="fa-solid fa-gauge-high text-danger"></i>
+                                            <strong>Carga Máxima (horas/semana)</strong> <span class="text-danger">*</span>
                                         </label>
-                                        <input type="number" 
-                                               name="cargaHoraria" 
-                                               id="cargaHoraria" 
-                                               class="form-control @error('cargaHoraria') is-invalid @enderror"
-                                               value="{{ old('cargaHoraria') }}"
+                                        <input type="number"
+                                               name="carga_maxima_horas"
+                                               id="carga_maxima_horas"
+                                               class="form-control @error('carga_maxima_horas') is-invalid @enderror"
+                                               value="{{ old('carga_maxima_horas', '24.00') }}"
                                                min="1"
                                                max="48"
-                                               placeholder="Ej: 40"
+                                               step="0.01"
+                                               placeholder="Ej: 24.00"
                                                required>
-                                        @error('cargaHoraria')
+                                        @error('carga_maxima_horas')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
-                                            Entre 1 y 48 horas semanales
+                                            <i class="fa-solid fa-info-circle"></i>
+                                            Límite de horas semanales que puede tener el docente
                                         </small>
                                     </div>
                                 </div>
@@ -95,11 +96,11 @@
                                     {{-- Categoría --}}
                                     <div class="mb-4">
                                         <label for="categoria" class="form-label">
-                                            <i class="fa-solid fa-tag text-warning"></i> 
+                                            <i class="fa-solid fa-tag text-warning"></i>
                                             <strong>Categoría</strong> <span class="text-danger">*</span>
                                         </label>
-                                        <select name="categoria" id="categoria" 
-                                                class="form-select @error('categoria') is-invalid @enderror" 
+                                        <select name="categoria" id="categoria"
+                                                class="form-select @error('categoria') is-invalid @enderror"
                                                 required>
                                             <option value="">Seleccione una categoría</option>
                                             <option value="Titular" {{ old('categoria') == 'Titular' ? 'selected' : '' }}>
@@ -122,7 +123,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
+                                            <i class="fa-solid fa-info-circle"></i>
                                             Categoría del docente en la institución
                                         </small>
                                     </div>
@@ -130,12 +131,12 @@
                                     {{-- Profesión --}}
                                     <div class="mb-4">
                                         <label for="profesion" class="form-label">
-                                            <i class="fa-solid fa-graduation-cap text-success"></i> 
+                                            <i class="fa-solid fa-graduation-cap text-success"></i>
                                             <strong>Profesión</strong>
                                         </label>
-                                        <input type="text" 
-                                               name="profesion" 
-                                               id="profesion" 
+                                        <input type="text"
+                                               name="profesion"
+                                               id="profesion"
                                                class="form-control @error('profesion') is-invalid @enderror"
                                                value="{{ old('profesion') }}"
                                                maxlength="150"
@@ -144,7 +145,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <i class="fa-solid fa-info-circle"></i> 
+                                            <i class="fa-solid fa-info-circle"></i>
                                             Profesión o título académico (opcional)
                                         </small>
                                     </div>
@@ -154,8 +155,8 @@
                             {{-- Información adicional --}}
                             <div class="alert alert-info mb-4">
                                 <i class="fa-solid fa-lightbulb"></i>
-                                <strong>Nota:</strong> Al registrar un docente, se le asignará automáticamente el rol de "docente" 
-                                en el sistema si aún no lo tiene.
+                                <strong>Nota:</strong> Al registrar un docente, se le asignará automáticamente el rol de "docente"
+                                en el sistema. La carga horaria actual se calculará automáticamente según las materias asignadas.
                             </div>
 
                             {{-- Botones de acción --}}
@@ -179,7 +180,7 @@
                         </h6>
                         <ul class="mb-0">
                             <li><strong>Usuario:</strong> Debe seleccionar un usuario existente que no esté registrado como docente.</li>
-                            <li><strong>Carga Horaria:</strong> Especifica las horas semanales de trabajo del docente.</li>
+                            <li><strong>Carga Máxima:</strong> Establece el límite de horas semanales que el docente puede tener asignadas.</li>
                             <li><strong>Categoría:</strong> Indica la categoría o nivel del docente en la institución.</li>
                             <li><strong>Profesión:</strong> Campo opcional para registrar la profesión o título del docente.</li>
                         </ul>

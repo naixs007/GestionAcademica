@@ -108,9 +108,16 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->name('admin.')->group(
         Route::resource('grupos', GrupoController::class)->names('grupos');
 
         // Carga Académica (Gestión de asignación de materias a docentes)
+        Route::get('carga-academica/docente/{docente}', [CargaAcademicaController::class, 'verDocente'])
+            ->name('carga-academica.docente');
+
         Route::resource('carga-academica', CargaAcademicaController::class)
             ->parameters(['carga-academica' => 'cargaAcademica'])
             ->names('carga-academica');
+
+        // Ruta AJAX para verificar conflictos de horario
+        Route::post('carga-academica/verificar-conflictos', [CargaAcademicaController::class, 'verificarConflictos'])
+            ->name('carga-academica.verificar-conflictos');
 
         // Horario (Resource completo)
         Route::resource('horario', HorarioController::class)

@@ -140,7 +140,8 @@
                                                        class="form-control @error('cargaHoraria') is-invalid @enderror"
                                                        value="{{ old('cargaHoraria', $materia->cargaHoraria) }}"
                                                        min="1"
-                                                       max="20"
+                                                       max="24"
+                                                       step="0.01"
                                                        required>
                                                 @error('cargaHoraria')
                                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -150,10 +151,10 @@
                                                 <div class="progress mt-2" style="height: 20px;">
                                                     <div class="progress-bar bg-success"
                                                          role="progressbar"
-                                                         style="width: {{ ($materia->cargaHoraria / 20) * 100 }}%"
+                                                         style="width: {{ ($materia->cargaHoraria / 24) * 100 }}%"
                                                          aria-valuenow="{{ $materia->cargaHoraria }}"
                                                          aria-valuemin="0"
-                                                         aria-valuemax="20">
+                                                         aria-valuemax="24">
                                                         {{ $materia->cargaHoraria }} hrs
                                                     </div>
                                                 </div>
@@ -266,7 +267,7 @@
         document.getElementById('cargaHoraria').addEventListener('input', function() {
             const value = this.value;
             const progressBar = document.querySelector('.progress-bar');
-            const percentage = (value / 20) * 100;
+            const percentage = (value / 24) * 100;
             progressBar.style.width = percentage + '%';
             progressBar.textContent = value + ' hrs';
         });

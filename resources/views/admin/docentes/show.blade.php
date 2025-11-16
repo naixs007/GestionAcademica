@@ -64,13 +64,39 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="text-muted small">
-                                    <i class="fa-solid fa-clock"></i> Carga Horaria
+                                    <i class="fa-solid fa-clock"></i> Carga Actual
                                 </label>
                                 <p class="mb-0">
                                     <span class="badge bg-info fs-6">
-                                        {{ $docente->cargaHoraria }} horas/semana
+                                        {{ number_format($docente->cargaHoraria, 2) }} hrs/semana
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">
+                                    <i class="fa-solid fa-gauge-high"></i> Carga Máxima
+                                </label>
+                                <p class="mb-0">
+                                    <span class="badge bg-danger fs-6">
+                                        {{ number_format($docente->carga_maxima_horas ?? 24, 2) }} hrs/semana
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small">
+                                    <i class="fa-solid fa-percent"></i> Porcentaje de Uso
+                                </label>
+                                <p class="mb-0">
+                                    @php
+                                        $maxima = $docente->carga_maxima_horas ?? 24;
+                                        $actual = $docente->cargaHoraria;
+                                        $porcentaje = $maxima > 0 ? ($actual / $maxima) * 100 : 0;
+                                        $color = $porcentaje >= 100 ? 'danger' : ($porcentaje >= 80 ? 'warning' : 'success');
+                                    @endphp
+                                    <span class="badge bg-{{ $color }} fs-6">
+                                        {{ number_format($porcentaje, 1) }}%
                                     </span>
                                 </p>
                             </div>
@@ -130,7 +156,7 @@
                                                 <td>{{ $materia->nivel ?? 'N/A' }}</td>
                                                 <td class="text-center">
                                                     <span class="badge bg-info">
-                                                        {{ $materia->grupos->count() ?? 0 }}
+                                                        {{ $materia->grupos->first()->nombre ?? 'N/A' }}
                                                     </span>
                                                 </td>
                                             </tr>

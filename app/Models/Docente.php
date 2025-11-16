@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Docente extends Model
 {
@@ -14,30 +15,36 @@ class Docente extends Model
         'user_id',
         'categoria',
         'profesion',
+        'carga_maxima_horas',
     ];
 
     /**
-     * Calcula la carga horaria total del docente
-     * Suma las horas de todos los horarios asignados en el periodo actual
+     * Calcula la carga horaria total del docente en horas decimales
+     * Suma la cargaHoraria de todas las materias asignadas
+     * Si no hay gestión/periodo específico, usa todas las cargas activas
      */
     public function getCargaHorariaAttribute()
     {
-        $gestionActual = date('Y');
-        $periodoActual = date('n') <= 6 ? '1' : '2'; // 1 = enero-junio, 2 = julio-diciembre
+        // Intentar obtener la gestión y periodo más reciente
+        $cargaMasReciente = $this->cargasAcademicas()
+            ->orderBy('gestion', 'desc')
+            ->orderBy('periodo', 'desc')
+            ->first();
 
-        return $this->cargasAcademicas()
-            ->where('gestion', $gestionActual)
-            ->where('periodo', $periodoActual)
-            ->with('horario')
+        if (!$cargaMasReciente) {
+            return 0;
+        }
+
+        $totalCargaHoraria = $this->cargasAcademicas()
+            ->where('gestion', $cargaMasReciente->gestion)
+            ->where('periodo', $cargaMasReciente->periodo)
+            ->with('materia')
             ->get()
             ->sum(function ($carga) {
-                if (!$carga->horario) return 0;
-
-                $inicio = \Carbon\Carbon::parse($carga->horario->hora_inicio);
-                $fin = \Carbon\Carbon::parse($carga->horario->hora_fin);
-
-                return $fin->diffInHours($inicio);
+                return $carga->materia ? $carga->materia->cargaHoraria : 0;
             });
+
+        return round($totalCargaHoraria, 2);
     }
 
     public function user()

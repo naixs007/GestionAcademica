@@ -37,7 +37,7 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo',
             'sigla' => 'required|string|max:20',
             'nivel' => 'required|integer|min:1|max:10',
-            'cargaHoraria' => 'required|integer|min:1|max:20',
+            'cargaHoraria' => 'required|numeric|min:0.5|max:24',
         ]);
 
         try {
@@ -95,7 +95,7 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo,' . $materia->id,
             'sigla' => 'required|string|max:20',
             'nivel' => 'required|integer|min:1|max:10',
-            'cargaHoraria' => 'required|integer|min:1|max:20',
+            'cargaHoraria' => 'required|numeric|min:0.5|max:24',
         ]);
 
         try {

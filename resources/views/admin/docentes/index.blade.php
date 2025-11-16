@@ -43,7 +43,7 @@
                                 <th style="min-width: 180px;">
                                     <i class="fa-solid fa-envelope"></i> Correo
                                 </th>
-                                <th style="min-width: 120px;">
+                                <th style="min-width: 150px;">
                                     <i class="fa-solid fa-clock"></i> Carga Horaria
                                 </th>
                                 <th style="min-width: 150px;">
@@ -73,9 +73,17 @@
                                         </small>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info">
-                                            {{ $docente->cargaHoraria }} hrs
+                                        @php
+                                            $actual = $docente->cargaHoraria;
+                                            $maxima = $docente->carga_maxima_horas ?? 24;
+                                            $porcentaje = $maxima > 0 ? ($actual / $maxima) * 100 : 0;
+                                            $color = $porcentaje >= 100 ? 'danger' : ($porcentaje >= 80 ? 'warning' : 'info');
+                                        @endphp
+                                        <span class="badge bg-{{ $color }}">
+                                            {{ number_format($actual, 2) }} / {{ number_format($maxima, 2) }} hrs
                                         </span>
+                                        <br>
+                                        <small class="text-muted">{{ number_format($porcentaje, 0) }}%</small>
                                     </td>
                                     <td>
                                         <span class="badge bg-primary">

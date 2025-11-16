@@ -24,14 +24,29 @@ class Horario extends Model
     }
 
     /**
-     * Calcula las horas del bloque (retorna decimal)
+     * Calcula la duración total del bloque horario en MINUTOS
+     * Incluye lógica de cruce de medianoche
      */
-    public function getHorasAttribute()
+    public function getMinutosTotalesAttribute()
     {
         $inicio = \Carbon\Carbon::parse($this->hora_inicio);
         $fin = \Carbon\Carbon::parse($this->hora_fin);
 
-        return round($fin->diffInMinutes($inicio) / 60, 2);
+        // Si la hora fin es menor que inicio, asumir que cruza medianoche
+        if ($fin->lessThan($inicio)) {
+            $fin->addDay();
+        }
+
+        return $inicio->diffInMinutes($fin);
+    }
+
+    /**
+     * Calcula las horas del bloque (retorna decimal)
+     * Usa minutos_totales como base y lo convierte a horas
+     */
+    public function getHorasAttribute()
+    {
+        return round($this->minutos_totales / 60, 2);
     }
 
     /**

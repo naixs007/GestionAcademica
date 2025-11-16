@@ -17,6 +17,11 @@ class Materia extends Model
         'nivel',
     ];
 
+    protected $casts = [
+        'cargaHoraria' => 'decimal:2',
+        'nivel' => 'integer',
+    ];
+
     /**
      * Accessor para obtener el nivel en formato texto
      */
