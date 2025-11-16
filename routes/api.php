@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\Api\AsistenciaController as ApiAsistenciaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,16 @@ Route::middleware(['auth', 'role:Administrador'])->group(function () {
     // POST /api/configuraciones - Actualizar configuración
     Route::post('/configuraciones', [ConfiguracionController::class, 'apiUpdate']);
 });
+
+/**
+ * Rutas de API para Marcado de Asistencia de Docentes
+ * Protegidas por middleware de autenticación
+ */
+Route::middleware(['auth'])->group(function () {
+    // GET /api/asistencia/marcado/{horarioId} - Obtener datos para marcado
+    Route::get('/asistencia/marcado/{horarioId}', [ApiAsistenciaController::class, 'getMarcadoData']);
+
+    // POST /api/asistencia/registrar-docente - Registrar asistencia del docente
+    Route::post('/asistencia/registrar-docente', [ApiAsistenciaController::class, 'registrarAsistenciaDocente']);
+});
+

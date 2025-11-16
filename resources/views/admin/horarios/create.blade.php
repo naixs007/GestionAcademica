@@ -25,56 +25,77 @@
                     @csrf
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-12 mb-3">
                             <label class="form-label">
-                                <i class="fa-solid fa-calendar-day"></i> Días de la Semana <span class="text-danger">*</span>
+                                <i class="fa-solid fa-calendar-week"></i> Días de la Semana <span class="text-danger">*</span>
                             </label>
-                            <div class="@error('dias_semana') is-invalid @enderror">
+                            <div class="border rounded p-3 bg-light @error('dias_semana') border-danger @enderror">
                                 @php
-                                    $dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                                    $dias = [
+                                        'Lunes' => 'L',
+                                        'Martes' => 'M',
+                                        'Miércoles' => 'M',
+                                        'Jueves' => 'J',
+                                        'Viernes' => 'V',
+                                        'Sábado' => 'S'
+                                    ];
                                     $oldDias = old('dias_semana', []);
                                 @endphp
-                                @foreach ($dias as $dia)
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="dias_semana[]"
-                                            value="{{ $dia }}" id="dia{{ $loop->index }}"
-                                            {{ in_array($dia, $oldDias) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="dia{{ $loop->index }}">
-                                            {{ $dia }}
-                                        </label>
-                                    </div>
-                                @endforeach
+                                <div class="row g-2">
+                                    @foreach ($dias as $diaCompleto => $diaCorto)
+                                        <div class="col-6 col-md-4 col-lg-2">
+                                            <input class="btn-check" type="checkbox" name="dias_semana[]"
+                                                value="{{ $diaCompleto }}" id="dia{{ $loop->index }}"
+                                                {{ in_array($diaCompleto, $oldDias) ? 'checked' : '' }}>
+                                            <label class="btn btn-outline-primary w-100" for="dia{{ $loop->index }}">
+                                                <i class="fa-solid fa-calendar-day d-block mb-1"></i>
+                                                <small class="d-block">{{ $diaCompleto }}</small>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAll">
+                                        <i class="fa-solid fa-check-double"></i> Seleccionar Todos
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="selectNone">
+                                        <i class="fa-solid fa-times"></i> Limpiar
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="selectWeekdays">
+                                        <i class="fa-solid fa-briefcase"></i> Lun-Vie
+                                    </button>
+                                </div>
                             </div>
                             @error('dias_semana')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">Seleccione al menos un día</small>
+                            <small class="text-muted d-block mt-1">Click en los días para seleccionar/deseleccionar</small>
                         </div>
 
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label for="hora_inicio" class="form-label">
                                 <i class="fa-solid fa-clock"></i> Hora de Inicio <span class="text-danger">*</span>
                             </label>
                             <input type="time" name="hora_inicio" id="hora_inicio"
                                 class="form-control @error('hora_inicio') is-invalid @enderror"
-                                value="{{ old('hora_inicio') }}" required>
+                                value="{{ old('hora_inicio', '07:00') }}" required>
                             @error('hora_inicio')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">Formato: HH:MM (24 horas)</small>
+                            <small class="text-muted">Formato 24 horas (ej: 07:00, 14:30)</small>
                         </div>
 
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label for="hora_fin" class="form-label">
                                 <i class="fa-solid fa-clock"></i> Hora de Fin <span class="text-danger">*</span>
                             </label>
                             <input type="time" name="hora_fin" id="hora_fin"
                                 class="form-control @error('hora_fin') is-invalid @enderror"
-                                value="{{ old('hora_fin') }}" required>
+                                value="{{ old('hora_fin', '08:30') }}" required>
                             @error('hora_fin')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">Formato: HH:MM (24 horas)</small>
+                            <small class="text-muted">Debe ser posterior a hora de inicio</small>
                         </div>
                     </div>
 
@@ -108,4 +129,30 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAll = document.getElementById('selectAll');
+            const selectNone = document.getElementById('selectNone');
+            const selectWeekdays = document.getElementById('selectWeekdays');
+            const checkboxes = document.querySelectorAll('input[name="dias_semana[]"]');
+
+            selectAll.addEventListener('click', function() {
+                checkboxes.forEach(cb => cb.checked = true);
+            });
+
+            selectNone.addEventListener('click', function() {
+                checkboxes.forEach(cb => cb.checked = false);
+            });
+
+            selectWeekdays.addEventListener('click', function() {
+                checkboxes.forEach((cb, index) => {
+                    // Marcar Lunes a Viernes (índices 0-4), desmarcar Sábado (índice 5)
+                    cb.checked = index < 5;
+                });
+            });
+        });
+    </script>
+    @endpush
 </x-admin-layout>

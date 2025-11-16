@@ -5,21 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Asistencia;
 use App\Models\Docente;
-use App\Models\Materia;
-use App\Models\Grupo;
 use App\Models\CargaAcademica;
-use Illuminate\Support\Facades\DB;
+use App\Services\AsistenciaService;
 
 class AsistenciaController extends Controller
 {
+    protected $asistenciaService;
+
+    public function __construct(AsistenciaService $asistenciaService)
+    {
+        $this->asistenciaService = $asistenciaService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = Asistencia::with(['docente.user', 'materia', 'grupo'])
-            ->orderByDesc('fecha')
-            ->orderByDesc('created_at');
+        $query = Asistencia::with(['docente.user', 'materia', 'grupo', 'horario']);
 
         // Filtros
         if ($request->filled('fecha_desde')) {
@@ -38,9 +40,12 @@ class AsistenciaController extends Controller
             $query->where('estado', $request->estado);
         }
 
-        $asistencias = $query->paginate(20)->withQueryString();
+        $asistencias = $query->orderBy('fecha', 'desc')
+                            ->orderBy('created_at', 'desc')
+                            ->paginate(15)
+                            ->withQueryString();
 
-        // Para los filtros
+        // Lista de docentes para filtro
         $docentes = Docente::with('user')->orderBy('id')->get();
 
         return view('admin.asistencia.index', compact('asistencias', 'docentes'));
@@ -87,23 +92,28 @@ class AsistenciaController extends Controller
         ]);
 
         // Obtener la carga académica
-        $carga = CargaAcademica::findOrFail($validated['carga_academica_id']);
+        $carga = $this->asistenciaService->obtenerCargaAcademica($validated['carga_academica_id']);
 
-        // Verificar que no exista ya un registro para este docente, materia, grupo y fecha
-        $existe = Asistencia::where('docente_id', $carga->docente_id)
-            ->where('materia_id', $carga->materia_id)
-            ->where('grupo_id', $carga->grupo_id)
-            ->where('fecha', $validated['fecha'])
-            ->exists();
+        if (!$carga) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'No se encontró la carga académica.');
+        }
 
-        if ($existe) {
+        // Verificar duplicados
+        if ($this->asistenciaService->existeAsistencia(
+            $carga->docente_id,
+            $carga->materia_id,
+            $carga->grupo_id,
+            $validated['fecha']
+        )) {
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Ya existe un registro de asistencia para este docente, materia, grupo y fecha.');
         }
 
         // Crear la asistencia
-        Asistencia::create([
+        $this->asistenciaService->crearAsistencia([
             'docente_id' => $carga->docente_id,
             'materia_id' => $carga->materia_id,
             'grupo_id' => $carga->grupo_id,

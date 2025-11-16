@@ -2,11 +2,11 @@
     <div class="container-fluid py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="h4 mb-0">
-                <i class="bi bi-pencil-square me-2"></i>
+                <i class="fa-solid fa-pen-to-square me-2"></i>
                 Editar Asistencia
             </h2>
             <a href="{{ route('admin.asistencia.show', $asistencia) }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i>
+                <i class="fa-solid fa-arrow-left me-1"></i>
                 Volver
             </a>
         </div>
@@ -15,7 +15,7 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-info text-white">
                 <h5 class="card-title mb-0">
-                    <i class="bi bi-info-circle me-2"></i>
+                    <i class="fa-solid fa-circle-info me-2"></i>
                     Información de la Asignación
                 </h5>
             </div>
@@ -24,7 +24,7 @@
                     <div class="col-md-6 mb-3">
                         <label class="text-muted small">Docente</label>
                         <p class="mb-0 fw-semibold">
-                            <i class="bi bi-person me-1"></i>
+                            <i class="fa-solid fa-user me-1"></i>
                             {{ $asistencia->docente->user->name ?? 'N/A' }}
                         </p>
                     </div>
@@ -33,7 +33,7 @@
                     <div class="col-md-6 mb-3">
                         <label class="text-muted small">Materia</label>
                         <p class="mb-0 fw-semibold">
-                            <i class="bi bi-book me-1"></i>
+                            <i class="fa-solid fa-book me-1"></i>
                             {{ $asistencia->materia->nombre }}
                         </p>
                     </div>
@@ -43,8 +43,8 @@
                     <div class="col-md-6 mb-3">
                         <label class="text-muted small">Grupo</label>
                         <p class="mb-0 fw-semibold">
-                            <i class="bi bi-people me-1"></i>
-                            {{ $asistencia->grupo->codigo }}
+                            <i class="fa-solid fa-users me-1"></i>
+                            {{ $asistencia->grupo->nombre }}
                         </p>
                     </div>
                     @endif
@@ -53,7 +53,7 @@
                     <div class="col-md-6 mb-3">
                         <label class="text-muted small">Horario</label>
                         <p class="mb-0 fw-semibold">
-                            <i class="bi bi-clock me-1"></i>
+                            <i class="fa-solid fa-clock me-1"></i>
                             {{ $asistencia->horario->dia_semana }}
                             {{ \Carbon\Carbon::parse($asistencia->horario->hora_inicio)->format('H:i') }} -
                             {{ \Carbon\Carbon::parse($asistencia->horario->hora_fin)->format('H:i') }}
@@ -62,7 +62,7 @@
                     @endif
                 </div>
                 <div class="alert alert-info mb-0">
-                    <i class="bi bi-info-circle me-1"></i>
+                    <i class="fa-solid fa-circle-info me-1"></i>
                     Esta información no se puede modificar. Solo puede editar la fecha, estado y observaciones.
                 </div>
             </div>
@@ -154,7 +154,7 @@
 
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save me-1"></i>
+                            <i class="fa-solid fa-floppy-disk me-1"></i>
                             Guardar Cambios
                         </button>
                         <a href="{{ route('admin.asistencia.show', $asistencia) }}" class="btn btn-secondary">

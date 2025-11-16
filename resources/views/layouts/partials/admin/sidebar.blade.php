@@ -137,24 +137,27 @@
 
         {{-- 4. Control de Asistencia Docente (Admin, Super-Admin, Decano) --}}
         @if ($user && $user->hasAnyRole(['admin', 'super-admin', 'decano']))
-            <a href="#" class="submenu-toggle {{ Route::is('admin.asistencia.*') ? 'active' : '' }}"
+            <a href="#"
+                class="submenu-toggle {{ Route::is('admin.asistencia.*') ? 'active' : '' }}"
                 data-target="asistencia-menu">
                 <i class="fa-solid fa-square-check"></i> Control de Asistencia Docente
                 <i class="fa-solid fa-chevron-down ms-auto"></i>
             </a>
 
             <div id="asistencia-menu" class="submenu {{ Route::is('admin.asistencia.*') ? 'show' : '' }}">
-                {{-- REGISTRAR ASISTENCIA --}}
+                {{-- VER ASISTENCIAS --}}
                 <a href="{{ route('admin.asistencia.index') }}"
                     class="{{ Route::is('admin.asistencia.index') ? 'active' : '' }}">
-                    <i class="fa-solid fa-clipboard-list"></i> Registrar Asistencia
+                    <i class="fa-solid fa-list"></i> Ver Asistencias
                 </a>
 
-                {{-- GENERAR ASISTENCIA --}}
-                <a href="{{ route('admin.asistencia.create') }}"
-                    class="{{ Route::is('admin.asistencia.create') ? 'active' : '' }}">
-                    <i class="fa-solid fa-plus-circle"></i> Generar Asistencia
-                </a>
+                {{-- REGISTRAR ASISTENCIA (Solo Admin, Super-Admin y Decano) --}}
+                @if ($user->hasAnyRole(['admin', 'super-admin', 'decano']))
+                    <a href="{{ route('admin.asistencia.create') }}"
+                        class="{{ Route::is('admin.asistencia.create') ? 'active' : '' }}">
+                        <i class="fa-solid fa-plus-circle"></i> Registrar Asistencia
+                    </a>
+                @endif
             </div>
 
             <hr>
@@ -163,19 +166,15 @@
         {{-- 5. Reportes (Admin, Super-Admin, Decano) --}}
         @if ($user && $user->hasAnyRole(['admin', 'super-admin', 'decano']))
             <a href="#"
-                class="submenu-toggle {{ Route::is('admin.reporte.*') || Route::is('admin.bitacora.*') ? 'active' : '' }}"
+                class="submenu-toggle {{ Route::is('admin.reporte.*') ? 'active' : '' }}"
                 data-target="reportes-menu">
                 <i class="fa-solid fa-chart-line"></i> Reportes y Estadísticas
                 <i class="fa-solid fa-chevron-down ms-auto"></i>
             </a>
 
-            {{-- CORRECCIÓN: Aplicar la condición de Bitácora para que el menú se mantenga 'show' --}}
-            <div id="reportes-menu"
-                class="submenu {{ Route::is('admin.reporte.*') || Route::is('admin.bitacora.*') ? 'show' : '' }}">
-
-                {{-- Enlaces de Reportes (Se mantienen) --}}
+            <div id="reportes-menu" class="submenu {{ Route::is('admin.reporte.*') ? 'show' : '' }}">
                 <a href="{{ route('admin.reporte.index') }}"
-                    class="{{ Route::is('admin.reporte.index') ? 'active' : '' }}">
+                    class="{{ Route::is('admin.reporte.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-file-chart-column"></i> Ver Reportes
                 </a>
 
@@ -183,17 +182,16 @@
                     class="{{ Route::is('admin.reporte.download') ? 'active' : '' }}">
                     <i class="fa-solid fa-download"></i> Descargar Reportes
                 </a>
-
-                {{-- Bitácora (El enlace ya tiene la condición correcta) --}}
-                @if ($user && $user->hasAnyRole(['admin', 'super-admin']))
-                    <a href="{{ route('admin.bitacora.index') }}"
-                        class="{{ Route::is('admin.bitacora.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-file-lines"></i> Bitácora
-                    </a>
-                @endif
             </div>
 
             <hr>
+        @endif
+
+        {{-- 6. Bitácora (Solo Admin y Super-Admin) --}}
+        @if ($user && $user->hasAnyRole(['admin', 'super-admin']))
+            <a href="{{ route('admin.bitacora.index') }}" class="{{ Route::is('admin.bitacora.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-pen-to-square"></i> Bitácora
+            </a>
         @endif
     </div>
 </div>

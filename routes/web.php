@@ -14,6 +14,7 @@ use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\CargaAcademicaController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\Docente\AsistenciaDocenteController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -57,6 +58,20 @@ Route::get('/decano/dashboard', function () {
 Route::get('/docente/dashboard', function () {
     return view('docente.dashboard');
 })->middleware(['auth', 'verified'])->name('docente.dashboard');
+
+// Redirección de conveniencia
+Route::redirect('/docente', '/docente/dashboard')->middleware(['auth', 'verified']);
+
+// Rutas del docente
+Route::middleware(['auth', 'role:docente'])->prefix('docente')->name('docente.')->group(function () {
+    // Asistencia
+    Route::get('asistencia', [AsistenciaDocenteController::class, 'index'])->name('asistencia.index');
+    Route::get('asistencia/marcar', [AsistenciaDocenteController::class, 'marcar'])->name('asistencia.marcar');
+    Route::post('asistencia/procesar', [AsistenciaDocenteController::class, 'procesarMarcado'])->name('asistencia.procesar');
+
+    // Carga Académica
+    Route::get('carga-academica', [AsistenciaDocenteController::class, 'cargaAcademica'])->name('carga-academica');
+});
 
 //--- Rutas de Administración (Consolidado) ---
 

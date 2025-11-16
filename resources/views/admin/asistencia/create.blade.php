@@ -3,7 +3,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="h4 mb-0">
                 <i class="bi bi-calendar-check me-2"></i>
-                Registrar Asistencia
+                Registrar Asistencia de Docente
             </h2>
             <a href="{{ route('admin.asistencia.index') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i>

@@ -82,8 +82,8 @@ class Asistencia extends Model
         return match($this->estado) {
             'Presente' => 'success',
             'Ausente' => 'danger',
-            'Justificado' => 'warning',
-            'Tardanza' => 'info',
+            'Justificado' => 'info',
+            'Tardanza' => 'warning',
             default => 'secondary',
         };
     }

@@ -1,52 +1,72 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de {{auth()->user()->name}}</title>
+@extends('layouts.docente')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@section('title', 'Dashboard Docente')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('content')\n<div class="container-fluid py-4">
+    <h2 class="mb-4">
+        <i class="fa-solid fa-gauge"></i> Bienvenido, {{ auth()->user()->name }}
+    </h2>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-</head>
-<body>
-
-    <button class="menu-toggle" id="menuToggle">
-        <i class="bi bi-list"></i>
-    </button>
-
-    @include('layouts.partials.admin.navigation')
-
-    @include('layouts.partials.admin.sidebar')
-
-    <main class="p-4" style="margin-left: 260px;">
-        <div class="container-fluid">
-            <h2>Panel de {{auth()->user()->name}}</h2>
-            <p>Bienvenido, {{auth()->user()->name}}. Utilizando temporalmente la estructura de navegación y sidebar del Administrador.</p>
-
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="alert alert-info">
-                        **Recuerda:** Los enlaces de navegación pueden ser incorrectos si la barra del administrador tiene rutas a las que el decano no debe acceder.
-                    </div>
+    <div class="row">
+        {{-- Tarjeta Mi Asistencia --}}
+        <div class="col-md-4 mb-4">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="fa-solid fa-clipboard-check fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Mi Asistencia</h5>
+                    <p class="card-text">Consulta tu historial de asistencias y marca tu presencia.</p>
+                    <a href="{{ route('docente.asistencia.index') }}" class="btn btn-primary">
+                        <i class="fa-solid fa-arrow-right"></i> Ver Asistencias
+                    </a>
                 </div>
             </div>
         </div>
-    </main>
 
-    <script>
-        const menuToggle = document.getElementById('menuToggle');
-        // Asegúrate de que tu sidebar incluido tenga el ID 'sidebar'
-        const sidebar = document.getElementById('sidebar');
+        {{-- Tarjeta Marcar Asistencia --}}
+        <div class="col-md-4 mb-4">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="fa-solid fa-hand-pointer fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Marcar Asistencia</h5>
+                    <p class="card-text">Registra tu asistencia para tus clases de hoy.</p>
+                    <a href="{{ route('docente.asistencia.marcar') }}" class="btn btn-success">
+                        <i class="fa-solid fa-check"></i> Marcar Ahora
+                    </a>
+                </div>
+            </div>
+        </div>
 
-        if (menuToggle && sidebar) {
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
-            });
-        }
-    </script>
-</body>
-</html>
+        {{-- Tarjeta Mi Carga Académica --}}
+        <div class="col-md-4 mb-4">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="fa-solid fa-book fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Mi Carga Académica</h5>
+                    <p class="card-text">Consulta tus materias, horarios y grupos asignados.</p>
+                    <a href="{{ route('docente.carga-academica') }}" class="btn btn-info">
+                        <i class="fa-solid fa-eye"></i> Ver Carga
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Información Rápida --}}
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fa-solid fa-info-circle"></i> Información Importante</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Puedes marcar tu asistencia desde <strong>15 minutos antes</strong> hasta <strong>15 minutos después</strong> de la hora de inicio de tu clase.</li>
+                        <li>Recuerda marcar tu asistencia a tiempo para evitar ser marcado como ausente.</li>
+                        <li>Si tienes algún problema con el registro, contacta al administrador del sistema.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
